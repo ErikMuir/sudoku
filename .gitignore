@@ -33,3 +33,5 @@ bld/
 *.nuget.targets
 
 node_modules
+ignore
+puzzles

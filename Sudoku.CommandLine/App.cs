@@ -7,7 +7,7 @@ namespace Sudoku.CommandLine
     public class App
     {
         private static readonly FluentConsole _console = new FluentConsole();
-        private static readonly Dictionary<char, string> _noPuzzleMenuOptions = new Dictionary<char, string>
+        private static readonly Dictionary<char, string> _homeMenuOptions = new Dictionary<char, string>
         {
             { '1', "Input" },
             { '2', "Load" },
@@ -21,7 +21,7 @@ namespace Sudoku.CommandLine
             { '4', "Clear" },
             { '0', "Quit" },
         };
-        private static readonly Menu _noPuzzleMenu = new Menu(_noPuzzleMenuOptions, "No Puzzle Menu");
+        private static readonly Menu _homeMenu = new Menu(_homeMenuOptions, "Home Menu");
         private static readonly Menu _puzzleMenu = new Menu(_puzzleMenuOptions, "Puzzle Menu");
         
         public Puzzle Puzzle { get; private set; }
@@ -47,13 +47,13 @@ namespace Sudoku.CommandLine
 
         private void ShowMenu()
         {
-            if (Puzzle == null) ShowNoPuzzleMenu();
+            if (Puzzle == null) ShowHomeMenu();
             else ShowPuzzleMenu();
         }
 
-        private void ShowNoPuzzleMenu()
+        private void ShowHomeMenu()
         {
-            switch (_noPuzzleMenu.Run())
+            switch (_homeMenu.Run())
             {
                 case '1': Input(); break;
                 case '2': Load(); break;
@@ -96,7 +96,7 @@ namespace Sudoku.CommandLine
 
         private void Save()
         {
-            _console.Info(Puzzle.ToSdkString());
+            _console.Info(Sdk.Serialize(Puzzle));
             FilePuzzle.Save(Puzzle);
             _console
                 .Write("Press any key to continue... ")

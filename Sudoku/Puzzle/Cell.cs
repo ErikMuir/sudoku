@@ -9,6 +9,10 @@ namespace Sudoku
 {
     public class Cell
     {
+        private static Regex _cluePattern = new Regex("^[0-8][0-8][1-9]1$");
+        private static Regex _filledPattern = new Regex("^[0-8][0-8][1-9]0$");
+        private static Regex _emptyPattern = new Regex("^[0-8][0-8]001?2?3?4?5?6?7?8?9?$");
+
         public Cell(int col, int row, int? val = null)
         {
             this.Validate(col, row, val);
@@ -114,9 +118,9 @@ namespace Sudoku
             return CellType.Invalid;
         }
 
-        private static bool IsClueString(string cell) => cell != null && new Regex("^[0-8][0-8][1-9]1$").IsMatch(cell);
-        private static bool IsFilledString(string cell) => cell != null && new Regex("^[0-8][0-8][1-9]0$").IsMatch(cell);
-        private static bool IsEmptyString(string cell) => cell != null && new Regex("^[0-8][0-8]001?2?3?4?5?6?7?8?9?$").IsMatch(cell);
+        private static bool IsClueString(string cell) => cell != null && _cluePattern.IsMatch(cell);
+        private static bool IsFilledString(string cell) => cell != null && _filledPattern.IsMatch(cell);
+        private static bool IsEmptyString(string cell) => cell != null && _emptyPattern.IsMatch(cell);
 
         private void Validate(int col, int row, int? val)
         {

@@ -2,6 +2,7 @@ namespace Sudoku.Serialization
 {
     public static class MetadataTokens
     {
+        public const string Prefix = "#";
         public const string Author = "A";
         public const string Description = "D";
         public const string Comment = "C";

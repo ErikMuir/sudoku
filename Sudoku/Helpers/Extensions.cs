@@ -52,8 +52,5 @@ namespace Sudoku
 
         public static string ToUtcString(this DateTime dt)
             => dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
-
-        public static string RemoveNewLines(this string val)
-            => val.Replace('\n', ' ').Replace('\r', ' ');
     }
 }

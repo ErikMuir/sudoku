@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Sudoku
 {
     public static class Constants
@@ -17,5 +15,6 @@ namespace Sudoku
         public const string BoxLineReduction = "BoxLineReduction";
         public const string XWing = "XWing";
         public const string YWing = "YWing";
+        public static string[] NewLines => new[] { "\r\n", "\r", "\n" };
     }
 }

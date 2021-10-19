@@ -80,12 +80,5 @@ namespace Sudoku.Tests
             Assert.NotSame(_testObject, clone);
             Assert.Equal(_testObject.ToString(), clone.ToString());
         }
-
-        [Fact]
-        public void ToString_Serializes_Clue()
-        {
-            string actual = _testObject.ToString().Substring(3, 1);
-            Assert.Equal("1", actual);
-        }
     }
 }

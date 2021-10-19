@@ -4,10 +4,10 @@ namespace Sudoku
 {
     public static class Utils
     {
-        public static void Loop(Action<int> action) => Loop(9, action);
-        public static void Loop<T>(T t, Action<int, T> action) => Loop<T>(9, t, action);
-        public static bool LoopAnd(Func<int, bool> func) => LoopAnd(9, func);
-        public static bool LoopOr(Func<int, bool> func) => LoopOr(9, func);
+        public static void Loop(Action<int> action) => Loop(Constants.UnitSize, action);
+        public static void Loop<T>(T t, Action<int, T> action) => Loop<T>(Constants.UnitSize, t, action);
+        public static bool LoopAnd(Func<int, bool> func) => LoopAnd(Constants.UnitSize, func);
+        public static bool LoopOr(Func<int, bool> func) => LoopOr(Constants.UnitSize, func);
 
         public static void Loop(int count, Action<int> action)
         {

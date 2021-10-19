@@ -3,24 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Sudoku.Serialization
+namespace Sudoku.Serializers
 {
-    public static class Sdk
+    public static class SdkSerializer
     {
         public static string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
             string serializedMetadata = Serialize(puzzle.Metadata);
             sb.Append(serializedMetadata);
-            for (int row = 0; row < Constants.Size; row++)
+            Utils.Loop(row =>
             {
-                for (int col = 0; col < Constants.Size; col++)
-                {
-                    string serializedCell = Serialize(puzzle.GetCell(col, row));
-                    sb.Append(serializedCell);
-                }
+                Utils.Loop(col => sb.Append(Serialize(puzzle.GetCell(col, row))));
                 sb.AppendLine();
-            }
+            });
             return sb.ToString();
         }
 
@@ -54,26 +50,26 @@ namespace Sudoku.Serialization
 
             string[] rows = puzzleString
                 .Split(Constants.NewLines, StringSplitOptions.None)
-                .Where(x => x.Length == Constants.Size)
+                .Where(x => x.Length == Constants.UnitSize)
                 .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
                 .ToArray();
 
-            if (rows.Length != Constants.Size)
+            if (rows.Length != Constants.UnitSize)
                 throw new SudokuException("Invalid sdk file format");
 
             Puzzle puzzle = new();
             puzzle.Metadata = DeserializeMetadata(puzzleString);
-            for (int row = 0; row < rows.Length; row++)
+            Utils.Loop(row =>
             {
                 string line = rows[row];
-                for (int col = 0; col < Constants.Size; col++)
+                Utils.Loop(col =>
                 {
-                    if (int.TryParse($"{line[col]}", out int intValue))
+                    if (int.TryParse($"{line[col]}", out int val))
                     {
-                        puzzle.Cells[(row * 9) + col] = new Clue(col, row, intValue);
+                        puzzle.Cells[(row * 9) + col] = new Clue(col, row, val);
                     }
-                }
-            }
+                });
+            });
             return puzzle;
         }
 

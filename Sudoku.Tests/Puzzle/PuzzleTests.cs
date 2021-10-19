@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -17,7 +16,7 @@ namespace Sudoku.Tests
         [Fact]
         public void Constructor_Sets_Cells()
         {
-            Assert.Equal(81, _testObject.Cells.Count);
+            Assert.Equal(81, _testObject.Cells.Length);
         }
 
         [Theory]
@@ -223,45 +222,6 @@ namespace Sudoku.Tests
             {
                 Assert.DoesNotContain(val, cell.Candidates);
             }
-        }
-
-        [Fact]
-        public void Clone_Returns_Copy()
-        {
-            Puzzle clone = _testObject.Clone();
-            Assert.NotNull(clone);
-            Assert.NotSame(_testObject, clone);
-            Assert.Equal(_testObject.ToString(), clone.ToString());
-        }
-
-        [Fact]
-        public void Parse_Returns_Puzzle()
-        {
-            string stringToParse = _testObject.ToString();
-            Puzzle newPuzzle = Puzzle.Parse(stringToParse);
-            Assert.NotNull(newPuzzle);
-            // and just for fun...
-            string newPuzzleString = newPuzzle.ToString();
-            Assert.Equal(stringToParse, newPuzzleString);
-        }
-
-        [Theory]
-        [ClassData(typeof(PuzzleParseThrowsTestData))]
-        public void Parse_Throws_InvalidPuzzle(string puzzleString, string message)
-        {
-            Exception exception = Record.Exception(() => Puzzle.Parse(puzzleString));
-            Assert.NotNull(exception);
-            Assert.IsType<SudokuException>(exception);
-            Assert.Equal(message, exception.Message);
-        }
-
-        [Fact]
-        public void ToString_Serializes_Puzzle()
-        {
-            string puzzleString = _testObject.ToString();
-            string[] cells = puzzleString.Split(',');
-            Assert.Equal(81, cells.Length);
-            Assert.Equal(_testObject.Cells[0].ToString(), cells[0]);
         }
     }
 }

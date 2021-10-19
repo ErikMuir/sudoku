@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Serializers;
 
 namespace Sudoku
 {
@@ -7,25 +8,25 @@ namespace Sudoku
     {
         public Puzzle()
         {
-            Utils.Loop(col => Utils.Loop(row => Cells.Add(new Cell(col, row))));
+            Utils.Loop(row => Utils.Loop(col => Cells[(row * Constants.UnitSize) + col] = new Cell(col, row)));
         }
 
-        public List<Cell> Cells { get; private set; } = new();
+        public Cell[] Cells { get; private set; } = new Cell[Constants.TotalCells];
         public Metadata Metadata { get; set; } = new();
 
-        public Cell GetCell(int col, int row) => this.Cells.Where(x => x.Col == col && x.Row == row).FirstOrDefault();
+        public Cell GetCell(int col, int row) => this.Cells[(row * Constants.UnitSize) + col];
         public List<Cell> GetRow(int row) => this.Cells.Where(x => x.Row == row).OrderBy(x => x.Col).ToList();
         public List<Cell> GetCol(int col) => this.Cells.Where(x => x.Col == col).OrderBy(x => x.Row).ToList();
         public List<Cell> GetBox(int box) => this.Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col).ToList();
-        public List<Cell> GetEmptyCells() => this.Cells.Where(x => !x.Value.HasValue).ToList();
-        public Cell GetNextEmptyCell() => this.Cells.Where(x => !x.Value.HasValue).FirstOrDefault();
+        public List<Cell> GetEmptyCells() => this.Cells.Where(x => x.Value is null).ToList();
+        public Cell GetNextEmptyCell() => this.Cells.Where(x => x.Value is null).FirstOrDefault();
         public List<Cell> GetRelatives(Cell cell)
         {
             List<Cell> relatives = new();
             List<Cell> col = GetCol(cell.Col);
             List<Cell> row = GetRow(cell.Row);
             List<Cell> box = GetBox(cell.Box);
-            for (int i = 0; i < Constants.Size; i++)
+            for (int i = 0; i < Constants.UnitSize; i++)
             {
                 relatives.Add(box[i]);
                 if (col[i].Box != cell.Box)
@@ -38,23 +39,15 @@ namespace Sudoku
         public List<Cell> GetCommonRelatives(Cell cell1, Cell cell2)
             => GetRelatives(cell1).Intersect(GetRelatives(cell2)).ToList();
 
-        public bool IsSolved()
-        {
-            return (
-                Utils.LoopAnd(i => this.GetRow(i).IsUnitSolved()) &&
-                Utils.LoopAnd(i => this.GetCol(i).IsUnitSolved()) &&
-                Utils.LoopAnd(i => this.GetBox(i).IsUnitSolved())
-            );
-        }
+        public bool IsSolved() =>
+            Utils.LoopAnd(i => this.GetRow(i).IsUnitSolved())
+            && Utils.LoopAnd(i => this.GetCol(i).IsUnitSolved())
+            && Utils.LoopAnd(i => this.GetBox(i).IsUnitSolved());
 
-        public bool IsValid()
-        {
-            return (
-                Utils.LoopAnd(i => this.GetRow(i).IsUnitValid()) &&
-                Utils.LoopAnd(i => this.GetCol(i).IsUnitValid()) &&
-                Utils.LoopAnd(i => this.GetBox(i).IsUnitValid())
-            );
-        }
+        public bool IsValid() =>
+            Utils.LoopAnd(i => this.GetRow(i).IsUnitValid())
+            && Utils.LoopAnd(i => this.GetCol(i).IsUnitValid())
+            && Utils.LoopAnd(i => this.GetBox(i).IsUnitValid());
 
         public void CalculateCandidates()
         {
@@ -67,19 +60,19 @@ namespace Sudoku
 
         public void ReduceCandidates()
         {
-            for (int iUnit = 0; iUnit < 9; iUnit++)
+            for (int iUnit = 0; iUnit < Constants.UnitSize; iUnit++)
             {
                 List<Cell> col = this.GetCol(iUnit);
                 List<Cell> row = this.GetRow(iUnit);
                 List<Cell> box = this.GetBox(iUnit);
 
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < Constants.UnitSize; i++)
                 {
                     int? colValue = col[i].Value;
                     int? rowValue = row[i].Value;
                     int? boxValue = box[i].Value;
 
-                    for (int j = 0; j < 9; j++)
+                    for (int j = 0; j < Constants.UnitSize; j++)
                     {
                         if (colValue.HasValue && !col[j].IsClue)
                             col[j].RemoveCandidate(colValue.Value);
@@ -96,42 +89,8 @@ namespace Sudoku
 
         public Puzzle Clone()
         {
-            string puzzleString = this.ToString();
-            return Puzzle.Parse(puzzleString);
-        }
-
-        public static Puzzle Parse(string puzzleString)
-        {
-            if (puzzleString is null)
-                throw new SudokuException("Cannot parse puzzle: value was null");
-
-            string[] cells = puzzleString.Split(',');
-            if (cells.Length != 81)
-                throw new SudokuException("Cannot parse puzzle: invalid cell count");
-
-            Puzzle puzzle = new();
-            Utils.Loop(81, i => puzzle.Cells[i] = Cell.Parse(cells[i]));
-
-            if (!puzzle.AreCellCoordinatesValid())
-                throw new SudokuException("Cannot parse puzzle: invalid cell coordinates");
-
-            return puzzle;
-        }
-
-        public override string ToString()
-        {
-            List<string> cellStrings = new();
-            Utils.Loop(cellStrings, (i, list1) => Utils.Loop(9, cellStrings, (j, list) => list.Add(this.GetRow(i)[j].ToString())));
-            return string.Join(",", cellStrings);
-        }
-
-        private bool AreCellCoordinatesValid()
-        {
-            return (
-                Utils.LoopAnd(i => this.GetRow(i).Count == 9) &&
-                Utils.LoopAnd(i => this.GetCol(i).Count == 9) &&
-                Utils.LoopAnd(i => this.GetBox(i).Count == 9)
-            );
+            string puzzleString = PzlSerializer.Serialize(this);
+            return PzlSerializer.Deserialize(puzzleString);
         }
     }
 }

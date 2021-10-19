@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
-using Sudoku.Serialization;
+using Sudoku.Serializers;
 
 namespace Sudoku.CommandLine
 {
@@ -24,7 +24,7 @@ namespace Sudoku.CommandLine
         };
         private static readonly Menu _homeMenu = new(_homeMenuOptions, "Home Menu");
         private static readonly Menu _puzzleMenu = new(_puzzleMenuOptions, "Puzzle Menu");
-        
+
         public Puzzle Puzzle { get; private set; }
 
         public void Run()
@@ -102,7 +102,7 @@ namespace Sudoku.CommandLine
 
         private void Save()
         {
-            _console.Info(Sdk.Serialize(Puzzle));
+            _console.Info(SdkSerializer.Serialize(Puzzle));
             FilePuzzle.Save(Puzzle);
             _console
                 .Write("Press any key to continue... ")

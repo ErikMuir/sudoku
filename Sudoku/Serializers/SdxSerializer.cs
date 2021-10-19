@@ -2,23 +2,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Sudoku.Serialization
+namespace Sudoku.Serializers
 {
-    public static class Sdx
+    public static class SdxSerializer
     {
         public static string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
-            for (int row = 0; row < Constants.Size; row++)
+            Utils.Loop(row =>
             {
                 List<string> cells = new();
-                for (int col = 0; col < Constants.Size; col++)
-                {
-                    string serializedCell = Serialize(puzzle.GetCell(col, row));
-                    cells.Add(serializedCell);
-                }
+                Utils.Loop(col => cells.Add(Serialize(puzzle.GetCell(col, row))));
                 sb.AppendLine(string.Join(" ", cells));
-            }
+            });
             return sb.ToString();
         }
 

@@ -1,8 +1,9 @@
 using System;
+using System.Text.RegularExpressions;
 
-namespace Sudoku.Serialization
+namespace Sudoku.Serializers
 {
-    public static class Utils
+    public static class SerializationUtils
     {
         public static string RemoveNewLines(this string val)
             => val.Replace('\n', ' ').Replace('\r', ' ');
@@ -18,5 +19,8 @@ namespace Sudoku.Serialization
 
         public static string SerializeMetadataEntry(this Level value, string token)
             => $"{MetadataTokens.Prefix}{token}{value}";
+
+        public static bool SafeIsMatch(this Regex pattern, string value)
+            => value is not null && pattern.IsMatch(value);
     }
 }

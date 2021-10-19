@@ -92,7 +92,7 @@ namespace Sudoku.Solvers
 
         public bool NakedSet(List<CandidateSet> sets)
         {
-            for (int i = 0; i < Constants.Size; i++)
+            for (int i = 0; i < Constants.UnitSize; i++)
             {
                 if (NakedSetUnitCheck(Puzzle.GetCol(i), sets))
                     return true;
@@ -148,7 +148,7 @@ namespace Sudoku.Solvers
 
         public bool HiddenSet(List<CandidateSet> sets)
         {
-            for (int i = 0; i < Constants.Size; i++)
+            for (int i = 0; i < Constants.UnitSize; i++)
             {
                 if (HiddenSetUnitCheck(Puzzle.GetCol(i), sets))
                     return true;
@@ -204,7 +204,7 @@ namespace Sudoku.Solvers
 
         public bool PointingSet()
         {
-            for (int i = 0; i < Constants.Size; i++)
+            for (int i = 0; i < Constants.UnitSize; i++)
             {
                 List<Cell> box = Puzzle.GetBox(i);
                 for (int candidate = 1; candidate < 10; candidate++)
@@ -240,7 +240,7 @@ namespace Sudoku.Solvers
 
         public bool BoxLineReduction()
         {
-            for (int i = 0; i < Constants.Size; i++)
+            for (int i = 0; i < Constants.UnitSize; i++)
             {
                 List<Cell> col = Puzzle.GetCol(i);
                 List<Cell> row = Puzzle.GetRow(i);
@@ -294,13 +294,13 @@ namespace Sudoku.Solvers
 
             bool reduce(int candidate, bool isCol)
             {
-                for (int iUnit = 0; iUnit < Constants.Size; iUnit++)
+                for (int iUnit = 0; iUnit < Constants.UnitSize; iUnit++)
                 {
                     List<Cell> unit = isCol ? Puzzle.GetCol(iUnit) : Puzzle.GetRow(iUnit);
                     List<Cell> matches = unit.GetCandidateMatches(candidate);
                     if (matches.Count != 2) continue;
 
-                    for (int iTestUnit = iUnit + 1; iTestUnit < Constants.Size; iTestUnit++)
+                    for (int iTestUnit = iUnit + 1; iTestUnit < Constants.UnitSize; iTestUnit++)
                     {
                         List<Cell> testUnit = isCol ? Puzzle.GetCol(iTestUnit) : Puzzle.GetRow(iTestUnit);
                         List<Cell> testMatches = testUnit.GetCandidateMatches(candidate);
@@ -342,9 +342,9 @@ namespace Sudoku.Solvers
 
         public bool YWing()
         {
-            for (int iCol = 0; iCol < Constants.Size; iCol++)
+            for (int iCol = 0; iCol < Constants.UnitSize; iCol++)
             {
-                for (int iRow = 0; iRow < Constants.Size; iRow++)
+                for (int iRow = 0; iRow < Constants.UnitSize; iRow++)
                 {
                     Cell hinge = Puzzle.GetCell(iCol, iRow);
                     if (hinge.Candidates.Count != 2) continue;
@@ -425,17 +425,17 @@ namespace Sudoku.Solvers
 
         private void _initializeSets()
         {
-            for (int a = 0; a < Constants.Size; a++)
+            for (int a = 0; a < Constants.UnitSize; a++)
             {
-                for (int b = 1; b < Constants.Size; b++)
+                for (int b = 1; b < Constants.UnitSize; b++)
                 {
                     if (b <= a) continue;
                     Doubles.Add(new Double(a, b));
-                    for (int c = 2; c < Constants.Size; c++)
+                    for (int c = 2; c < Constants.UnitSize; c++)
                     {
                         if (c <= a || c <= b) continue;
                         Triples.Add(new Triple(a, b, c));
-                        for (int d = 3; d < Constants.Size; d++)
+                        for (int d = 3; d < Constants.UnitSize; d++)
                         {
                             if (d <= a || d <= b || d <= c) continue;
                             Quadruples.Add(new Quadruple(a, b, c, d));

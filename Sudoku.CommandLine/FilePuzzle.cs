@@ -1,13 +1,14 @@
 using System;
 using System.IO;
 using MuirDev.ConsoleTools;
+using Sudoku.Serializers;
 
 namespace Sudoku.CommandLine
 {
     public static class FilePuzzle
     {
         private const string PuzzleDirectory = "./puzzles";
-        private const string PuzzleExtension = "sdk";
+        private const string PuzzleExtension = "pzl";
         private static readonly FluentConsole _console = new();
 
         public static void Save(Puzzle puzzle)
@@ -26,7 +27,8 @@ namespace Sudoku.CommandLine
                         ? new Confirm("File exists! Overwrite?", true).Run(LogType.Warning)
                         : true;
                 } while (!isFileNameValid);
-                File.WriteAllText(fullPath, puzzle.ToString());
+                string puzzleString = PzlSerializer.Serialize(puzzle);
+                File.WriteAllText(fullPath, puzzleString);
                 _console.Success($"File successfully saved: {fullPath}");
             }
             catch (Exception e)
@@ -54,7 +56,7 @@ namespace Sudoku.CommandLine
                     }
                 } while (!fileExists);
                 string puzzleString = File.ReadAllText(fullPath);
-                puzzle = Puzzle.Parse(puzzleString);
+                puzzle = PzlSerializer.Deserialize(puzzleString);
                 _console.Success("Successfully loaded puzzle from file!");
             }
             catch (SudokuException e)

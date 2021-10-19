@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Sudoku.Serialization
+namespace Sudoku.Serializers
 {
-    public static class Sdm
+    public static class SdmSerializer
     {
         private static Regex _sdmPattern = new("^.{81}$");
 
@@ -24,15 +24,7 @@ namespace Sudoku.Serialization
         private static string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
-            for (int row = 0; row < Constants.Size; row++)
-            {
-                for (int col = 0; col < Constants.Size; col++)
-                {
-                    Cell cell = puzzle.GetCell(row, col);
-                    string serializedCell = Sdm.Serialize(cell);
-                    sb.Append(serializedCell);
-                }
-            }
+            Utils.Loop(Constants.TotalCells, i => sb.Append(SdmSerializer.Serialize(puzzle.Cells[i])));
             return sb.ToString();
         }
 
@@ -53,15 +45,13 @@ namespace Sudoku.Serialization
             foreach (string serializedPuzzle in serializedPuzzles)
             {
                 Puzzle puzzle = new();
-                for (int row = 0; row < Constants.Size; row++)
+                Utils.Loop(Constants.TotalCells, i =>
                 {
-                    for (int col = 0; col < Constants.Size; col++)
-                    {
-                        int index = (row * 9) + col;
-                        int.TryParse($"{serializedPuzzle[index]}", out int value);
-                        puzzle.Cells[index] = new Clue(col, row, value);
-                    }
-                }
+                    int col = i % Constants.UnitSize;
+                    int row = i / Constants.UnitSize;
+                    int.TryParse($"{serializedPuzzle[i]}", out int val);
+                    puzzle.Cells[i] = new Clue(col, row, val);
+                });
                 puzzles.Add(puzzle);
             }
             return puzzles;

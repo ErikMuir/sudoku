@@ -1,4 +1,4 @@
-namespace Sudoku.Serialization
+namespace Sudoku.Serializers
 {
     public static class MetadataTokens
     {

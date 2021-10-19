@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MuirDev.ConsoleTools;
+using Sudoku.Serializers;
 
 namespace Sudoku.CommandLine
 {
@@ -15,11 +16,7 @@ namespace Sudoku.CommandLine
             do
             {
                 _console.WriteLine("Input a Sudoku puzzle one line at a time. Enter 0 for empty cells.");
-                for (int i = 1; i < 10; i++)
-                {
-                    string row = InputRow(i);
-                    rows.Add(row);
-                }
+                Utils.Loop(i => rows.Add(InputRow(i)));
             } while (!Confirm(rows));
             return ParsePuzzle(rows);
         }
@@ -28,7 +25,7 @@ namespace Sudoku.CommandLine
         {
             StringBuilder sb = new();
             ConsoleKeyInfo key;
-            _console.Write($"row {i}: ");
+            _console.Write($"row {i + 1}: ");
             do
             {
                 key = _console.ReadKey(true);
@@ -62,18 +59,17 @@ namespace Sudoku.CommandLine
         private static Puzzle ParsePuzzle(List<string> rows)
         {
             StringBuilder sb = new();
-            for (int row = 0; row < 9; row++)
+            Utils.Loop(Constants.TotalCells, i =>
             {
-                for (int col = 0; col < 9; col++)
-                {
-                    int val = rows[row][col];
-                    int clue = val == 0 ? 0 : 1;
-                    sb.Append($"{col}{row}{val}{clue},");
-                }
-            }
+                int col = i % Constants.UnitSize;
+                int row = i / Constants.UnitSize;
+                int.TryParse($"{rows[row][col]}", out int val);
+                int clue = val == 0 ? 0 : 1;
+                sb.Append($"{val}{clue},");
+            });
             sb.Length--;
             string puzzleString = sb.ToString();
-            return Puzzle.Parse(puzzleString);
+            return PzlSerializer.Deserialize(puzzleString);
         }
     }
 }

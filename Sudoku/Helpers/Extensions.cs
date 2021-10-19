@@ -13,7 +13,7 @@ namespace Sudoku
             => inclusive ? lower <= num && num <= upper : lower < num && num < upper;
 
         private static bool IsUnit(this List<Cell> unit)
-            => (unit != null && unit.Count == 9);
+            => (unit is not null && unit.Count == 9);
 
         public static bool IsUnitSolved(this List<Cell> unit)
             => (unit.IsUnit() && unit.All(x => x.Value.HasValue) && unit.Select(x => x.Value).Distinct().Count() == 9);

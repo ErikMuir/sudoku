@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -8,14 +9,14 @@ namespace Sudoku.Serialization
     {
         public static string Serialize(Puzzle puzzle)
         {
-            var sb = new StringBuilder();
-            var serializedMetadata = Serialize(puzzle.Metadata);
+            StringBuilder sb = new();
+            string serializedMetadata = Serialize(puzzle.Metadata);
             sb.Append(serializedMetadata);
-            for (var row = 0; row < Constants.Size; row++)
+            for (int row = 0; row < Constants.Size; row++)
             {
-                for (var col = 0; col < Constants.Size; col++)
+                for (int col = 0; col < Constants.Size; col++)
                 {
-                    var serializedCell = Serialize(puzzle.GetCell(col, row));
+                    string serializedCell = Serialize(puzzle.GetCell(col, row));
                     sb.Append(serializedCell);
                 }
                 sb.AppendLine();
@@ -25,16 +26,16 @@ namespace Sudoku.Serialization
 
         private static string Serialize(Metadata metadata)
         {
-            if (metadata == null) return null;
+            if (metadata is null) return null;
 
-            var sb = new StringBuilder();
-            if (metadata.Author != null) sb.AppendLine(metadata.Author.SerializeMetadataEntry(MetadataTokens.Author));
-            if (metadata.Description != null) sb.AppendLine(metadata.Description.SerializeMetadataEntry(MetadataTokens.Description));
-            if (metadata.Comment != null) sb.AppendLine(metadata.Comment.SerializeMetadataEntry(MetadataTokens.Comment));
-            if (metadata.DatePublished != null) sb.AppendLine(metadata.DatePublished.SerializeMetadataEntry(MetadataTokens.DatePublished));
-            if (metadata.Source != null) sb.AppendLine(metadata.Source.SerializeMetadataEntry(MetadataTokens.Source));
+            StringBuilder sb = new();
+            if (metadata.Author is not null) sb.AppendLine(metadata.Author.SerializeMetadataEntry(MetadataTokens.Author));
+            if (metadata.Description is not null) sb.AppendLine(metadata.Description.SerializeMetadataEntry(MetadataTokens.Description));
+            if (metadata.Comment is not null) sb.AppendLine(metadata.Comment.SerializeMetadataEntry(MetadataTokens.Comment));
+            if (metadata.DatePublished != default(DateTime)) sb.AppendLine(metadata.DatePublished.SerializeMetadataEntry(MetadataTokens.DatePublished));
+            if (metadata.Source is not null) sb.AppendLine(metadata.Source.SerializeMetadataEntry(MetadataTokens.Source));
             if (metadata.Level != Level.Uninitialized) sb.AppendLine(metadata.Level.SerializeMetadataEntry(MetadataTokens.Level));
-            if (metadata.SourceUrl != null) sb.AppendLine(metadata.SourceUrl.SerializeMetadataEntry(MetadataTokens.SourceUrl));
+            if (metadata.SourceUrl is not null) sb.AppendLine(metadata.SourceUrl.SerializeMetadataEntry(MetadataTokens.SourceUrl));
             return sb.ToString();
         }
 
@@ -49,9 +50,9 @@ namespace Sudoku.Serialization
 
         public static Puzzle Deserialize(string puzzleString)
         {
-            if (puzzleString == null) return null;
+            if (puzzleString is null) return null;
 
-            var rows = puzzleString
+            string[] rows = puzzleString
                 .Split(Constants.NewLines, StringSplitOptions.None)
                 .Where(x => x.Length == Constants.Size)
                 .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
@@ -60,14 +61,14 @@ namespace Sudoku.Serialization
             if (rows.Length != Constants.Size)
                 throw new SudokuException("Invalid sdk file format");
 
-            var puzzle = new Puzzle();
+            Puzzle puzzle = new();
             puzzle.Metadata = DeserializeMetadata(puzzleString);
-            for (var row = 0; row < rows.Length; row++)
+            for (int row = 0; row < rows.Length; row++)
             {
-                var line = rows[row];
-                for (var col = 0; col < Constants.Size; col++)
+                string line = rows[row];
+                for (int col = 0; col < Constants.Size; col++)
                 {
-                    if (int.TryParse($"{line[col]}", out var intValue))
+                    if (int.TryParse($"{line[col]}", out int intValue))
                     {
                         puzzle.Cells[(row * 9) + col] = new Clue(col, row, intValue);
                     }
@@ -78,18 +79,18 @@ namespace Sudoku.Serialization
 
         private static Metadata DeserializeMetadata(string puzzleString)
         {
-            if (puzzleString == null) return null;
+            if (puzzleString is null) return null;
 
-            var metadata = new Metadata();
-            var lines = puzzleString
+            Metadata metadata = new();
+            IEnumerable<string> lines = puzzleString
                 .Split(Constants.NewLines, StringSplitOptions.None)
                 .Where(x => x.Length >= 2)
                 .Where(x => x.Substring(0, 1) == MetadataTokens.Prefix);
 
-            foreach (var line in lines)
+            foreach (string line in lines)
             {
-                var token = line.Substring(1, 1);
-                var value = line.Substring(2);
+                string token = line.Substring(1, 1);
+                string value = line.Substring(2);
                 try
                 {
                     switch (token)

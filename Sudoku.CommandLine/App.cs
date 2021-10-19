@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
 using Sudoku.Serialization;
@@ -6,14 +7,14 @@ namespace Sudoku.CommandLine
 {
     public class App
     {
-        private static readonly FluentConsole _console = new FluentConsole();
-        private static readonly Dictionary<char, string> _homeMenuOptions = new Dictionary<char, string>
+        private static readonly FluentConsole _console = new();
+        private static readonly Dictionary<char, string> _homeMenuOptions = new()
         {
             { '1', "Input" },
             { '2', "Load" },
             { '0', "Quit" },
         };
-        private static readonly Dictionary<char, string> _puzzleMenuOptions = new Dictionary<char, string>
+        private static readonly Dictionary<char, string> _puzzleMenuOptions = new()
         {
             { '1', "Save" },
             { '2', "Solve" },
@@ -21,8 +22,8 @@ namespace Sudoku.CommandLine
             { '4', "Clear" },
             { '0', "Quit" },
         };
-        private static readonly Menu _homeMenu = new Menu(_homeMenuOptions, "Home Menu");
-        private static readonly Menu _puzzleMenu = new Menu(_puzzleMenuOptions, "Puzzle Menu");
+        private static readonly Menu _homeMenu = new(_homeMenuOptions, "Home Menu");
+        private static readonly Menu _puzzleMenu = new(_puzzleMenuOptions, "Puzzle Menu");
         
         public Puzzle Puzzle { get; private set; }
 
@@ -42,12 +43,17 @@ namespace Sudoku.CommandLine
                 {
                     _console.Failure(e.Message);
                 }
+                catch (Exception e)
+                {
+                    _console.LineFeed().Failure($"Unhandled Error: {e}");
+                    return;
+                }
             }
         }
 
         private void ShowMenu()
         {
-            if (Puzzle == null) ShowHomeMenu();
+            if (Puzzle is null) ShowHomeMenu();
             else ShowPuzzleMenu();
         }
 

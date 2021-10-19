@@ -29,7 +29,7 @@ namespace Sudoku.Solvers
         }
 
         public ConstraintType Constraint { get; set; }
-        public List<Action> Actions { get; set; } = new List<Action>();
+        public List<Action> Actions { get; set; } = new();
 
         public override string ToString() => $"{Constraint}\n  {string.Join("\n  ", Actions)}";
     }

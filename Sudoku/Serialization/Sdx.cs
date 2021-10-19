@@ -8,13 +8,13 @@ namespace Sudoku.Serialization
     {
         public static string Serialize(Puzzle puzzle)
         {
-            var sb = new StringBuilder();
-            for (var row = 0; row < Constants.Size; row++)
+            StringBuilder sb = new();
+            for (int row = 0; row < Constants.Size; row++)
             {
-                var cells = new List<string>();
-                for (var col = 0; col < Constants.Size; col++)
+                List<string> cells = new();
+                for (int col = 0; col < Constants.Size; col++)
                 {
-                    var serializedCell = Serialize(puzzle.GetCell(col, row));
+                    string serializedCell = Serialize(puzzle.GetCell(col, row));
                     cells.Add(serializedCell);
                 }
                 sb.AppendLine(string.Join(" ", cells));

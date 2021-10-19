@@ -7,17 +7,17 @@ namespace Sudoku.CommandLine
 {
     public static class InputPuzzle
     {
-        private static readonly FluentConsole _console = new FluentConsole();
+        private static readonly FluentConsole _console = new();
 
         public static Puzzle Run()
         {
-            var rows = new List<string>();
+            List<string> rows = new();
             do
             {
                 _console.WriteLine("Input a Sudoku puzzle one line at a time. Enter 0 for empty cells.");
-                for (var i = 1; i < 10; i++)
+                for (int i = 1; i < 10; i++)
                 {
-                    var row = InputRow(i);
+                    string row = InputRow(i);
                     rows.Add(row);
                 }
             } while (!Confirm(rows));
@@ -26,7 +26,7 @@ namespace Sudoku.CommandLine
 
         private static string InputRow(int i)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new();
             ConsoleKeyInfo key;
             _console.Write($"row {i}: ");
             do
@@ -61,18 +61,18 @@ namespace Sudoku.CommandLine
 
         private static Puzzle ParsePuzzle(List<string> rows)
         {
-            var sb = new StringBuilder();
-            for (var row = 0; row < 9; row++)
+            StringBuilder sb = new();
+            for (int row = 0; row < 9; row++)
             {
-                for (var col = 0; col < 9; col++)
+                for (int col = 0; col < 9; col++)
                 {
-                    var val = rows[row][col];
-                    var clue = $"{val}" == "0" ? "0" : "1";
+                    int val = rows[row][col];
+                    int clue = val == 0 ? 0 : 1;
                     sb.Append($"{col}{row}{val}{clue},");
                 }
             }
             sb.Length--;
-            var puzzleString = sb.ToString();
+            string puzzleString = sb.ToString();
             return Puzzle.Parse(puzzleString);
         }
     }

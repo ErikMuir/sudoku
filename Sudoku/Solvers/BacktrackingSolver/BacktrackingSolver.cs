@@ -27,7 +27,7 @@ namespace Sudoku.Solvers
 
         public string Statistics()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine($"Is Solved: {Puzzle.IsSolved()}");
             sb.AppendLine($"Solve Duration (ms): {SolveDuration.Milliseconds}");
             sb.AppendLine($"Solve Depth: {SolveDepth}");
@@ -38,17 +38,17 @@ namespace Sudoku.Solvers
         {
             SolveDepth++;
 
-            var nextEmptyCell = Puzzle.GetNextEmptyCell();
-            if (nextEmptyCell == null) return Puzzle.IsSolved();
+            Cell nextEmptyCell = Puzzle.GetNextEmptyCell();
+            if (nextEmptyCell is null) return Puzzle.IsSolved();
 
             Puzzle.CalculateCandidates();
-            foreach (var candidate in nextEmptyCell.Candidates)
+            foreach (int candidate in nextEmptyCell.Candidates)
             {
                 nextEmptyCell.Value = candidate;
                 if (_doSolve()) return true;
             }
 
-            if (Puzzle.GetNextEmptyCell() != null) nextEmptyCell.Value = null;
+            if (Puzzle.GetNextEmptyCell() is not null) nextEmptyCell.Value = null;
 
             return false;
         }

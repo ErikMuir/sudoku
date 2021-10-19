@@ -11,7 +11,7 @@ namespace Sudoku
 
         public static void Loop(int count, Action<int> action)
         {
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 action?.Invoke(i);
             }
@@ -19,7 +19,7 @@ namespace Sudoku
 
         public static void Loop<T>(int count, T t, Action<int, T> action)
         {
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 action?.Invoke(i, t);
             }
@@ -27,7 +27,7 @@ namespace Sudoku
 
         public static bool LoopAnd(int count, Func<int, bool> func)
         {
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (!func?.Invoke(i) ?? false) return false;
             }
@@ -36,7 +36,7 @@ namespace Sudoku
 
         public static bool LoopOr(int count, Func<int, bool> func)
         {
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (func?.Invoke(i) ?? false) return true;
             }

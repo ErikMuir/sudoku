@@ -9,8 +9,8 @@ namespace Sudoku.Tests
         [Fact]
         public void Solve_EmptyPuzzle()
         {
-            var puzzle = TestHelpers.GetEmptyPuzzle();
-            var solver = new BacktrackingSolver(puzzle);
+            Puzzle puzzle = TestHelpers.GetEmptyPuzzle();
+            BacktrackingSolver solver = new(puzzle);
             solver.Solve();
             Assert.True(solver.SolveDepth > 0);
             Assert.True(solver.SolveDuration > TimeSpan.Zero);
@@ -20,8 +20,8 @@ namespace Sudoku.Tests
         [Fact]
         public void Solve_SolvedPuzzle()
         {
-            var puzzle = TestHelpers.GetSolvedPuzzle();
-            var solver = new BacktrackingSolver(puzzle);
+            Puzzle puzzle = TestHelpers.GetSolvedPuzzle();
+            BacktrackingSolver solver = new(puzzle);
             solver.Solve();
             Assert.Equal(0, solver.SolveDepth);
             Assert.Equal(TimeSpan.Zero, solver.SolveDuration);
@@ -31,8 +31,8 @@ namespace Sudoku.Tests
         [Fact]
         public void Solve_EasyPuzzle()
         {
-            var puzzle = TestHelpers.GetEasyPuzzle();
-            var solver = new BacktrackingSolver(puzzle);
+            Puzzle puzzle = TestHelpers.GetEasyPuzzle();
+            BacktrackingSolver solver = new(puzzle);
             solver.Solve();
             Assert.True(solver.SolveDepth > 0);
             Assert.True(solver.SolveDuration > TimeSpan.Zero);
@@ -42,8 +42,8 @@ namespace Sudoku.Tests
         [Fact]
         public void Solve_MediumPuzzle()
         {
-            var puzzle = TestHelpers.GetMediumPuzzle();
-            var solver = new BacktrackingSolver(puzzle);
+            Puzzle puzzle = TestHelpers.GetMediumPuzzle();
+            BacktrackingSolver solver = new(puzzle);
             solver.Solve();
             Assert.True(solver.SolveDepth > 0);
             Assert.True(solver.SolveDuration > TimeSpan.Zero);
@@ -53,8 +53,8 @@ namespace Sudoku.Tests
         [Fact]
         public void Solve_DifficultPuzzle()
         {
-            var puzzle = TestHelpers.GetDifficultPuzzle();
-            var solver = new BacktrackingSolver(puzzle);
+            Puzzle puzzle = TestHelpers.GetDifficultPuzzle();
+            BacktrackingSolver solver = new(puzzle);
             solver.Solve();
             Assert.True(solver.SolveDepth > 0);
             Assert.True(solver.SolveDuration > TimeSpan.Zero);

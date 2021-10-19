@@ -8,13 +8,14 @@ namespace Sudoku.CommandLine
     {
         private const string PuzzleDirectory = "./puzzles";
         private const string PuzzleExtension = "sdk";
-        private static readonly FluentConsole _console = new FluentConsole();
+        private static readonly FluentConsole _console = new();
 
         public static void Save(Puzzle puzzle)
         {
             try
             {
-                string fileName, fullPath;
+                string fileName;
+                string fullPath;
                 bool isFileNameValid;
                 Directory.CreateDirectory(PuzzleDirectory);
                 do
@@ -47,11 +48,12 @@ namespace Sudoku.CommandLine
                     fileExists = File.Exists(fullPath);
                     if (!fileExists)
                     {
-                        var tryAgain = new Confirm("File cannot be found! Try again?", true).Run(LogType.Warning);
+                        Confirm confirm = new("File cannot be found! Try again?", true);
+                        bool tryAgain = confirm.Run(LogType.Warning);
                         if (!tryAgain) return null;
                     }
                 } while (!fileExists);
-                var puzzleString = File.ReadAllText(fullPath);
+                string puzzleString = File.ReadAllText(fullPath);
                 puzzle = Puzzle.Parse(puzzleString);
                 _console.Success("Successfully loaded puzzle from file!");
             }

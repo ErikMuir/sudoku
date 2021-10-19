@@ -9,19 +9,19 @@ namespace Sudoku.CommandLine
         const string GridBorder = " ----------------------------- ";
         const string GridDivide = "|---------+---------+---------|";
         const char VerticalLine = '|';
-        private static readonly FluentConsole _console = new FluentConsole();
-        private static readonly Dictionary<char, string> _menuOptions = new Dictionary<char, string>
+        private static readonly FluentConsole _console = new();
+        private static readonly Dictionary<char, string> _menuOptions = new()
         {
             { '1', "Grid" },
             { '2', "Serialized" },
             { '0', "Go back" },
         };
-        private static readonly Menu _menu = new Menu(_menuOptions, "Choose a print format:");
+        private static readonly Menu _menu = new(_menuOptions, "Choose a print format:");
 
         public static void Run(Puzzle puzzle)
         {
             _console.LineFeed();
-            var choice = _menu.Run();
+            char choice = _menu.Run();
             _console.LineFeed();
 
             switch (choice)
@@ -35,15 +35,15 @@ namespace Sudoku.CommandLine
 
         private static void Grid(Puzzle puzzle)
         {
-            var rows = new List<string>();
+            List<string> rows = new();
             Utils.Loop(i =>
             {
-                var rowCells = puzzle.GetRow(i);
-                var rowString = GridRow(rowCells);
+                List<Cell> rowCells = puzzle.GetRow(i);
+                string rowString = GridRow(rowCells);
                 rows.Add(rowString);
             });
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine(GridBorder);
             sb.AppendLine(rows[0]);
             sb.AppendLine(rows[1]);
@@ -63,10 +63,10 @@ namespace Sudoku.CommandLine
 
         private static string GridRow(List<Cell> row)
         {
-            var cells = new List<string>();
+            List<string> cells = new();
             Utils.Loop(i => cells.Add(GridCell(row[i])));
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.Append(VerticalLine);
             sb.Append(cells[0]);
             sb.Append(cells[1]);

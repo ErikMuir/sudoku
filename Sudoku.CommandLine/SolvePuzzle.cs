@@ -6,14 +6,14 @@ namespace Sudoku.CommandLine
 {
     public static class SolvePuzzle
     {
-        private static readonly FluentConsole _console = new FluentConsole();
-        private static readonly Dictionary<char, string> _menuOptions = new Dictionary<char, string>
+        private static readonly FluentConsole _console = new();
+        private static readonly Dictionary<char, string> _menuOptions = new()
         {
             { '1', "Backtracking Solver" },
             { '2', "Constraint Solver" },
             { '0', "Go back" },
         };
-        private static readonly Menu _menu = new Menu(_menuOptions, "Choose a solver:");
+        private static readonly Menu _menu = new(_menuOptions, "Choose a solver:");
 
         public static void Run(Puzzle puzzle)
         {

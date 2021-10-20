@@ -89,8 +89,9 @@ namespace Sudoku
 
         public Puzzle Clone()
         {
-            string puzzleString = PzlSerializer.Serialize(this);
-            return PzlSerializer.Deserialize(puzzleString);
+            PzlSerializer pzl = new();
+            string puzzleString = pzl.Serialize(this);
+            return pzl.Deserialize(puzzleString);
         }
     }
 }

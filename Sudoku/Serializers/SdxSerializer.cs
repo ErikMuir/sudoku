@@ -1,12 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Sudoku.Serializers
 {
-    public static class SdxSerializer
+    public class SdxSerializer : ISerializer
     {
-        public static string Serialize(Puzzle puzzle)
+        private static readonly Regex _sdxPattern = new("^(u?[1-9]* ){8}u?[1-9]*(\r\n?|\n)?$", RegexOptions.Multiline);
+        private static readonly Regex _cluePattern = new("^[1-9]$");
+        private static readonly Regex _filledPattern = new("^u[1-9]$");
+        private static readonly Regex _emptyPattern = new("^1?2?3?4?5?6?7?8?9?$");
+
+        public string FileExtension => "sdx";
+
+        public string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
             Utils.Loop(row =>
@@ -18,29 +27,65 @@ namespace Sudoku.Serializers
             return sb.ToString();
         }
 
-        private static string Serialize(Cell cell)
-            => cell.Value.HasValue
+        private string Serialize(Cell cell)
+            => cell.Value is not null
                 ? $"{(cell.IsClue ? "" : "u")}{cell.Value}"
                 : string.Join("", cell.Candidates.Select(x => $"{x}"));
 
-        public static Puzzle Deserialize(string puzzleString)
+        public Puzzle Deserialize(string puzzleString)
         {
-            throw new System.NotImplementedException();
-            /*
-            This format contains a line for each row in the grid. A blank separates the cells.
-            For unsolved cells, the candidates are listed without separating space.
-            Solved cells are preceded by u when they are placed by the user, the givens have no prefix.
+            if (!_sdxPattern.SafeIsMatch(puzzleString))
+                throw new SudokuException("Invalid sdx file format");
 
-            2 679 6789 1 46789 5 469 9 3
-            389 5 4 69 689 68 7 1 29
-            9 1 679 2 4679 3 4569 8 59
-            6 9 2 8 u1 7 3 59 4
-            3489 3479 3789 56 2456 46 u1 2579 2579
-            1 47 5 3 24 9 8 27 6
-            3459 2 39 7 3589 1 59 6 589
-            359 8 1 569 3569 6 2 4 579
-            7 369 369 4 35689 2 59 359 1
-            */
+            string[] lines = puzzleString
+                .Split(Constants.NewLines, StringSplitOptions.None)
+                .ToArray();
+
+            Puzzle puzzle = new();
+            Utils.Loop(row =>
+            {
+                string[] cells = lines[row].Split(' ');
+                Utils.Loop(col =>
+                {
+                    int index = (row * Constants.UnitSize) + col;
+                    string cellString = cells[col];
+                    puzzle.Cells[index] = DeserializeCell(cellString, col, row);
+                });
+            });
+            return puzzle;
+        }
+
+        private Cell DeserializeCell(string cellString, int col, int row)
+        {
+            CellType cellType = GetCellType(cellString);
+            if (cellType == CellType.Invalid)
+                throw new SudokuException("Invalid sdx file format");
+
+            Cell cell = cellType switch
+            {
+                CellType.Clue => new Clue(col, row, int.Parse(cellString)),
+                CellType.Filled => new Cell(col, row, int.Parse(cellString.Replace("u", ""))),
+                CellType.Empty => new Cell(col, row),
+                _ => throw new NotImplementedException("Unsupported cell type"),
+            };
+
+            if (cellType == CellType.Empty)
+            {
+                cellString.ToList().ForEach(x => cell.AddCandidate(int.Parse($"{x}")));
+            }
+
+            return cell;
+        }
+
+        private CellType GetCellType(string cell)
+        {
+            if (_cluePattern.SafeIsMatch(cell))
+                return CellType.Clue;
+            if (_filledPattern.SafeIsMatch(cell))
+                return CellType.Filled;
+            if (_emptyPattern.SafeIsMatch(cell))
+                return CellType.Empty;
+            return CellType.Invalid;
         }
     }
 }

@@ -6,11 +6,20 @@ using System.Text.RegularExpressions;
 
 namespace Sudoku.Serializers
 {
-    public static class SdmSerializer
+    public class SdmSerializer : ISerializer
     {
-        private static Regex _sdmPattern = new("^.{81}$");
+        private static readonly Regex _sdmPattern = new("^.{81}$");
 
-        public static string Serialize(List<Puzzle> puzzles)
+        public string FileExtension => "sdm";
+
+        public string Serialize(Puzzle puzzle)
+        {
+            StringBuilder sb = new();
+            Utils.Loop(Constants.TotalCells, i => sb.Append(Serialize(puzzle.Cells[i])));
+            return sb.ToString();
+        }
+
+        public string Serialize(List<Puzzle> puzzles)
         {
             StringBuilder sb = new();
             foreach (Puzzle puzzle in puzzles)
@@ -21,40 +30,33 @@ namespace Sudoku.Serializers
             return sb.ToString();
         }
 
-        private static string Serialize(Puzzle puzzle)
+        private string Serialize(Cell cell) => cell.Value is not null ? $"{cell.Value}" : "0";
+
+        public Puzzle Deserialize(string puzzleString)
         {
-            StringBuilder sb = new();
-            Utils.Loop(Constants.TotalCells, i => sb.Append(SdmSerializer.Serialize(puzzle.Cells[i])));
-            return sb.ToString();
-        }
-
-        private static string Serialize(Cell cell) => cell.IsClue ? $"{cell.Value}" : "0";
-
-        public static List<Puzzle> DeserializePuzzles(string puzzleString)
-        {
-            if (puzzleString is null) return null;
-
-            string[] serializedPuzzles = puzzleString
-                .Split(Constants.NewLines, StringSplitOptions.None)
-                .ToArray();
-
-            if (serializedPuzzles.Any(x => !_sdmPattern.IsMatch(x)))
+            if (!_sdmPattern.SafeIsMatch(puzzleString))
                 throw new SudokuException("Invalid sdm file format");
 
-            List<Puzzle> puzzles = new();
-            foreach (string serializedPuzzle in serializedPuzzles)
+            Puzzle puzzle = new();
+            Utils.Loop(Constants.TotalCells, i =>
             {
-                Puzzle puzzle = new();
-                Utils.Loop(Constants.TotalCells, i =>
-                {
-                    int col = i % Constants.UnitSize;
-                    int row = i / Constants.UnitSize;
-                    int.TryParse($"{serializedPuzzle[i]}", out int val);
-                    puzzle.Cells[i] = new Clue(col, row, val);
-                });
-                puzzles.Add(puzzle);
-            }
-            return puzzles;
+                int col = i % Constants.UnitSize;
+                int row = i / Constants.UnitSize;
+                int.TryParse($"{puzzleString[i]}", out int val);
+                if (val > 0) puzzle.Cells[i] = new Clue(col, row, val);
+            });
+            return puzzle;
+        }
+
+        public List<Puzzle> DeserializePuzzles(string puzzleString)
+        {
+            if (puzzleString is null)
+                throw new SudokuException("Invalid sdm file format");
+
+            return puzzleString
+                .Split(Constants.NewLines, StringSplitOptions.None)
+                .Select(x => Deserialize(x))
+                .ToList();
         }
     }
 }

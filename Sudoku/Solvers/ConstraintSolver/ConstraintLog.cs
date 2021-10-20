@@ -4,6 +4,9 @@ namespace Sudoku.Solvers
 {
     public class ConstraintLog
     {
+        public ConstraintType Constraint { get; set; }
+        public List<Action> Actions { get; set; } = new();
+
         public ConstraintLog(ConstraintType type)
         {
             Constraint = type;
@@ -27,9 +30,6 @@ namespace Sudoku.Solvers
                     break;
             }
         }
-
-        public ConstraintType Constraint { get; set; }
-        public List<Action> Actions { get; set; } = new();
 
         public override string ToString() => $"{Constraint}\n  {string.Join("\n  ", Actions)}";
     }

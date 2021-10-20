@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MuirDev.ConsoleTools;
+using Sudoku.Serializers;
 
 namespace Sudoku.CommandLine
 {
@@ -9,6 +10,7 @@ namespace Sudoku.CommandLine
         const string GridBorder = " ----------------------------- ";
         const string GridDivide = "|---------+---------+---------|";
         const char VerticalLine = '|';
+        private static readonly SdkSerializer _serializer = new();
         private static readonly FluentConsole _console = new();
         private static readonly Dictionary<char, string> _menuOptions = new()
         {
@@ -88,7 +90,7 @@ namespace Sudoku.CommandLine
 
         private static void Serialized(Puzzle puzzle)
         {
-            _console.WriteLine(puzzle.ToString());
+            _console.WriteLine(_serializer.Serialize(puzzle));
         }
     }
 }

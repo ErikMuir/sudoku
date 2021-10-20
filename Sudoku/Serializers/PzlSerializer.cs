@@ -5,15 +5,22 @@ using System.Text.RegularExpressions;
 
 namespace Sudoku.Serializers
 {
-    public static class PzlSerializer
+    public class PzlSerializer : ISerializer
     {
-        public static string Serialize(Puzzle puzzle)
+        private static readonly Regex _pzlPattern = new("^([0-9][0-1]1?2?3?4?5?6?7?8?9?,?){81}$");
+        private static readonly Regex _cluePattern = new("^[1-9]1$");
+        private static readonly Regex _filledPattern = new("^[1-9]0$");
+        private static readonly Regex _emptyPattern = new("^001?2?3?4?5?6?7?8?9?$");
+
+        public string FileExtension => "pzl";
+
+        public string Serialize(Puzzle puzzle)
         {
             List<string> cellStrings = puzzle.Cells.Select(cell => Serialize(cell)).ToList();
             return string.Join(",", cellStrings);
         }
 
-        private static string Serialize(Cell cell)
+        private string Serialize(Cell cell)
         {
             int value = cell.Value ?? 0;
             int isClue = cell.IsClue ? 1 : 0;
@@ -21,21 +28,18 @@ namespace Sudoku.Serializers
             return $"{value}{isClue}{candidates}";
         }
 
-        public static Puzzle Deserialize(string puzzleString)
+        public Puzzle Deserialize(string puzzleString)
         {
-            if (puzzleString is null)
-                throw new SudokuException("Invalid pzl file format");
-
-            string[] cells = puzzleString.Split(',');
-            if (cells.Length != Constants.TotalCells)
+            if (!_pzlPattern.SafeIsMatch(puzzleString))
                 throw new SudokuException("Invalid pzl file format");
 
             Puzzle puzzle = new();
+            string[] cells = puzzleString.Split(',');
             Utils.Loop(Constants.TotalCells, i => puzzle.Cells[i] = DeserializeCell(cells[i], i));
             return puzzle;
         }
 
-        private static Cell DeserializeCell(string cellString, int index)
+        private Cell DeserializeCell(string cellString, int index)
         {
             CellType cellType = GetCellType(cellString);
             if (cellType == CellType.Invalid)
@@ -45,30 +49,23 @@ namespace Sudoku.Serializers
             int row = index / Constants.UnitSize;
             int val = int.Parse($"{cellString[0]}");
 
-            Cell cell;
-            switch (cellType)
+            Cell cell = cellType switch
             {
-                case CellType.Clue:
-                    cell = new Clue(col, row, val);
-                    break;
-                case CellType.Filled:
-                    cell = new Cell(col, row, val);
-                    break;
-                case CellType.Empty:
-                    cell = new Cell(col, row);
-                    cellString.Skip(2).ToList().ForEach(x => cell.AddCandidate(int.Parse($"{x}")));
-                    break;
-                default:
-                    throw new NotImplementedException("Unsupported cell type");
+                CellType.Clue => new Clue(col, row, val),
+                CellType.Filled => new Cell(col, row, val),
+                CellType.Empty => new Cell(col, row),
+                _ => throw new NotImplementedException("Unsupported cell type"),
+            };
+
+            if (cellType == CellType.Empty)
+            {
+                cellString.Skip(2).ToList().ForEach(x => cell.AddCandidate(int.Parse($"{x}")));
             }
+
             return cell;
         }
 
-        private static Regex _cluePattern = new("^[1-9]1$");
-        private static Regex _filledPattern = new("^[1-9]0$");
-        private static Regex _emptyPattern = new("^001?2?3?4?5?6?7?8?9?$");
-
-        private static CellType GetCellType(string cell)
+        private CellType GetCellType(string cell)
         {
             if (_cluePattern.SafeIsMatch(cell))
                 return CellType.Clue;

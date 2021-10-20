@@ -102,7 +102,6 @@ namespace Sudoku.CommandLine
 
         private void Save()
         {
-            _console.Info(SdkSerializer.Serialize(Puzzle));
             FilePuzzle.Save(Puzzle);
             _console
                 .Write("Press any key to continue... ")

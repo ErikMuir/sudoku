@@ -18,6 +18,7 @@ namespace Sudoku.Solvers
         public Puzzle Puzzle { get; set; }
         public Stopwatch Timer { get; }
         public TimeSpan SolveDuration => Timer.Elapsed;
+        public int SolveDepth { get; set; } = 0;
         public List<ConstraintLog> Logs { get; set; } = new();
 
         public List<CandidateSet> Doubles { get; set; } = new();
@@ -34,6 +35,7 @@ namespace Sudoku.Solvers
             bool isChanged;
             do
             {
+                SolveDepth++;
                 isChanged = false;
                 if (!isChanged) isChanged = NakedSingle();
                 if (!isChanged) isChanged = HiddenSingle();
@@ -415,10 +417,20 @@ namespace Sudoku.Solvers
             StringBuilder sb = new();
             sb.AppendLine($"Is Solved: {Puzzle.IsSolved()}");
             sb.AppendLine($"Solve Duration (ms): {SolveDuration.Milliseconds}");
-            sb.AppendLine("Logs:");
-            foreach (ConstraintLog log in Logs)
+            sb.AppendLine($"Solve Depth: {SolveDepth}");
+            sb.AppendLine("Constraint Actions:");
+            List<ConstraintType> constraints = Logs
+                .Select(x => x.Constraint)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+            foreach (ConstraintType constraint in constraints)
             {
-                sb.AppendLine($"{log}");
+                int actionCount = Logs
+                    .Where(x => x.Constraint == constraint)
+                    .Select(x => x.Actions.Count())
+                    .Aggregate((result, item) => result + item);
+                sb.AppendLine($"  {constraint}: {actionCount}");
             }
             return sb.ToString();
         }

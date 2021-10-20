@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MuirDev.ConsoleTools;
 using Sudoku.Serializers;
 
@@ -8,28 +10,40 @@ namespace Sudoku.CommandLine
     public static class FilePuzzle
     {
         private const string PuzzleDirectory = "./puzzles";
-        private const string PuzzleExtension = "pzl";
+        private static readonly List<ISerializer> _serializers = new()
+        {
+            new PzlSerializer(),
+            new SdkSerializer(),
+            new SdmSerializer(),
+            new SdxSerializer(),
+        };
+        private static readonly Dictionary<char, string> _menuOptions = new()
+        {
+            { '1', _serializers[0].FileExtension },
+            { '2', _serializers[1].FileExtension },
+            { '3', _serializers[2].FileExtension },
+            { '4', _serializers[3].FileExtension },
+            { '0', "Go back" },
+        };
+        private static readonly Menu _menu = new(_menuOptions, "Choose a file format:");
         private static readonly FluentConsole _console = new();
 
         public static void Save(Puzzle puzzle)
         {
+            _console.LineFeed();
+            char choice = _menu.Run();
+            _console.LineFeed();
+
+            if (choice == '0') throw new MenuExitException();
+
             try
             {
-                string fileName;
-                string fullPath;
-                bool isFileNameValid;
-                Directory.CreateDirectory(PuzzleDirectory);
-                do
-                {
-                    fileName = _console.Write("Save as: ").ReadLine();
-                    fullPath = $"{PuzzleDirectory}/{fileName}.{PuzzleExtension}";
-                    isFileNameValid = File.Exists(fullPath)
-                        ? new Confirm("File exists! Overwrite?", true).Run(LogType.Warning)
-                        : true;
-                } while (!isFileNameValid);
-                string puzzleString = PzlSerializer.Serialize(puzzle);
-                File.WriteAllText(fullPath, puzzleString);
-                _console.Success($"File successfully saved: {fullPath}");
+                string fileExtension = _menuOptions.GetValueOrDefault(choice);
+                string path = $"{PuzzleDirectory}/{DateTime.Now:yyyyMMdd_HHmmss}.{fileExtension}";
+                ISerializer serializer = _serializers.Single(x => x.FileExtension == fileExtension);
+                string contents = serializer.Serialize(puzzle);
+                File.WriteAllText(path, contents);
+                _console.Success($"File successfully saved: {path}");
             }
             catch (Exception e)
             {
@@ -40,23 +54,33 @@ namespace Sudoku.CommandLine
         public static Puzzle Load()
         {
             Puzzle puzzle = null;
+
             try
             {
                 string fullPath;
-                bool fileExists;
+                string fileExtension;
+                ISerializer serializer;
+                string validationMessage;
+
                 do
                 {
                     fullPath = _console.Info("Enter the file with path: ").ReadLine();
-                    fileExists = File.Exists(fullPath);
-                    if (!fileExists)
+                    fileExtension = fullPath.Split('.').Last().ToLower();
+                    serializer = _serializers.FirstOrDefault(x => x.FileExtension == fileExtension);
+                    validationMessage =
+                        !File.Exists(fullPath) ? "File cannot be found!" :
+                        serializer is null ? "File type not supported!" :
+                        null;
+                    if (validationMessage is not null)
                     {
-                        Confirm confirm = new("File cannot be found! Try again?", true);
+                        Confirm confirm = new($"{validationMessage} Try again?", true);
                         bool tryAgain = confirm.Run(LogType.Warning);
                         if (!tryAgain) return null;
                     }
-                } while (!fileExists);
+                } while (validationMessage is not null);
+
                 string puzzleString = File.ReadAllText(fullPath);
-                puzzle = PzlSerializer.Deserialize(puzzleString);
+                puzzle = serializer.Deserialize(puzzleString);
                 _console.Success("Successfully loaded puzzle from file!");
             }
             catch (SudokuException e)

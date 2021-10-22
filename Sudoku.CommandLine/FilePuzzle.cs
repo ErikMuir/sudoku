@@ -81,6 +81,10 @@ namespace Sudoku.CommandLine
 
                 string puzzleString = File.ReadAllText(fullPath);
                 puzzle = serializer.Deserialize(puzzleString);
+
+                SudokuPuzzle puzzle2 = new(puzzleString.Replace("\r", "").Replace("\n", ""));
+                SudokuPuzzle.Output(puzzle2);
+
                 _console.Success("Successfully loaded puzzle from file!");
             }
             catch (SudokuException e)

@@ -12,6 +12,7 @@ namespace Sudoku.CommandLine
         {
             { '1', "Input" },
             { '2', "Load" },
+            { '3', "Generate" },
             { '0', "Quit" },
         };
         private static readonly Dictionary<char, string> _puzzleMenuOptions = new()
@@ -26,6 +27,7 @@ namespace Sudoku.CommandLine
         private static readonly Menu _puzzleMenu = new(_puzzleMenuOptions, "Puzzle Menu");
 
         public Puzzle Puzzle { get; private set; }
+        public SudokuPuzzle SudokuPuzzle { get; private set; }
 
         public void Run()
         {
@@ -63,6 +65,7 @@ namespace Sudoku.CommandLine
             {
                 case '1': Input(); break;
                 case '2': Load(); break;
+                case '3': Generate(); break;
                 case '0': throw new MenuExitException();
                 default: throw new SudokuException("Invalid option");
             }
@@ -94,6 +97,16 @@ namespace Sudoku.CommandLine
         private void Load()
         {
             Puzzle = FilePuzzle.Load();
+            _console
+                .Write("Press any key to continue... ")
+                .WaitForKeyPress()
+                .LineFeed();
+        }
+
+        private void Generate()
+        {
+            SudokuPuzzle = SudokuPuzzle.RandomGrid(9);
+            SudokuPuzzle.Output(SudokuPuzzle);
             _console
                 .Write("Press any key to continue... ")
                 .WaitForKeyPress()

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
-using Sudoku.Serializers;
 
 namespace Sudoku.CommandLine
 {
@@ -13,6 +12,7 @@ namespace Sudoku.CommandLine
             { '1', "Input" },
             { '2', "Load" },
             { '3', "Generate" },
+            { '4', "** debug **" },
             { '0', "Quit" },
         };
         private static readonly Dictionary<char, string> _puzzleMenuOptions = new()
@@ -27,7 +27,6 @@ namespace Sudoku.CommandLine
         private static readonly Menu _puzzleMenu = new(_puzzleMenuOptions, "Puzzle Menu");
 
         public Puzzle Puzzle { get; private set; }
-        public SudokuPuzzle SudokuPuzzle { get; private set; }
 
         public void Run()
         {
@@ -66,6 +65,7 @@ namespace Sudoku.CommandLine
                 case '1': Input(); break;
                 case '2': Load(); break;
                 case '3': Generate(); break;
+                case '4': Debug(); break;
                 case '0': throw new MenuExitException();
                 default: throw new SudokuException("Invalid option");
             }
@@ -88,7 +88,6 @@ namespace Sudoku.CommandLine
         {
             Puzzle = InputPuzzle.Run();
             _console
-                .Success("Puzzle is now in memory.")
                 .Write("Press any key to continue... ")
                 .WaitForKeyPress()
                 .LineFeed();
@@ -105,12 +104,16 @@ namespace Sudoku.CommandLine
 
         private void Generate()
         {
-            SudokuPuzzle = SudokuPuzzle.RandomGrid(9);
-            SudokuPuzzle.Output(SudokuPuzzle);
+            Puzzle = GeneratePuzzle.Run();
             _console
                 .Write("Press any key to continue... ")
                 .WaitForKeyPress()
                 .LineFeed();
+        }
+
+        private void Debug()
+        {
+            _console.Warning("Not implemented!");
         }
 
         private void Save()
@@ -137,16 +140,11 @@ namespace Sudoku.CommandLine
 
         private void Print()
         {
-            try
-            {
-                PrintPuzzle.Run(Puzzle);
-                _console
-                    .LineFeed()
-                    .Write("Press any key to continue... ")
-                    .WaitForKeyPress()
-                    .LineFeed();
-            }
-            catch (MenuExitException) { }
+            PrintPuzzle.Run(Puzzle);
+            _console
+                .Write("Press any key to continue... ")
+                .WaitForKeyPress()
+                .LineFeed();
         }
 
         private void Clear()

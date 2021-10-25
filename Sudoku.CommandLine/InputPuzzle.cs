@@ -21,7 +21,10 @@ namespace Sudoku.CommandLine
                 _console.WriteLine("Input a Sudoku puzzle one line at a time. Enter a period (.) for empty cells.");
                 Utils.Loop(i => rows.Add(InputRow(i)));
             } while (!_confirm.Run());
-            return ParsePuzzle(rows);
+            Puzzle puzzle = ParsePuzzle(rows);
+            PrintPuzzle.Run(puzzle);
+            _console.Success("Puzzle is now in memory.");
+            return puzzle;
         }
 
         private static string InputRow(int i)

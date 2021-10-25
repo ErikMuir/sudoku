@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Generators;
 using Sudoku.Serializers;
 
 namespace Sudoku
@@ -9,6 +10,23 @@ namespace Sudoku
         public Puzzle()
         {
             Utils.Loop(row => Utils.Loop(col => Cells[(row * Constants.UnitSize) + col] = new Cell(col, row)));
+        }
+
+        public Puzzle(GeneratorPuzzle puzzle)
+        {
+            Cells = puzzle.Cells
+                .Select((candidates, index) =>
+                {
+                    int row = index / Constants.UnitSize;
+                    int col = index % Constants.UnitSize;
+                    if (candidates.Length == 1)
+                        return new Clue(col, row, candidates[0]);
+                    Cell cell = new Cell(col, row);
+                    foreach (int cand in candidates)
+                        cell.AddCandidate(cand);
+                    return cell;
+                })
+                .ToArray();
         }
 
         public Cell[] Cells { get; private set; } = new Cell[Constants.TotalCells];

@@ -12,7 +12,7 @@ namespace Sudoku.CommandLine
             { '1', "Input" },
             { '2', "Load" },
             { '3', "Generate" },
-            { '4', "** debug **" },
+            // { '4', "** debug **" },
             { '0', "Quit" },
         };
         private static readonly Dictionary<char, string> _puzzleMenuOptions = new()

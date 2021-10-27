@@ -1,6 +1,6 @@
 namespace Sudoku.Generators
 {
-    public enum SymmetryType
+    public enum Symmetry
     {
         None,
         Horizontal,

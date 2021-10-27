@@ -12,15 +12,15 @@ namespace Sudoku.Generators
 
         private static readonly Random _rand = new();
         private static readonly Dictionary<Tuple<int, int>, int[]> _savedPeers = new();
-        private static readonly SymmetryType[] _supportedSymmetryTypes = new[]
+        private static readonly Symmetry[] _supportedSymmetryTypes = new[]
         {
-            SymmetryType.Horizontal,
-            SymmetryType.Vertical,
-            // SymmetryType.DiagonalUp,
-            // SymmetryType.DiagonalDown,
-            // SymmetryType.Rotational,
+            Symmetry.Horizontal,
+            Symmetry.Vertical,
+            Symmetry.DiagonalUp,
+            Symmetry.DiagonalDown,
+            // Symmetry.Rotational,
         };
-        private static SymmetryType GetRandomSymmetry() => _supportedSymmetryTypes[_rand.Next(_supportedSymmetryTypes.Length)];
+        private static Symmetry GetRandomSymmetry() => _supportedSymmetryTypes[_rand.Next(_supportedSymmetryTypes.Length)];
 
         public GeneratorPuzzle(int length)
         {
@@ -149,12 +149,12 @@ namespace Sudoku.Generators
             }
         }
 
-        public static GeneratorPuzzle Generate(int size, SymmetryType symmetry)
+        public static GeneratorPuzzle Generate(int size, Symmetry symmetry)
         {
-            if (symmetry == SymmetryType.None)
+            if (symmetry == Symmetry.None)
                 return Generate(size);
 
-            if (symmetry == SymmetryType.Random)
+            if (symmetry == Symmetry.Random)
                 symmetry = GetRandomSymmetry();
 
             while (true)
@@ -188,7 +188,7 @@ namespace Sudoku.Generators
             }
         }
 
-        private static int[] GetCellsToFill(GeneratorPuzzle puzzle, SymmetryType symmetry)
+        public static int[] GetCellsToFill(GeneratorPuzzle puzzle, Symmetry symmetry)
         {
             int[] unsolvedCellIndexes = GetUnsolvedCells(puzzle);
             int randomUnsolvedCell = unsolvedCellIndexes[_rand.Next(unsolvedCellIndexes.Length)];
@@ -196,31 +196,31 @@ namespace Sudoku.Generators
             return cellsToFill;
         }
 
-        private static int[] GetUnsolvedCells(GeneratorPuzzle puzzle)
+        public static int[] GetUnsolvedCells(GeneratorPuzzle puzzle)
             => puzzle.Cells
                 .Select((cands, index) => new { cands, index })
                 .Where(t => t.cands.Length >= 2)
                 .Select(u => u.index)
                 .ToArray();
 
-        private static int GetReflectiveIndex(GeneratorPuzzle puzzle)
+        public static int GetReflectiveIndex(GeneratorPuzzle puzzle)
             => puzzle.Length % 2 == 0 ? -1 : puzzle.Length / 2;
 
-        public static int[] GetReflections(GeneratorPuzzle puzzle, int cell, SymmetryType symmetry)
+        public static int[] GetReflections(GeneratorPuzzle puzzle, int cell, Symmetry symmetry)
         {
             int[] symmetricCells = symmetry switch
             {
-                SymmetryType.Horizontal => GetHorizontalReflection(puzzle, cell),
-                SymmetryType.Vertical => GetVerticalReflection(puzzle, cell),
-                SymmetryType.DiagonalUp => GetDiagonalUpReflection(puzzle, cell),
-                SymmetryType.DiagonalDown => GetDiagonalDownReflection(puzzle, cell),
-                SymmetryType.Rotational => GetRotationalReflection(puzzle, cell),
+                Symmetry.Horizontal => GetHorizontalReflection(puzzle, cell),
+                Symmetry.Vertical => GetVerticalReflection(puzzle, cell),
+                Symmetry.DiagonalUp => GetDiagonalUpReflection(puzzle, cell),
+                Symmetry.DiagonalDown => GetDiagonalDownReflection(puzzle, cell),
+                Symmetry.Rotational => GetRotationalReflection(puzzle, cell),
                 _ => new int[] { },
             };
             return symmetricCells.Concat(new[] { cell }).ToArray();
         }
 
-        private static int[] GetHorizontalReflection(GeneratorPuzzle puzzle, int cell)
+        public static int[] GetHorizontalReflection(GeneratorPuzzle puzzle, int cell)
         {
             int row = puzzle.Row(cell);
             int col = puzzle.Col(cell);
@@ -231,7 +231,7 @@ namespace Sudoku.Generators
             return new[] { reflectedIndex };
         }
 
-        private static int[] GetVerticalReflection(GeneratorPuzzle puzzle, int cell)
+        public static int[] GetVerticalReflection(GeneratorPuzzle puzzle, int cell)
         {
             int row = puzzle.Row(cell);
             int col = puzzle.Col(cell);
@@ -242,22 +242,20 @@ namespace Sudoku.Generators
             return new[] { reflectedIndex };
         }
 
-        private static int[] GetDiagonalUpReflection(GeneratorPuzzle puzzle, int cell)
+        public static int[] GetDiagonalUpReflection(GeneratorPuzzle puzzle, int cell)
         {
-            throw new NotImplementedException();
             int row = puzzle.Row(cell);
             int col = puzzle.Col(cell);
             if (row + col == puzzle.Length - 1)
                 return new int[] { };
-            int reflectedCol = 0; // TODO
-            int reflectedRow = 0; // TODO
+            int reflectedCol = (puzzle.Length- 1) - row;
+            int reflectedRow = (puzzle.Length - 1) - col;
             int reflectedIndex = (reflectedRow * puzzle.Length) + reflectedCol;
             return new[] { reflectedIndex };
         }
 
-        private static int[] GetDiagonalDownReflection(GeneratorPuzzle puzzle, int cell)
+        public static int[] GetDiagonalDownReflection(GeneratorPuzzle puzzle, int cell)
         {
-            // TODO : test this
             int row = puzzle.Row(cell);
             int col = puzzle.Col(cell);
             if (row == col)
@@ -271,6 +269,31 @@ namespace Sudoku.Generators
         private static int[] GetRotationalReflection(GeneratorPuzzle puzzle, int cell)
         {
             throw new NotImplementedException();
+        }
+
+        public static GeneratorPuzzle Rotate(GeneratorPuzzle input, int quarterTurns)
+        {
+            GeneratorPuzzle puzzle = new(input);
+            for (int i = 0; i < quarterTurns; i++)
+                puzzle = Rotate(puzzle);
+            return puzzle;
+        }
+
+        public static GeneratorPuzzle Rotate(GeneratorPuzzle input)
+        {
+            GeneratorPuzzle puzzle = new(input);
+            for (int row = 0; row < puzzle.Length; row++)
+            {
+                for (int col = 0; col < puzzle.Length; col++)
+                {
+                    int newRow = col;
+                    int newCol = (puzzle.Length - 1) - row;
+                    int sourceIndex = (row * puzzle.Length) + col;
+                    int targetIndex = (newRow * puzzle.Length) + newCol;
+                    puzzle.Cells[targetIndex] = input.Cells[sourceIndex];
+                }
+            }
+            return puzzle;
         }
     }
 }

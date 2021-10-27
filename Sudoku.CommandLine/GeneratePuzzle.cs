@@ -23,20 +23,20 @@ namespace Sudoku.CommandLine
         public static Puzzle Run()
         {
             _console.LineFeed();
-            SymmetryType symmetryType = _menu.Run() switch
+            Symmetry symmetry = _menu.Run() switch
             {
-                '1' => SymmetryType.None,
-                '2' => SymmetryType.Horizontal,
-                '3' => SymmetryType.Vertical,
-                '4' => SymmetryType.DiagonalUp,
-                '5' => SymmetryType.DiagonalDown,
-                '6' => SymmetryType.Rotational,
-                '7' => SymmetryType.Random,
+                '1' => Symmetry.None,
+                '2' => Symmetry.Horizontal,
+                '3' => Symmetry.Vertical,
+                '4' => Symmetry.DiagonalUp,
+                '5' => Symmetry.DiagonalDown,
+                '6' => Symmetry.Rotational,
+                '7' => Symmetry.Random,
                 '0' => throw new MenuExitException(),
                 _ => throw new SudokuException("Invalid option"),
             };
 
-            GeneratorPuzzle generator = GeneratorPuzzle.Generate(9, symmetryType);
+            GeneratorPuzzle generator = GeneratorPuzzle.Generate(9, symmetry);
             Puzzle puzzle = new Puzzle(generator);
             PrintPuzzle.Run(puzzle);
             _console.Success("Puzzle is now in memory.");

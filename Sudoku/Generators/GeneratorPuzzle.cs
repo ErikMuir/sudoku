@@ -245,11 +245,27 @@ namespace Sudoku.Generators
         private static int[] GetDiagonalUpReflection(GeneratorPuzzle puzzle, int cell)
         {
             throw new NotImplementedException();
+            int row = puzzle.Row(cell);
+            int col = puzzle.Col(cell);
+            if (row + col == puzzle.Length - 1)
+                return new int[] { };
+            int reflectedCol = 0; // TODO
+            int reflectedRow = 0; // TODO
+            int reflectedIndex = (reflectedRow * puzzle.Length) + reflectedCol;
+            return new[] { reflectedIndex };
         }
 
         private static int[] GetDiagonalDownReflection(GeneratorPuzzle puzzle, int cell)
         {
-            throw new NotImplementedException();
+            // TODO : test this
+            int row = puzzle.Row(cell);
+            int col = puzzle.Col(cell);
+            if (row == col)
+                return new int[] { };
+            int reflectedCol = row;
+            int reflectedRow = col;
+            int reflectedIndex = (reflectedRow * puzzle.Length) + reflectedCol;
+            return new[] { reflectedIndex };
         }
 
         private static int[] GetRotationalReflection(GeneratorPuzzle puzzle, int cell)

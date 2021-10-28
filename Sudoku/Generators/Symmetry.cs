@@ -7,7 +7,8 @@ namespace Sudoku.Generators
         Vertical,
         DiagonalUp,
         DiagonalDown,
-        Rotational,
+        RotationalTwoFold,
+        RotationalFourFold,
         Random,
     }
 }

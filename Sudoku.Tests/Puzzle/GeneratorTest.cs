@@ -6,27 +6,27 @@ namespace Sudoku.Tests
 {
     public class GeneratorTest
     {
-        private readonly GeneratorPuzzle testObject;
+        private readonly GeneratorPuzzle _testObject;
 
         public GeneratorTest()
         {
-            testObject = new GeneratorPuzzle(9);
+            _testObject = new GeneratorPuzzle(9);
         }
 
         [Fact]
         public void Constructor_Sets_Cells()
         {
-            Assert.Equal(81, testObject.Cells.Length);
-            Assert.Equal(9, testObject.Cells[0].Length);
+            Assert.Equal(81, _testObject.Cells.Length);
+            Assert.Equal(9, _testObject.Cells[0].Length);
         }
 
         [Fact]
         public void Constructor_Copies_Cells()
         {
-            GeneratorPuzzle copy = new(testObject);
-            for (int i = 0; i < testObject.Cells.Length; i++)
+            GeneratorPuzzle copy = new(_testObject);
+            for (int i = 0; i < _testObject.Cells.Length; i++)
             {
-                Assert.Equal(copy.Cells[i], testObject.Cells[i]);
+                Assert.Equal(copy.Cells[i], _testObject.Cells[i]);
             }
         }
 
@@ -40,7 +40,7 @@ namespace Sudoku.Tests
         [Fact]
         public void Peers()
         {
-            var peers = testObject.Peers(40);
+            var peers = _testObject.Peers(40);
             var expectedResult = new int[] { 4, 13, 22, 30, 31, 32, 36, 37, 38, 39, 41, 42, 43, 44, 48, 49, 50, 58, 67, 76 };
             Assert.Equal(expectedResult, peers);
         }
@@ -48,7 +48,7 @@ namespace Sudoku.Tests
         [Fact]
         public void Solve()
         {
-            GeneratorPuzzle solved = GeneratorPuzzle.Solve(testObject);
+            GeneratorPuzzle solved = GeneratorPuzzle.Solve(_testObject);
             Assert.True(solved.Cells.All(c => c.Length == 1));
             // SudokuPuzzle puzzle = new("..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..");
             // int[] expectedResult = new[]
@@ -67,10 +67,9 @@ namespace Sudoku.Tests
         [InlineData(8, 72)]
         [InlineData(76, 44)]
         [InlineData(64, 16)]
-        public void Reflection_DiagonalDown(int cell, int expected)
+        public void Reflection_Diagonal_Down(int cell, int expected)
         {
-            GeneratorPuzzle puzzle = new(9);
-            int[] actual = GeneratorPuzzle.GetDiagonalDownReflection(puzzle, cell);
+            int[] actual = GeneratorPuzzle.GetDiagonalDownReflection(_testObject, cell);
             Assert.Equal(new[] { expected }, actual);
         }
 
@@ -84,10 +83,9 @@ namespace Sudoku.Tests
         [InlineData(60)]
         [InlineData(70)]
         [InlineData(80)]
-        public void Reflection_DiagonalDown_Axis(int cell)
+        public void Reflection_Diagonal_Down_Axis(int cell)
         {
-            GeneratorPuzzle puzzle = new(9);
-            int[] actual = GeneratorPuzzle.GetDiagonalDownReflection(puzzle, cell);
+            int[] actual = GeneratorPuzzle.GetDiagonalDownReflection(_testObject, cell);
             Assert.Equal(new int[] { }, actual);
         }
 
@@ -98,10 +96,9 @@ namespace Sudoku.Tests
         [InlineData(44, 4)]
         [InlineData(70, 10)]
         [InlineData(60, 20)]
-        public void Reflection_DiagonalUp(int cell, int expected)
+        public void Reflection_Diagonal_Up(int cell, int expected)
         {
-            GeneratorPuzzle puzzle = new(9);
-            int[] actual = GeneratorPuzzle.GetDiagonalUpReflection(puzzle, cell);
+            int[] actual = GeneratorPuzzle.GetDiagonalUpReflection(_testObject, cell);
             Assert.Equal(new[] { expected }, actual);
         }
 
@@ -115,26 +112,76 @@ namespace Sudoku.Tests
         [InlineData(56)]
         [InlineData(64)]
         [InlineData(72)]
-        public void Reflection_DiagonalUp_Axis(int cell)
+        public void Reflection_Diagonal_Up_Axis(int cell)
         {
-            GeneratorPuzzle puzzle = new(9);
-            int[] actual = GeneratorPuzzle.GetDiagonalUpReflection(puzzle, cell);
+            int[] actual = GeneratorPuzzle.GetDiagonalUpReflection(_testObject, cell);
             Assert.Equal(new int[] { }, actual);
         }
 
         [Theory]
-        [InlineData(0, 2, 2, 8)]
-        [InlineData(2, 8, 8, 6)]
-        [InlineData(8, 6, 6, 0)]
-        [InlineData(6, 0, 0, 2)]
-        [InlineData(1, 2, 2, 7)]
-        [InlineData(6, 2, 2, 2)]
-        public void RotateQuarterTurn(int sourceRow, int sourceCol, int targetRow, int targetCol)
+        [InlineData(1, 79)]
+        [InlineData(10, 70)]
+        [InlineData(53, 27)]
+        [InlineData(30, 50)]
+        [InlineData(76, 4)]
+        [InlineData(46, 34)]
+        public void Reflection_Rotational_TwoFold(int cell, int expected)
         {
-            GeneratorPuzzle solved = GeneratorPuzzle.Solve(testObject);
-            GeneratorPuzzle rotated = GeneratorPuzzle.Rotate(solved);
-            int sourceIndex = (sourceRow * 9) + sourceCol;
-            int targetIndex = (targetRow * 9) + targetCol;
+            int[] actual = GeneratorPuzzle.GetRotationalTwoFoldReflection(_testObject, cell);
+            Assert.Equal(new[] { expected }, actual);
+        }
+
+        [Fact]
+        public void Reflection_Rotational_TwoFold_Axis()
+        {
+            int[] actual = GeneratorPuzzle.GetRotationalTwoFoldReflection(_testObject, 40);
+            Assert.Equal(new int[] { }, actual);
+        }
+
+        [Theory]
+        [InlineData(1, 17, 79, 63)]
+        [InlineData(10, 16, 70, 64)]
+        [InlineData(53, 75, 27, 5)]
+        [InlineData(30, 32, 50, 48)]
+        [InlineData(76, 36, 4, 44)]
+        [InlineData(46, 12, 34, 68)]
+        public void Reflection_Rotational_FourFold(int cell, int expected1, int expected2, int expected3)
+        {
+            int[] actual = GeneratorPuzzle.GetRotationalFourFoldReflection(_testObject, cell);
+            Assert.Equal(new[] { expected1, expected2, expected3 }, actual);
+        }
+
+        [Fact]
+        public void Reflection_Rotational_FourFold_Axis()
+        {
+            int[] actual = GeneratorPuzzle.GetRotationalFourFoldReflection(_testObject, 40);
+            Assert.Equal(new int[] { }, actual);
+        }
+
+        [Theory]
+        [InlineData(2, 26)]
+        [InlineData(26, 78)]
+        [InlineData(78, 54)]
+        [InlineData(54, 2)]
+        [InlineData(11, 25)]
+        [InlineData(56, 20)]
+        public void RotateCell(int sourceIndex, int expected)
+        {
+            int actual = GeneratorPuzzle.RotateCell(_testObject, sourceIndex);
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(2, 26)]
+        [InlineData(26, 78)]
+        [InlineData(78, 54)]
+        [InlineData(54, 2)]
+        [InlineData(11, 25)]
+        [InlineData(56, 20)]
+        public void RotatePuzzle(int sourceIndex, int targetIndex)
+        {
+            GeneratorPuzzle solved = GeneratorPuzzle.Solve(_testObject);
+            GeneratorPuzzle rotated = GeneratorPuzzle.RotatePuzzle(solved);
             Assert.Equal(rotated.Cells[targetIndex], solved.Cells[sourceIndex]);
         }
     }

@@ -12,10 +12,11 @@ namespace Sudoku.CommandLine
             { '1', "None" },
             { '2', "Horizontal" },
             { '3', "Vertical" },
-            { '4', "Diagonal Up" },
-            { '5', "Diagonal Down" },
-            { '6', "Rotational" },
-            { '7', "Random" },
+            { '4', "Diagonal (up)" },
+            { '5', "Diagonal (down)" },
+            { '6', "Rotational (two-fold)" },
+            { '7', "Rotational (four-fold)" },
+            { '8', "Random" },
             { '0', "Go back" },
         };
         private static readonly Menu _menu = new(_menuOptions, "Choose a symmetry:");
@@ -30,8 +31,9 @@ namespace Sudoku.CommandLine
                 '3' => Symmetry.Vertical,
                 '4' => Symmetry.DiagonalUp,
                 '5' => Symmetry.DiagonalDown,
-                '6' => Symmetry.Rotational,
-                '7' => Symmetry.Random,
+                '6' => Symmetry.RotationalTwoFold,
+                '7' => Symmetry.RotationalFourFold,
+                '8' => Symmetry.Random,
                 '0' => throw new MenuExitException(),
                 _ => throw new SudokuException("Invalid option"),
             };

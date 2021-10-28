@@ -21,7 +21,7 @@ namespace Sudoku.CommandLine
             ISolver solver;
             switch (_menu.Run())
             {
-                case '1': solver = new BacktrackingSolver(puzzle); break;
+                case '1': solver = new Solver(puzzle); break;
                 case '2': solver = new ConstraintSolver(puzzle); break;
                 case '0': throw new MenuExitException();
                 default: throw new SudokuException("Invalid option");

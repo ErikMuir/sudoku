@@ -40,14 +40,11 @@ namespace Sudoku.Serializers
         public string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
-            for (int row = 0; row < puzzle.Length; row++)
+            for (int i = 0; i < puzzle.Cells.Length; i++)
             {
-                for (int col = 0; col < puzzle.Length; col++)
-                {
-                    int cellIndex = (row * puzzle.Length) + col;
-                    sb.Append(Serialize(puzzle.Cells[cellIndex]));
-                }
-                sb.AppendLine();
+                sb.Append(Serialize(puzzle.Cells[i]));
+                if ((i + 1) % puzzle.Length == 0)
+                    sb.AppendLine();
             }
             return sb.ToString();
         }

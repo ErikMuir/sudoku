@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using MuirDev.ConsoleTools;
@@ -14,12 +15,18 @@ namespace Sudoku.CommandLine
         public static void Run(Puzzle puzzle)
         {
             List<string> rows = new();
-            Utils.Loop(i =>
+            for (int row = 0; row < puzzle.Length; row++)
             {
-                List<Cell> rowCells = puzzle.GetRow(i);
+                List<int[]> rowCells = new();
+                for (int col = 0; col < puzzle.Length; col++)
+                {
+                    int cellIndex = (row * puzzle.Length) + col;
+                    rowCells.Add(puzzle.Cells[cellIndex]);
+                }
                 string rowString = GridRow(rowCells);
                 rows.Add(rowString);
-            });
+            }
+
             _console
                 .LineFeed()
                 .WriteLine(GridBorder)
@@ -38,10 +45,11 @@ namespace Sudoku.CommandLine
                 .LineFeed();
         }
 
-        private static string GridRow(List<Cell> row)
+        private static string GridRow(List<int[]> row)
         {
             List<string> cells = new();
-            Utils.Loop(i => cells.Add(GridCell(row[i])));
+            for (int i = 0; i < row.Count; i++)
+                cells.Add(GridCell(row[i]));
 
             StringBuilder sb = new();
             sb.Append(VerticalLine);
@@ -61,6 +69,6 @@ namespace Sudoku.CommandLine
             return sb.ToString();
         }
 
-        private static string GridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
+        private static string GridCell(int[] cell) => cell.Length == 1 ? $" {Math.Abs(cell[0])} " : "   ";
     }
 }

@@ -19,7 +19,8 @@ namespace Sudoku.CommandLine
             do
             {
                 _console.WriteLine("Input a Sudoku puzzle one line at a time. Enter a period (.) for empty cells.");
-                Utils.Loop(i => rows.Add(InputRow(i)));
+                for (int i = 0; i < 9; i++)
+                    rows.Add(InputRow(i));
             } while (!_confirm.Run());
             Puzzle puzzle = ParsePuzzle(rows);
             PrintPuzzle.Run(puzzle);
@@ -31,7 +32,7 @@ namespace Sudoku.CommandLine
         {
             StringBuilder sb = new();
             _console.Write($"row {i + 1}: ");
-            while (sb.Length < Constants.UnitSize)
+            while (sb.Length < 9)
                 InputCell(ref sb);
             _console.LineFeed();
             return sb.ToString();

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
-using Sudoku.Generators;
 
 namespace Sudoku.CommandLine
 {
@@ -38,7 +37,7 @@ namespace Sudoku.CommandLine
                 _ => throw new SudokuException("Invalid option"),
             };
 
-            GeneratorPuzzle generator = GeneratorPuzzle.Generate(9, symmetry);
+            Puzzle generator = Generator.Generate(9, symmetry);
             Puzzle puzzle = new Puzzle(generator);
             PrintPuzzle.Run(puzzle);
             _console.Success("Puzzle is now in memory.");

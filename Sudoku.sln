@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Tests", "Sudoku.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku", "Sudoku\Sudoku.csproj", "{45D97ECF-E485-4BB4-8CE5-249B78C15FAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.CommandLine", "Sudoku.CommandLine\Sudoku.CommandLine.csproj", "{01A50F6A-BB16-4170-BF57-94A8C3378AB3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sudoku.Console", "Sudoku.Console\Sudoku.Console.csproj", "{01A50F6A-BB16-4170-BF57-94A8C3378AB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

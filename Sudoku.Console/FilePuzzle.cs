@@ -12,7 +12,6 @@ namespace Sudoku.CommandLine
         private const string PuzzleDirectory = "./puzzles";
         private static readonly List<ISerializer> _serializers = new()
         {
-            new PzlSerializer(),
             new SdkSerializer(),
             new SdmSerializer(),
             new SdxSerializer(),

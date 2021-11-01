@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Sudoku.Solvers;
+using Sudoku.Solution;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,7 +27,7 @@ namespace Sudoku.Tests
             Assert.True(solver.SolveDuration > TimeSpan.Zero);
             Assert.Empty(solver.Logs);
         }
-        
+
         [Fact]
         public void Solve_SolvedPuzzle()
         {

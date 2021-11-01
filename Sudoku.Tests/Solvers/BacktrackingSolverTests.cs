@@ -1,5 +1,5 @@
 using System;
-using Sudoku.Solvers;
+using Sudoku.Solution;
 using Xunit;
 
 namespace Sudoku.Tests

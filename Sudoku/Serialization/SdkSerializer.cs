@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Sudoku.Serializers
+namespace Sudoku.Serialization
 {
     public class SdkSerializer : ISerializer
     {

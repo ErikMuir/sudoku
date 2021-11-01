@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sudoku
+namespace Sudoku.Solution
 {
     public static class Solver
     {

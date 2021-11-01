@@ -1,5 +1,5 @@
 using System.Text;
-using Sudoku.Serializers;
+using Sudoku.Serialization;
 
 namespace Sudoku.Tests
 {

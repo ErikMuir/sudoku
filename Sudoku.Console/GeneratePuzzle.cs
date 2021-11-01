@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
+using Sudoku.Generation;
 
 namespace Sudoku.CommandLine
 {

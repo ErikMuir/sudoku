@@ -10,18 +10,7 @@ namespace Sudoku
         public int[][] Cells;
         public int BoxSize => (int)Math.Sqrt(Length);
 
-        private static readonly Random _rand = new();
         private static readonly Dictionary<Tuple<int, int>, int[]> _savedPeers = new();
-        private static readonly Symmetry[] _supportedSymmetryTypes = new[]
-        {
-            Symmetry.Horizontal,
-            Symmetry.Vertical,
-            Symmetry.DiagonalUp,
-            Symmetry.DiagonalDown,
-            Symmetry.RotationalTwoFold,
-            Symmetry.RotationalFourFold,
-        };
-        private static Symmetry GetRandomSymmetry() => _supportedSymmetryTypes[_rand.Next(_supportedSymmetryTypes.Length)];
 
         public Puzzle(int length)
         {

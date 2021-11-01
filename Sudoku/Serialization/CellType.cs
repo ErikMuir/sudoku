@@ -1,4 +1,4 @@
-namespace Sudoku.Serializers
+namespace Sudoku.Serialization
 {
     public enum CellType
     {

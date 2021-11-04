@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using MuirDev.ConsoleTools;
 
-namespace Sudoku.CommandLine
+namespace Sudoku.Console
 {
     public static class PrintPuzzle
     {

@@ -1,4 +1,4 @@
-namespace Sudoku.Generators
+namespace Sudoku.Generation
 {
     public enum Symmetry
     {

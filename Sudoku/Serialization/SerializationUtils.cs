@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Sudoku.Serializers
+namespace Sudoku.Serialization
 {
     public static class SerializationUtils
     {

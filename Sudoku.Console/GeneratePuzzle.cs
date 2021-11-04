@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
-using Sudoku.Generators;
+using Sudoku.Generation;
 
-namespace Sudoku.CommandLine
+namespace Sudoku.Console
 {
     public static class GeneratePuzzle
     {
@@ -20,7 +20,7 @@ namespace Sudoku.CommandLine
             { '0', "Go back" },
         };
         private static readonly Menu _menu = new(_menuOptions, "Choose a symmetry:");
-        
+
         public static Puzzle Run()
         {
             _console.LineFeed();

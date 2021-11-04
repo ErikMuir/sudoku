@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
 
-namespace Sudoku.CommandLine
+namespace Sudoku.Console
 {
     public class App
     {

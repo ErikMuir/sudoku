@@ -1,5 +1,5 @@
 using System.Linq;
-using Sudoku.Generators;
+using Sudoku.Generation;
 using Xunit;
 
 namespace Sudoku.Tests

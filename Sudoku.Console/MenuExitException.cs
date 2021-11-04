@@ -1,6 +1,6 @@
 using System;
 
-namespace Sudoku.CommandLine
+namespace Sudoku.Console
 {
     public class MenuExitException : SudokuException
     {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
-using Sudoku.Solvers;
+using Sudoku.Solution;
 
-namespace Sudoku.CommandLine
+namespace Sudoku.Console
 {
     public static class SolvePuzzle
     {

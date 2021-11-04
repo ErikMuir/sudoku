@@ -1,4 +1,4 @@
-namespace Sudoku.Solvers
+namespace Sudoku.Solution
 {
     public enum ConstraintType
     {

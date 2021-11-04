@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Sudoku.Solvers
+namespace Sudoku.Solution
 {
     public interface ISolver
     {

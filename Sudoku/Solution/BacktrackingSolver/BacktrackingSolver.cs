@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 
-namespace Sudoku.Solvers
+namespace Sudoku.Solution
 {
     public class BacktrackingSolver : ISolver
     {

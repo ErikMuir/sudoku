@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MuirDev.ConsoleTools;
-using Sudoku.Serializers;
+using Sudoku.Serialization;
 
-namespace Sudoku.CommandLine
+namespace Sudoku.Console
 {
     public static class FilePuzzle
     {

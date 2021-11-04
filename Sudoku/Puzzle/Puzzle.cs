@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Sudoku.Generators;
-using Sudoku.Serializers;
+using Sudoku.Generation;
+using Sudoku.Serialization;
 
 namespace Sudoku
 {

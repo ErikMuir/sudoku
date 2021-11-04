@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Sudoku.Solvers
+namespace Sudoku.Solution
 {
     public class ConstraintSolver : ISolver
     {
@@ -77,8 +77,8 @@ namespace Sudoku.Solvers
                 foreach (int candidate in cell.Candidates)
                 {
                     if (
-                        Puzzle.GetCol(cell.Col).IsCandidateUnique(candidate) || 
-                        Puzzle.GetCol(cell.Row).IsCandidateUnique(candidate) || 
+                        Puzzle.GetCol(cell.Col).IsCandidateUnique(candidate) ||
+                        Puzzle.GetCol(cell.Row).IsCandidateUnique(candidate) ||
                         Puzzle.GetBox(cell.Box).IsCandidateUnique(candidate)
                         )
                     {
@@ -109,7 +109,7 @@ namespace Sudoku.Solvers
         public bool NakedSetUnitCheck(List<Cell> unit, List<CandidateSet> sets)
         {
             int setLength = sets.First().Count;
-            
+
             foreach (CandidateSet set in sets)
             {
                 List<Cell> matches = unit.Where(x => x.ContainsOnlyMatches(set)).ToList();
@@ -253,7 +253,7 @@ namespace Sudoku.Solvers
                     if (reduce(row, candidate)) return true;
                 }
             }
-            
+
             return false;
 
             bool reduce(List<Cell> unit, int candidate)
@@ -289,7 +289,7 @@ namespace Sudoku.Solvers
             for (int candidate = 1; candidate < 10; candidate++)
             {
                 if (reduce(candidate, true)) return true;
-                if (reduce(candidate, false)) return true;                
+                if (reduce(candidate, false)) return true;
             }
 
             return false;
@@ -367,7 +367,7 @@ namespace Sudoku.Solvers
             {
                 if (reduce(hinge, wing1Unit, wing2Unit, hinge.Candidates[0], hinge.Candidates[1]))
                     return true;
-                    
+
                 if (reduce(hinge, wing1Unit, wing2Unit, hinge.Candidates[1], hinge.Candidates[0]))
                     return true;
 

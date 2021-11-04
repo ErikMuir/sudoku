@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MuirDev.ConsoleTools;
-using Sudoku.Serializers;
+using Sudoku.Serialization;
 
-namespace Sudoku.CommandLine
+namespace Sudoku.Console
 {
     public static class InputPuzzle
     {

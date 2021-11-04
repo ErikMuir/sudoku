@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Sudoku.Solvers
+namespace Sudoku.Solution
 {
     public class ConstraintLog
     {

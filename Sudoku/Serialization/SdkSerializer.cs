@@ -19,7 +19,7 @@ namespace Sudoku.Serialization
             sb.Append(serializedMetadata);
             Utils.Loop(row =>
             {
-                Utils.Loop(col => sb.Append(Serialize(puzzle.GetCell(col, row))));
+                Utils.Loop(col => sb.Append(Serialize(puzzle.GetCell(row, col))));
                 sb.AppendLine();
             });
             return sb.ToString();
@@ -52,7 +52,7 @@ namespace Sudoku.Serialization
                 .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
                 .ToArray();
 
-            if (rows.Length != Constants.UnitSize || rows.Any(row => !_sdkLinePattern.IsMatch(row)))
+            if (rows.Length != Puzzle.UnitSize || rows.Any(row => !_sdkLinePattern.IsMatch(row)))
                 throw new SudokuException("Invalid sdk file format");
 
             Puzzle puzzle = new();
@@ -63,7 +63,7 @@ namespace Sudoku.Serialization
                 Utils.Loop(col =>
                 {
                     int.TryParse($"{line[col]}", out int val);
-                    if (val > 0) puzzle.Cells[(row * Constants.UnitSize) + col] = new Clue(col, row, val);
+                    if (val > 0) puzzle.Cells[(row * Puzzle.UnitSize) + col] = new Clue(row, col, val);
                 });
             });
             return puzzle;

@@ -31,7 +31,7 @@ namespace Sudoku.Console
         {
             StringBuilder sb = new();
             _console.Write($"row {i + 1}: ");
-            while (sb.Length < Constants.UnitSize)
+            while (sb.Length < Puzzle.UnitSize)
                 InputCell(ref sb);
             _console.LineFeed();
             return sb.ToString();

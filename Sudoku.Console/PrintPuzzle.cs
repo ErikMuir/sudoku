@@ -16,7 +16,7 @@ namespace Sudoku.Console
             List<string> rows = new();
             Utils.Loop(i =>
             {
-                List<Cell> rowCells = puzzle.GetRow(i);
+                Cell[] rowCells = puzzle.GetRow(i);
                 string rowString = GridRow(rowCells);
                 rows.Add(rowString);
             });
@@ -38,7 +38,7 @@ namespace Sudoku.Console
                 .LineFeed();
         }
 
-        private static string GridRow(List<Cell> row)
+        private static string GridRow(Cell[] row)
         {
             List<string> cells = new();
             Utils.Loop(i => cells.Add(GridCell(row[i])));

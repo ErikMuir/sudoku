@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Sudoku
@@ -12,13 +11,13 @@ namespace Sudoku
         public static bool Between(this int? num, int lower, int upper, bool inclusive = false)
             => inclusive ? lower <= num && num <= upper : lower < num && num < upper;
 
-        private static bool IsUnit(this List<Cell> unit)
-            => (unit is not null && unit.Count == 9);
+        private static bool IsUnit(this Cell[] unit)
+            => (unit is not null && unit.Length == 9);
 
-        public static bool IsUnitSolved(this List<Cell> unit)
+        public static bool IsUnitSolved(this Cell[] unit)
             => (unit.IsUnit() && unit.All(x => x.Value.HasValue) && unit.Select(x => x.Value).Distinct().Count() == 9);
 
-        public static bool IsUnitValid(this List<Cell> unit)
+        public static bool IsUnitValid(this Cell[] unit)
             => (
                 unit.IsUnit() &&
                 unit.Where(x => x.Value.HasValue)
@@ -29,26 +28,26 @@ namespace Sudoku
                                     .Count()
             );
 
-        public static bool IsCandidateUnique(this List<Cell> cells, int candidate)
+        public static bool IsCandidateUnique(this Cell[] cells, int candidate)
             => cells.Where(x => x.Candidates.Contains(candidate)).Count() == 1;
 
-        public static List<Cell> CloneCells(this List<Cell> cells)
-            => cells.Select(x => x.Clone()).ToList();
+        public static Cell[] CloneCells(this Cell[] cells)
+            => cells.Select(x => x.Clone()).ToArray();
 
-        public static bool ContainsEveryCandidate(this List<Cell> cells, CandidateSet set)
+        public static bool ContainsEveryCandidate(this Cell[] cells, CandidateSet set)
             => set.All(candidate => cells.Any(cell => cell.Candidates.Contains(candidate)));
 
-        public static bool AllInSameCol(this List<Cell> cells)
+        public static bool AllInSameCol(this Cell[] cells)
             => cells.Select(x => x.Col).Distinct().Count() == 1;
 
-        public static bool AllInSameRow(this List<Cell> cells)
+        public static bool AllInSameRow(this Cell[] cells)
             => cells.Select(x => x.Row).Distinct().Count() == 1;
 
-        public static bool AllInSameBox(this List<Cell> cells)
+        public static bool AllInSameBox(this Cell[] cells)
             => cells.Select(x => x.Box).Distinct().Count() == 1;
 
-        public static List<Cell> GetCandidateMatches(this List<Cell> cells, int candidate)
-            => cells.Where(x => x.Candidates.Contains(candidate)).ToList();
+        public static Cell[] GetCandidateMatches(this Cell[] cells, int candidate)
+            => cells.Where(x => x.Candidates.Contains(candidate)).ToArray();
 
         public static string ToUtcString(this DateTime dt)
             => dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");

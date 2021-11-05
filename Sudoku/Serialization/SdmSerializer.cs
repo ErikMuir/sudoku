@@ -15,7 +15,7 @@ namespace Sudoku.Serialization
         public string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
-            Utils.Loop(Constants.TotalCells, i => sb.Append(Serialize(puzzle.Cells[i])));
+            Utils.Loop(Puzzle.TotalCells, i => sb.Append(Serialize(puzzle.Cells[i])));
             return sb.ToString();
         }
 
@@ -38,12 +38,12 @@ namespace Sudoku.Serialization
                 throw new SudokuException("Invalid sdm file format");
 
             Puzzle puzzle = new();
-            Utils.Loop(Constants.TotalCells, i =>
+            Utils.Loop(Puzzle.TotalCells, i =>
             {
-                int col = i % Constants.UnitSize;
-                int row = i / Constants.UnitSize;
+                int col = i % Puzzle.UnitSize;
+                int row = i / Puzzle.UnitSize;
                 int.TryParse($"{puzzleString[i]}", out int val);
-                if (val > 0) puzzle.Cells[i] = new Clue(col, row, val);
+                if (val > 0) puzzle.Cells[i] = new Clue(row, col, val);
             });
             return puzzle;
         }

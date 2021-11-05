@@ -94,7 +94,7 @@ namespace Sudoku.Solution
 
         public bool NakedSet(List<CandidateSet> sets)
         {
-            for (int i = 0; i < Constants.UnitSize; i++)
+            for (int i = 0; i < Puzzle.UnitSize; i++)
             {
                 if (NakedSetUnitCheck(Puzzle.GetCol(i), sets))
                     return true;
@@ -106,7 +106,7 @@ namespace Sudoku.Solution
             return false;
         }
 
-        public bool NakedSetUnitCheck(List<Cell> unit, List<CandidateSet> sets)
+        public bool NakedSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
         {
             int setLength = sets.First().Count;
 
@@ -150,7 +150,7 @@ namespace Sudoku.Solution
 
         public bool HiddenSet(List<CandidateSet> sets)
         {
-            for (int i = 0; i < Constants.UnitSize; i++)
+            for (int i = 0; i < Puzzle.UnitSize; i++)
             {
                 if (HiddenSetUnitCheck(Puzzle.GetCol(i), sets))
                     return true;
@@ -162,15 +162,15 @@ namespace Sudoku.Solution
             return false;
         }
 
-        public bool HiddenSetUnitCheck(List<Cell> unit, List<CandidateSet> sets)
+        public bool HiddenSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
         {
             int setLength = sets.First().Count;
 
             foreach (CandidateSet set in sets)
             {
-                List<Cell> matches = unit.Where(x => x.ContainsAtLeastOneMatch(set)).ToList();
+                Cell[] matches = unit.Where(x => x.ContainsAtLeastOneMatch(set)).ToArray();
 
-                if (matches.Count != setLength || !matches.ContainsEveryCandidate(set))
+                if (matches.Length != setLength || !matches.ContainsEveryCandidate(set))
                     continue;
 
                 List<Action> actions = new();
@@ -206,20 +206,20 @@ namespace Sudoku.Solution
 
         public bool PointingSet()
         {
-            for (int i = 0; i < Constants.UnitSize; i++)
+            for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                List<Cell> box = Puzzle.GetBox(i);
+                Cell[] box = Puzzle.GetBox(i);
                 for (int candidate = 1; candidate < 10; candidate++)
                 {
-                    List<Cell> matches = box.Where(cell => cell.Candidates.Contains(candidate)).ToList();
-                    if (matches.Count < 2) continue;
+                    Cell[] matches = box.Where(cell => cell.Candidates.Contains(candidate)).ToArray();
+                    if (matches.Length < 2) continue;
 
                     int? col = matches.AllInSameCol() ? matches.First().Col : null as int?;
                     int? row = matches.AllInSameRow() ? matches.First().Row : null as int?;
                     if (col is null && row is null) continue;
 
                     List<Action> actions = new();
-                    List<Cell> unit = col.HasValue ? Puzzle.GetCol(col.Value) : Puzzle.GetRow(row.Value);
+                    Cell[] unit = col.HasValue ? Puzzle.GetCol(col.Value) : Puzzle.GetRow(row.Value);
                     unit.Where(cell => cell.Candidates.Contains(candidate))
                         .Where(cell => cell.Box != i)
                         .ToList()
@@ -242,10 +242,10 @@ namespace Sudoku.Solution
 
         public bool BoxLineReduction()
         {
-            for (int i = 0; i < Constants.UnitSize; i++)
+            for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                List<Cell> col = Puzzle.GetCol(i);
-                List<Cell> row = Puzzle.GetRow(i);
+                Cell[] col = Puzzle.GetCol(i);
+                Cell[] row = Puzzle.GetRow(i);
 
                 for (int candidate = 1; candidate < 10; candidate++)
                 {
@@ -256,11 +256,11 @@ namespace Sudoku.Solution
 
             return false;
 
-            bool reduce(List<Cell> unit, int candidate)
+            bool reduce(Cell[] unit, int candidate)
             {
-                List<Cell> matches = unit.Where(x => x.Candidates.Contains(candidate)).ToList();
+                Cell[] matches = unit.Where(x => x.Candidates.Contains(candidate)).ToArray();
 
-                if (matches.Count < 2 || !matches.AllInSameBox())
+                if (matches.Length < 2 || !matches.AllInSameBox())
                     return false;
 
                 List<Action> actions = new();
@@ -296,17 +296,17 @@ namespace Sudoku.Solution
 
             bool reduce(int candidate, bool isCol)
             {
-                for (int iUnit = 0; iUnit < Constants.UnitSize; iUnit++)
+                for (int iUnit = 0; iUnit < Puzzle.UnitSize; iUnit++)
                 {
-                    List<Cell> unit = isCol ? Puzzle.GetCol(iUnit) : Puzzle.GetRow(iUnit);
-                    List<Cell> matches = unit.GetCandidateMatches(candidate);
-                    if (matches.Count != 2) continue;
+                    Cell[] unit = isCol ? Puzzle.GetCol(iUnit) : Puzzle.GetRow(iUnit);
+                    Cell[] matches = unit.GetCandidateMatches(candidate);
+                    if (matches.Length != 2) continue;
 
-                    for (int iTestUnit = iUnit + 1; iTestUnit < Constants.UnitSize; iTestUnit++)
+                    for (int iTestUnit = iUnit + 1; iTestUnit < Puzzle.UnitSize; iTestUnit++)
                     {
-                        List<Cell> testUnit = isCol ? Puzzle.GetCol(iTestUnit) : Puzzle.GetRow(iTestUnit);
-                        List<Cell> testMatches = testUnit.GetCandidateMatches(candidate);
-                        if (testMatches.Count != 2) continue;
+                        Cell[] testUnit = isCol ? Puzzle.GetCol(iTestUnit) : Puzzle.GetRow(iTestUnit);
+                        Cell[] testMatches = testUnit.GetCandidateMatches(candidate);
+                        if (testMatches.Length != 2) continue;
                         if (isCol && matches[0].Row != testMatches[0].Row) continue;
                         if (isCol && matches[1].Row != testMatches[1].Row) continue;
                         if (!isCol && matches[0].Col != testMatches[0].Col) continue;
@@ -315,7 +315,7 @@ namespace Sudoku.Solution
                         List<Action> actions = new();
                         for (int iActionUnit = 0; iActionUnit < 2; iActionUnit++)
                         {
-                            List<Cell> actionUnit = isCol
+                            Cell[] actionUnit = isCol
                                 ? Puzzle.GetRow(testMatches[iActionUnit].Row)
                                 : Puzzle.GetCol(testMatches[iActionUnit].Col);
                             actionUnit
@@ -344,16 +344,16 @@ namespace Sudoku.Solution
 
         public bool YWing()
         {
-            for (int iCol = 0; iCol < Constants.UnitSize; iCol++)
+            for (int iCol = 0; iCol < Puzzle.UnitSize; iCol++)
             {
-                for (int iRow = 0; iRow < Constants.UnitSize; iRow++)
+                for (int iRow = 0; iRow < Puzzle.UnitSize; iRow++)
                 {
-                    Cell hinge = Puzzle.GetCell(iCol, iRow);
+                    Cell hinge = Puzzle.GetCell(iRow, iCol);
                     if (hinge.Candidates.Count != 2) continue;
 
-                    List<Cell> hingeCol = Puzzle.GetCol(hinge.Col);
-                    List<Cell> hingeRow = Puzzle.GetRow(hinge.Row);
-                    List<Cell> hingeBox = Puzzle.GetBox(hinge.Box);
+                    Cell[] hingeCol = Puzzle.GetCol(hinge.Col);
+                    Cell[] hingeRow = Puzzle.GetRow(hinge.Row);
+                    Cell[] hingeBox = Puzzle.GetBox(hinge.Box);
 
                     if (hingeAndWings(hinge, hingeCol, hingeRow)) return true;
                     if (hingeAndWings(hinge, hingeBox, hingeCol)) return true;
@@ -363,7 +363,7 @@ namespace Sudoku.Solution
 
             return false;
 
-            bool hingeAndWings(Cell hinge, List<Cell> wing1Unit, List<Cell> wing2Unit)
+            bool hingeAndWings(Cell hinge, Cell[] wing1Unit, Cell[] wing2Unit)
             {
                 if (reduce(hinge, wing1Unit, wing2Unit, hinge.Candidates[0], hinge.Candidates[1]))
                     return true;
@@ -374,7 +374,7 @@ namespace Sudoku.Solution
                 return false;
             }
 
-            bool reduce(Cell hinge, List<Cell> wing1Unit, List<Cell> wing2Unit, int wing1Candidate, int wing2Candidate)
+            bool reduce(Cell hinge, Cell[] wing1Unit, Cell[] wing2Unit, int wing1Candidate, int wing2Candidate)
             {
                 foreach (Cell wing1 in wing1Unit
                         .Where(x => x.Candidates.Count == 2)
@@ -437,17 +437,17 @@ namespace Sudoku.Solution
 
         private void _initializeSets()
         {
-            for (int a = 0; a < Constants.UnitSize; a++)
+            for (int a = 0; a < Puzzle.UnitSize; a++)
             {
-                for (int b = 1; b < Constants.UnitSize; b++)
+                for (int b = 1; b < Puzzle.UnitSize; b++)
                 {
                     if (b <= a) continue;
                     Doubles.Add(new Double(a, b));
-                    for (int c = 2; c < Constants.UnitSize; c++)
+                    for (int c = 2; c < Puzzle.UnitSize; c++)
                     {
                         if (c <= a || c <= b) continue;
                         Triples.Add(new Triple(a, b, c));
-                        for (int d = 3; d < Constants.UnitSize; d++)
+                        for (int d = 3; d < Puzzle.UnitSize; d++)
                         {
                             if (d <= a || d <= b || d <= c) continue;
                             Quadruples.Add(new Quadruple(a, b, c, d));

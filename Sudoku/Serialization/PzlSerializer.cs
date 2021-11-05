@@ -35,7 +35,7 @@ namespace Sudoku.Serialization
 
             Puzzle puzzle = new();
             string[] cells = puzzleString.Split(',');
-            Utils.Loop(Constants.TotalCells, i => puzzle.Cells[i] = DeserializeCell(cells[i], i));
+            Utils.Loop(Puzzle.TotalCells, i => puzzle.Cells[i] = DeserializeCell(cells[i], i));
             return puzzle;
         }
 
@@ -45,15 +45,15 @@ namespace Sudoku.Serialization
             if (cellType == CellType.Invalid)
                 throw new SudokuException("Invalid pzl file format");
 
-            int col = index % Constants.UnitSize;
-            int row = index / Constants.UnitSize;
+            int col = index % Puzzle.UnitSize;
+            int row = index / Puzzle.UnitSize;
             int val = int.Parse($"{cellString[0]}");
 
             Cell cell = cellType switch
             {
-                CellType.Clue => new Clue(col, row, val),
-                CellType.Filled => new Cell(col, row, val),
-                CellType.Empty => new Cell(col, row),
+                CellType.Clue => new Clue(row, col, val),
+                CellType.Filled => new Cell(row, col, val),
+                CellType.Empty => new Cell(row, col),
                 _ => throw new NotImplementedException("Unsupported cell type"),
             };
 

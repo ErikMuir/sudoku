@@ -7,9 +7,13 @@ namespace Sudoku
 {
     public class Puzzle
     {
+        public const int BoxSize = 3;
+        public const int UnitSize = BoxSize * BoxSize;
+        public const int TotalCells = UnitSize * UnitSize;
+
         public Puzzle()
         {
-            Utils.Loop(row => Utils.Loop(col => Cells[(row * Constants.UnitSize) + col] = new Cell(col, row)));
+            Utils.Loop(row => Utils.Loop(col => Cells[(row * UnitSize) + col] = new Cell(row, col)));
         }
 
         public Puzzle(GeneratorPuzzle puzzle)
@@ -17,11 +21,11 @@ namespace Sudoku
             Cells = puzzle.Cells
                 .Select((candidates, index) =>
                 {
-                    int row = index / Constants.UnitSize;
-                    int col = index % Constants.UnitSize;
+                    int row = index / UnitSize;
+                    int col = index % UnitSize;
                     if (candidates.Length == 1)
-                        return new Clue(col, row, candidates[0]);
-                    Cell cell = new Cell(col, row);
+                        return new Clue(row, col, candidates[0]);
+                    Cell cell = new Cell(row, col);
                     foreach (int cand in candidates)
                         cell.AddCandidate(cand);
                     return cell;
@@ -29,33 +33,46 @@ namespace Sudoku
                 .ToArray();
         }
 
-        public Cell[] Cells { get; private set; } = new Cell[Constants.TotalCells];
+        public Cell[] Cells { get; private set; } = new Cell[TotalCells];
         public Metadata Metadata { get; set; } = new();
 
-        public Cell GetCell(int col, int row) => this.Cells[(row * Constants.UnitSize) + col];
-        public List<Cell> GetRow(int row) => this.Cells.Where(x => x.Row == row).OrderBy(x => x.Col).ToList();
-        public List<Cell> GetCol(int col) => this.Cells.Where(x => x.Col == col).OrderBy(x => x.Row).ToList();
-        public List<Cell> GetBox(int box) => this.Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col).ToList();
-        public List<Cell> GetEmptyCells() => this.Cells.Where(x => x.Value is null).ToList();
+        public Cell GetCell(int row, int col) => this.Cells[(row * UnitSize) + col];
+        public Cell[] GetRow(int row) => this.Cells.Where(x => x.Row == row).OrderBy(x => x.Col).ToArray();
+        public Cell[] GetCol(int col) => this.Cells.Where(x => x.Col == col).OrderBy(x => x.Row).ToArray();
+        public Cell[] GetBox(int box) => this.Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col).ToArray();
+        public Cell[] GetEmptyCells() => this.Cells.Where(x => x.Value is null).ToArray();
         public Cell GetNextEmptyCell() => this.Cells.Where(x => x.Value is null).FirstOrDefault();
-        public List<Cell> GetRelatives(Cell cell)
+        public Cell[] GetRelatives(Cell cell)
         {
             List<Cell> relatives = new();
-            List<Cell> col = GetCol(cell.Col);
-            List<Cell> row = GetRow(cell.Row);
-            List<Cell> box = GetBox(cell.Box);
-            for (int i = 0; i < Constants.UnitSize; i++)
+            Cell[] row = GetRow(cell.Row);
+            Cell[] col = GetCol(cell.Col);
+            Cell[] box = GetBox(cell.Box);
+            for (int i = 0; i < UnitSize; i++)
             {
                 relatives.Add(box[i]);
-                if (col[i].Box != cell.Box)
-                    relatives.Add(col[i]);
                 if (row[i].Box != cell.Box)
                     relatives.Add(row[i]);
+                if (col[i].Box != cell.Box)
+                    relatives.Add(col[i]);
             }
-            return relatives;
+            return relatives.ToArray();
         }
-        public List<Cell> GetCommonRelatives(Cell cell1, Cell cell2)
-            => GetRelatives(cell1).Intersect(GetRelatives(cell2)).ToList();
+        public Cell[] GetCommonRelatives(Cell cell1, Cell cell2)
+            => GetRelatives(cell1).Intersect(GetRelatives(cell2)).ToArray();
+
+        private static readonly Dictionary<int, int[]> _savedPeers = new();
+        public int[] Peers(int cell)
+        {
+            if (!_savedPeers.ContainsKey(cell))
+                _savedPeers.Add(cell, Enumerable.Range(0, 81).Where(c => IsPeer(cell, c)).ToArray());
+            return _savedPeers[cell];
+        }
+        public int[] CommonPeers(int c1, int c2) => Peers(c1).Intersect(Peers(c2)).ToArray();
+        private bool IsPeer(int c1, int c2) => c1 != c2 && (IsSameRow(c1, c2) || IsSameColumn(c1, c2) || IsSameBox(c1, c2));
+        private bool IsSameRow(int c1, int c2) => c1 / UnitSize == c2 / UnitSize;
+        private bool IsSameColumn(int c1, int c2) => c1 % UnitSize == c2 % UnitSize;
+        private bool IsSameBox(int c1, int c2) => c1 / UnitSize / BoxSize == c2 / UnitSize / BoxSize && c1 % UnitSize / BoxSize == c2 % UnitSize / BoxSize;
 
         public bool IsSolved() =>
             Utils.LoopAnd(i => this.GetRow(i).IsUnitSolved())
@@ -70,7 +87,9 @@ namespace Sudoku
         public void CalculateCandidates()
         {
             // first fill all candidates of empty cells
-            this.GetEmptyCells().ForEach(cell => cell.FillCandidates());
+            this.GetEmptyCells()
+                .ToList()
+                .ForEach(cell => cell.FillCandidates());
 
             // then reduce candidates by col/row/box constraints
             this.ReduceCandidates();
@@ -78,28 +97,34 @@ namespace Sudoku
 
         public void ReduceCandidates()
         {
-            for (int iUnit = 0; iUnit < Constants.UnitSize; iUnit++)
+            for (int iUnit = 0; iUnit < UnitSize; iUnit++)
             {
-                List<Cell> col = this.GetCol(iUnit);
-                List<Cell> row = this.GetRow(iUnit);
-                List<Cell> box = this.GetBox(iUnit);
+                Cell[] row = this.GetRow(iUnit);
+                Cell[] col = this.GetCol(iUnit);
+                Cell[] box = this.GetBox(iUnit);
 
-                for (int i = 0; i < Constants.UnitSize; i++)
+                for (int iCell = 0; iCell < UnitSize; iCell++)
                 {
-                    int? colValue = col[i].Value;
-                    int? rowValue = row[i].Value;
-                    int? boxValue = box[i].Value;
+                    int? rowCellValue = row[iCell].Value;
+                    int? colCellValue = col[iCell].Value;
+                    int? boxCellValue = box[iCell].Value;
 
-                    for (int j = 0; j < Constants.UnitSize; j++)
+                    for (int iPeer = 0; iPeer < UnitSize; iPeer++)
                     {
-                        if (colValue.HasValue && !col[j].IsClue)
-                            col[j].RemoveCandidate(colValue.Value);
+                        if (iPeer == iCell) continue;
 
-                        if (rowValue.HasValue && !row[j].IsClue)
-                            row[j].RemoveCandidate(rowValue.Value);
+                        Cell rowPeer = row[iPeer];
+                        Cell colPeer = col[iPeer];
+                        Cell boxPeer = box[iPeer];
 
-                        if (boxValue.HasValue && !box[j].IsClue)
-                            box[j].RemoveCandidate(boxValue.Value);
+                        if (rowCellValue.HasValue && !rowPeer.IsClue)
+                            rowPeer.RemoveCandidate(rowCellValue.Value);
+
+                        if (colCellValue.HasValue && !colPeer.IsClue)
+                            colPeer.RemoveCandidate(colCellValue.Value);
+
+                        if (boxCellValue.HasValue && !boxPeer.IsClue)
+                            boxPeer.RemoveCandidate(boxCellValue.Value);
                     }
                 }
             }

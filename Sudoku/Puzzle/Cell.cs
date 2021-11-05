@@ -6,17 +6,17 @@ namespace Sudoku
 {
     public class Cell
     {
-        public Cell(int col, int row, int? val = null)
+        public Cell(int row, int col, int? val = null)
         {
-            this.Validate(col, row, val);
-            this.Col = col;
+            this.Validate(row, col, val);
             this.Row = row;
-            this.Box = ((col / 3) + ((row / 3) * 3));
+            this.Col = col;
+            this.Box = ((col / Puzzle.BoxSize) + ((row / Puzzle.BoxSize) * Puzzle.BoxSize));
             this._value = val;
         }
 
-        public readonly int Col;
         public readonly int Row;
+        public readonly int Col;
         public readonly int Box;
 
         public virtual bool IsClue => false;
@@ -55,23 +55,24 @@ namespace Sudoku
 
         public virtual Cell Clone()
         {
-            Cell clone = new(this.Col, this.Row, this.Value);
+            Cell clone = new(this.Row, this.Col, this.Value);
             this._candidates.ToList().ForEach(x => clone.AddCandidate(x));
             return clone;
         }
 
-        private void Validate(int col, int row, int? val)
+        private void Validate(int row, int col, int? val)
         {
             List<string> errors = new();
+            int max = Puzzle.UnitSize;
 
-            if (!col.Between(0, 8, true))
-                errors.Add("Cell columns must be between 0 and 8, inclusive.");
+            if (!row.Between(0, max - 1, true))
+                errors.Add($"Cell rows must be between 0 and {max - 1}, inclusive.");
 
-            if (!row.Between(0, 8, true))
-                errors.Add("Cell rows must be between 0 and 8, inclusive.");
+            if (!col.Between(0, max - 1, true))
+                errors.Add($"Cell columns must be between 0 and {max - 1}, inclusive.");
 
-            if (val is not null && !val.Between(1, 9, true))
-                errors.Add("Cell values must be between 1 and 9, inclusive.");
+            if (val is not null && !val.Between(1, max, true))
+                errors.Add($"Cell values must be between 1 and {max}, inclusive.");
 
             if (errors.Any())
                 throw new SudokuException(string.Join(" ", errors));
@@ -79,8 +80,8 @@ namespace Sudoku
 
         private int ValidatedValue(int val)
         {
-            if (val.Between(1, 9, true)) return val;
-            throw new SudokuException("Value must be between 1 and 9, inclusive.");
+            if (val.Between(1, Puzzle.UnitSize, true)) return val;
+            throw new SudokuException($"Value must be between 1 and {Puzzle.UnitSize}, inclusive.");
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Sudoku.Serialization
             Utils.Loop(row =>
             {
                 List<string> cells = new();
-                Utils.Loop(col => cells.Add(Serialize(puzzle.GetCell(col, row))));
+                Utils.Loop(col => cells.Add(Serialize(puzzle.GetCell(row, col))));
                 sb.AppendLine(string.Join(" ", cells));
             });
             return sb.ToString();
@@ -47,7 +47,7 @@ namespace Sudoku.Serialization
                 string[] cells = lines[row].Split(' ');
                 Utils.Loop(col =>
                 {
-                    int index = (row * Constants.UnitSize) + col;
+                    int index = (row * Puzzle.UnitSize) + col;
                     string cellString = cells[col];
                     puzzle.Cells[index] = DeserializeCell(cellString, col, row);
                 });
@@ -63,9 +63,9 @@ namespace Sudoku.Serialization
 
             Cell cell = cellType switch
             {
-                CellType.Clue => new Clue(col, row, int.Parse(cellString)),
-                CellType.Filled => new Cell(col, row, int.Parse(cellString.Replace("u", ""))),
-                CellType.Empty => new Cell(col, row),
+                CellType.Clue => new Clue(row, col, int.Parse(cellString)),
+                CellType.Filled => new Cell(row, col, int.Parse(cellString.Replace("u", ""))),
+                CellType.Empty => new Cell(row, col),
                 _ => throw new NotImplementedException("Unsupported cell type"),
             };
 

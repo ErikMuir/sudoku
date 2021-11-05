@@ -119,8 +119,8 @@ namespace Sudoku.Tests
             int otherVal = val == 9 ? 1 : val + 1;
             _emptyPuzzle.GetCell(0, 0).AddCandidate(val);
             _emptyPuzzle.GetCell(0, 0).AddCandidate(otherVal);
-            _emptyPuzzle.GetCell(1, 0).AddCandidate(otherVal);
             _emptyPuzzle.GetCell(0, 1).AddCandidate(otherVal);
+            _emptyPuzzle.GetCell(1, 0).AddCandidate(otherVal);
             ConstraintSolver solver = new(_emptyPuzzle);
             bool actual = solver.HiddenSingle();
             Assert.True(actual);

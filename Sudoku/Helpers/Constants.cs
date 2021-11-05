@@ -2,8 +2,6 @@ namespace Sudoku
 {
     public static class Constants
     {
-        public const int UnitSize = 9;
-        public const int TotalCells = UnitSize * UnitSize;
         public const string NakedSingle = "NamedSingle";
         public const string HiddenSingle = "HiddenSingle";
         public const string NakedDouble = "NakedDouble";

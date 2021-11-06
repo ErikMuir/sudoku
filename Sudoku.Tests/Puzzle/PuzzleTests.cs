@@ -70,19 +70,19 @@ namespace Sudoku.Tests
         }
 
         [Fact]
-        public void GetRelatives_Returns_Relatives()
+        public void Peers_Returns_Peers()
         {
             Cell cell = new(0, 0);
-            Cell[] actual = _testObject.GetRelatives(cell);
+            Cell[] actual = _testObject.Peers(cell);
             Assert.All(actual, x => Assert.True(x.Col == cell.Col || x.Row == cell.Row || x.Box == cell.Box));
         }
 
         [Fact]
-        public void GetCommonRelatives_Returns_CommonRelatives()
+        public void CommonPeers_Returns_CommonPeers()
         {
             Cell cell1 = new(0, 0);
             Cell cell2 = new(1, 1);
-            Cell[] actual = _testObject.GetCommonRelatives(cell1, cell2);
+            Cell[] actual = _testObject.CommonPeers(cell1, cell2);
             Assert.All(actual, x => Assert.True(x.Box == cell1.Box));
         }
 

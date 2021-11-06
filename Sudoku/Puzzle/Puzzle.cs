@@ -42,33 +42,16 @@ namespace Sudoku
         public Cell[] GetBox(int box) => this.Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col).ToArray();
         public Cell[] GetEmptyCells() => this.Cells.Where(x => x.Value is null).ToArray();
         public Cell GetNextEmptyCell() => this.Cells.Where(x => x.Value is null).FirstOrDefault();
-        public Cell[] GetRelatives(Cell cell)
-        {
-            List<Cell> relatives = new();
-            Cell[] row = GetRow(cell.Row);
-            Cell[] col = GetCol(cell.Col);
-            Cell[] box = GetBox(cell.Box);
-            for (int i = 0; i < UnitSize; i++)
-            {
-                relatives.Add(box[i]);
-                if (row[i].Box != cell.Box)
-                    relatives.Add(row[i]);
-                if (col[i].Box != cell.Box)
-                    relatives.Add(col[i]);
-            }
-            return relatives.ToArray();
-        }
-        public Cell[] GetCommonRelatives(Cell cell1, Cell cell2)
-            => GetRelatives(cell1).Intersect(GetRelatives(cell2)).ToArray();
 
         private static readonly Dictionary<int, int[]> _savedPeers = new();
-        public int[] Peers(int cell)
+        public int[] Peers(int cellIndex)
         {
-            if (!_savedPeers.ContainsKey(cell))
-                _savedPeers.Add(cell, Enumerable.Range(0, 81).Where(c => IsPeer(cell, c)).ToArray());
-            return _savedPeers[cell];
+            if (!_savedPeers.ContainsKey(cellIndex))
+                _savedPeers.Add(cellIndex, Enumerable.Range(0, 81).Where(c => IsPeer(cellIndex, c)).ToArray());
+            return _savedPeers[cellIndex];
         }
-        public int[] CommonPeers(int c1, int c2) => Peers(c1).Intersect(Peers(c2)).ToArray();
+        public Cell[] Peers(Cell cell) => Peers((cell.Row * UnitSize) + cell.Col).Select(i => Cells[i]).ToArray();
+        public Cell[] CommonPeers(Cell c1, Cell c2) => Peers(c1).Intersect(Peers(c2)).ToArray();
         private bool IsPeer(int c1, int c2) => c1 != c2 && (IsSameRow(c1, c2) || IsSameColumn(c1, c2) || IsSameBox(c1, c2));
         private bool IsSameRow(int c1, int c2) => c1 / UnitSize == c2 / UnitSize;
         private bool IsSameColumn(int c1, int c2) => c1 % UnitSize == c2 % UnitSize;
@@ -87,9 +70,7 @@ namespace Sudoku
         public void CalculateCandidates()
         {
             // first fill all candidates of empty cells
-            this.GetEmptyCells()
-                .ToList()
-                .ForEach(cell => cell.FillCandidates());
+            this.GetEmptyCells().ToList().ForEach(cell => cell.FillCandidates());
 
             // then reduce candidates by col/row/box constraints
             this.ReduceCandidates();
@@ -117,13 +98,13 @@ namespace Sudoku
                         Cell colPeer = col[iPeer];
                         Cell boxPeer = box[iPeer];
 
-                        if (rowCellValue.HasValue && !rowPeer.IsClue)
+                        if (rowCellValue is not null && !rowPeer.IsClue)
                             rowPeer.RemoveCandidate(rowCellValue.Value);
 
-                        if (colCellValue.HasValue && !colPeer.IsClue)
+                        if (colCellValue is not null && !colPeer.IsClue)
                             colPeer.RemoveCandidate(colCellValue.Value);
 
-                        if (boxCellValue.HasValue && !boxPeer.IsClue)
+                        if (boxCellValue is not null && !boxPeer.IsClue)
                             boxPeer.RemoveCandidate(boxCellValue.Value);
                     }
                 }

@@ -388,7 +388,7 @@ namespace Sudoku.Solution
                         !x.Candidates.Contains(confluence)))
                     {
                         List<Action> actions = new();
-                        Puzzle.GetCommonRelatives(wing1, wing2)
+                        Puzzle.CommonPeers(wing1, wing2)
                             .Where(x => x.Candidates.Contains(confluence))
                             .Where(x => x != hinge)
                             .Where(x => x != wing1)

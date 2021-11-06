@@ -55,28 +55,6 @@ namespace Sudoku.Tests
         }
 
         [Theory]
-        [InlineData(-1)]
-        [InlineData(9)]
-        public void Constructor_Throws_InvalidRow(int row)
-        {
-            Exception exception = Record.Exception(() => new Cell(row, 0));
-            Assert.NotNull(exception);
-            Assert.IsType<SudokuException>(exception);
-            Assert.Equal("Cell rows must be between 0 and 8, inclusive.", exception.Message);
-        }
-
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(9)]
-        public void Constructor_Throws_InvalidCol(int col)
-        {
-            Exception exception = Record.Exception(() => new Cell(0, col));
-            Assert.NotNull(exception);
-            Assert.IsType<SudokuException>(exception);
-            Assert.Equal("Cell columns must be between 0 and 8, inclusive.", exception.Message);
-        }
-
-        [Theory]
         [InlineData(0)]
         [InlineData(10)]
         public void Constructor_Throws_InvalidValue(int val)
@@ -84,17 +62,7 @@ namespace Sudoku.Tests
             Exception exception = Record.Exception(() => new Cell(0, 0, val));
             Assert.NotNull(exception);
             Assert.IsType<SudokuException>(exception);
-            Assert.Equal("Cell values must be between 1 and 9, inclusive.", exception.Message);
-        }
-
-        [Fact]
-        public void Constructor_Throws_MultipleErrors()
-        {
-            string expected = "Cell rows must be between 0 and 8, inclusive. Cell columns must be between 0 and 8, inclusive. Cell values must be between 1 and 9, inclusive.";
-            Exception exception = Record.Exception(() => new Cell(9, 9, 0));
-            Assert.NotNull(exception);
-            Assert.IsType<SudokuException>(exception);
-            Assert.Equal(expected, exception.Message);
+            Assert.Equal("Value must be between 1 and 9, inclusive.", exception.Message);
         }
 
         [Fact]

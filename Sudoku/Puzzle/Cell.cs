@@ -8,11 +8,10 @@ namespace Sudoku
     {
         public Cell(int row, int col, int? val = null)
         {
-            this.Validate(row, col, val);
             this.Row = row;
             this.Col = col;
             this.Box = ((col / Puzzle.BoxSize) + ((row / Puzzle.BoxSize) * Puzzle.BoxSize));
-            this._value = val;
+            this._value = val.HasValue ? this.ValidatedValue(val.Value) : null;
         }
 
         public readonly int Row;
@@ -60,28 +59,11 @@ namespace Sudoku
             return clone;
         }
 
-        private void Validate(int row, int col, int? val)
-        {
-            List<string> errors = new();
-            int max = Puzzle.UnitSize;
-
-            if (!row.Between(0, max - 1, true))
-                errors.Add($"Cell rows must be between 0 and {max - 1}, inclusive.");
-
-            if (!col.Between(0, max - 1, true))
-                errors.Add($"Cell columns must be between 0 and {max - 1}, inclusive.");
-
-            if (val is not null && !val.Between(1, max, true))
-                errors.Add($"Cell values must be between 1 and {max}, inclusive.");
-
-            if (errors.Any())
-                throw new SudokuException(string.Join(" ", errors));
-        }
-
         private int ValidatedValue(int val)
         {
-            if (val.Between(1, Puzzle.UnitSize, true)) return val;
-            throw new SudokuException($"Value must be between 1 and {Puzzle.UnitSize}, inclusive.");
+            if (!val.Between(1, Puzzle.UnitSize, true))
+                throw new SudokuException($"Value must be between 1 and {Puzzle.UnitSize}, inclusive.");
+            return val;
         }
     }
 }

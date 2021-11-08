@@ -11,6 +11,7 @@ namespace Sudoku
             this.Row = row;
             this.Col = col;
             this.Box = ((col / Puzzle.BoxSize) + ((row / Puzzle.BoxSize) * Puzzle.BoxSize));
+            this.Index = (row * Puzzle.UnitSize) + col;
             this._value = val.HasValue ? this.ValidatedValue(val.Value) : null;
         }
 
@@ -22,6 +23,7 @@ namespace Sudoku
         public readonly int Row;
         public readonly int Col;
         public readonly int Box;
+        public readonly int Index;
 
         public virtual bool IsClue => false;
 

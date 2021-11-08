@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Sudoku.Generation;
 
 namespace Sudoku
 {
     public class Puzzle
     {
         public const int BoxSize = 3;
-        public const int UnitSize = BoxSize * BoxSize;
-        public const int TotalCells = UnitSize * UnitSize;
+        public const int UnitSize = 9;
+        public const int TotalCells = 81;
+        public const int ReflectiveIndex = 4;
 
         public Puzzle()
         {
@@ -25,23 +25,6 @@ namespace Sudoku
                     ? new Clue(cell as Clue)
                     : new Cell(cell);
             }
-        }
-
-        public Puzzle(GeneratorPuzzle puzzle)
-        {
-            Cells = puzzle.Cells
-                .Select((candidates, index) =>
-                {
-                    int row = index / UnitSize;
-                    int col = index % UnitSize;
-                    if (candidates.Length == 1)
-                        return new Clue(row, col, candidates[0]);
-                    Cell cell = new Cell(row, col);
-                    foreach (int cand in candidates)
-                        cell.AddCandidate(cand);
-                    return cell;
-                })
-                .ToArray();
         }
 
         public Cell[] Cells { get; private set; } = new Cell[TotalCells];

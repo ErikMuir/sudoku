@@ -2,45 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sudoku.Solution
+namespace Sudoku
 {
     public static class Solver
     {
-        public static Puzzle PlaceValue(Puzzle input, int cellIndex, int value)
-        {
-            Puzzle puzzle = new(input);
-            Cell cell = puzzle.Cells[cellIndex];
-            if (!cell.Candidates.Contains(value))
-                return null;
-            cell.Value = value;
-            Dictionary<int, int> cellsToPlace = new();
-            foreach (Cell peer in puzzle.Peers(cell))
-            {
-                if (peer.Value is not null)
-                    continue;
-                SortedSet<int> newCandidates = new(peer.Candidates.Except(new int[] { value }));
-                if (!newCandidates.Any())
-                    return null;
-                if (newCandidates.Count == 1 && peer.Candidates.Count > 1)
-                    cellsToPlace.Add(peer.Index, newCandidates.Single());
-                peer.RemoveCandidate(value);
-            }
-            foreach (KeyValuePair<int, int> pair in cellsToPlace)
-            {
-                if ((puzzle = PlaceValue(puzzle, pair.Key, pair.Value)) is null)
-                    return null;
-            }
-            return puzzle;
-        }
-
-        public static Cell FindWorkingCell(Puzzle puzzle)
-        {
-            return puzzle
-                .GetEmptyCells()
-                .OrderBy(cell => cell.Candidates.Count)
-                .FirstOrDefault();
-        }
-
         public static Puzzle Solve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
         {
             if (input.IsSolved())
@@ -67,6 +32,41 @@ namespace Sudoku.Solution
                 return solutions.Count() < maxSolutions || maxSolutions == -1;
             });
             return solutions;
+        }
+
+        private static Puzzle PlaceValue(Puzzle input, int cellIndex, int value)
+        {
+            Puzzle puzzle = new(input);
+            Cell cell = puzzle.Cells[cellIndex];
+            if (!cell.Candidates.Contains(value))
+                return null;
+            cell.Value = value;
+            Dictionary<int, int> cellsToPlace = new();
+            foreach (Cell peer in puzzle.Peers(cell))
+            {
+                if (peer.Value is not null)
+                    continue;
+                SortedSet<int> newCandidates = new(peer.Candidates.Except(new int[] { value }));
+                if (!newCandidates.Any())
+                    return null;
+                if (newCandidates.Count == 1 && peer.Candidates.Count > 1)
+                    cellsToPlace.Add(peer.Index, newCandidates.Single());
+                peer.RemoveCandidate(value);
+            }
+            foreach (KeyValuePair<int, int> pair in cellsToPlace)
+            {
+                if ((puzzle = PlaceValue(puzzle, pair.Key, pair.Value)) is null)
+                    return null;
+            }
+            return puzzle;
+        }
+
+        private static Cell FindWorkingCell(Puzzle puzzle)
+        {
+            return puzzle
+                .GetEmptyCells()
+                .OrderBy(cell => cell.Candidates.Count)
+                .FirstOrDefault();
         }
     }
 }

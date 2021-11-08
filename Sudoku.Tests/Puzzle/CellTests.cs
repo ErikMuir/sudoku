@@ -66,6 +66,17 @@ namespace Sudoku.Tests
         }
 
         [Fact]
+        public void CopyConstructor_Returns_Copy()
+        {
+            Cell original = new(1, 2, 3);
+            original.AddCandidate(4);
+            Cell clone = new(original);
+            Assert.NotNull(clone);
+            Assert.NotSame(original, clone);
+            Assert.Equal(original.ToString(), clone.ToString());
+        }
+
+        [Fact]
         public void IsClue_Returns_False()
         {
             Cell testObject = new(0, 0);
@@ -213,17 +224,6 @@ namespace Sudoku.Tests
             List<int> actual = testObject.GetNonMatchingCandidates(new List<int> { 1, 2 });
             Assert.Single(actual);
             Assert.Equal(3, actual[0]);
-        }
-
-        [Fact]
-        public void Clone_Returns_Copy()
-        {
-            Cell original = new(1, 2, 3);
-            original.AddCandidate(4);
-            Cell clone = original.Clone();
-            Assert.NotNull(clone);
-            Assert.NotSame(original, clone);
-            Assert.Equal(original.ToString(), clone.ToString());
         }
     }
 }

@@ -31,9 +31,6 @@ namespace Sudoku
         public static bool IsCandidateUnique(this Cell[] cells, int candidate)
             => cells.Where(x => x.Candidates.Contains(candidate)).Count() == 1;
 
-        public static Cell[] CloneCells(this Cell[] cells)
-            => cells.Select(x => x.Clone()).ToArray();
-
         public static bool ContainsEveryCandidate(this Cell[] cells, CandidateSet set)
             => set.All(candidate => cells.Any(cell => cell.Candidates.Contains(candidate)));
 

@@ -71,14 +71,5 @@ namespace Sudoku.Tests
             Assert.IsType<SudokuException>(exception);
             Assert.Equal(_exceptionMessage, exception.Message);
         }
-
-        [Fact]
-        public void Clone_Returns_Copy()
-        {
-            Cell clone = _testObject.Clone();
-            Assert.NotNull(clone);
-            Assert.NotSame(_testObject, clone);
-            Assert.Equal(_testObject.ToString(), clone.ToString());
-        }
     }
 }

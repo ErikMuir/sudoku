@@ -8,7 +8,7 @@ namespace Sudoku.Solution
     {
         public BacktrackingSolver(Puzzle puzzle)
         {
-            Puzzle = puzzle.Clone();
+            Puzzle = new Puzzle(puzzle);
             Timer = new Stopwatch();
         }
 

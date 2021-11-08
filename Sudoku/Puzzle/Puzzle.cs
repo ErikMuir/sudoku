@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Sudoku.Generation;
-using Sudoku.Serialization;
 
 namespace Sudoku
 {
@@ -14,6 +13,18 @@ namespace Sudoku
         public Puzzle()
         {
             Utils.Loop(row => Utils.Loop(col => Cells[(row * UnitSize) + col] = new Cell(row, col)));
+        }
+
+        public Puzzle(Puzzle puzzle)
+        {
+            this.Metadata = puzzle.Metadata;
+            for (int i = 0; i < TotalCells; i++)
+            {
+                Cell cell = puzzle.Cells[i];
+                this.Cells[i] = cell.IsClue
+                    ? new Clue(cell as Clue)
+                    : new Cell(cell);
+            }
         }
 
         public Puzzle(GeneratorPuzzle puzzle)
@@ -109,13 +120,6 @@ namespace Sudoku
                     }
                 }
             }
-        }
-
-        public Puzzle Clone()
-        {
-            PzlSerializer pzl = new();
-            string puzzleString = pzl.Serialize(this);
-            return pzl.Deserialize(puzzleString);
         }
     }
 }

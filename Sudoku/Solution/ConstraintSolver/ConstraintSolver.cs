@@ -10,7 +10,7 @@ namespace Sudoku.Solution
     {
         public ConstraintSolver(Puzzle puzzle)
         {
-            Puzzle = puzzle.Clone();
+            Puzzle = new Puzzle(puzzle);
             Timer = new Stopwatch();
             _initializeSets();
         }

@@ -14,6 +14,11 @@ namespace Sudoku
             this._value = val.HasValue ? this.ValidatedValue(val.Value) : null;
         }
 
+        public Cell(Cell cell) : this(cell.Row, cell.Col, cell.Value)
+        {
+            cell.Candidates.ToList().ForEach(x => this.AddCandidate(x));
+        }
+
         public readonly int Row;
         public readonly int Col;
         public readonly int Box;
@@ -51,13 +56,6 @@ namespace Sudoku
             this._candidates.Intersect(set).Any();
         public virtual List<int> GetNonMatchingCandidates(IEnumerable<int> set) =>
             this._candidates.Except(set).ToList();
-
-        public virtual Cell Clone()
-        {
-            Cell clone = new(this.Row, this.Col, this.Value);
-            this._candidates.ToList().ForEach(x => clone.AddCandidate(x));
-            return clone;
-        }
 
         private int ValidatedValue(int val)
         {

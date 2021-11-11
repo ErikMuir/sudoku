@@ -18,9 +18,10 @@ namespace Sudoku.Console
         private static readonly Dictionary<char, string> _puzzleMenuOptions = new()
         {
             { '1', "Save" },
-            { '2', "Solve" },
-            { '3', "Print" },
-            { '4', "Clear" },
+            { '2', "Analyze" },
+            { '3', "Solve" },
+            { '4', "Print" },
+            { '5', "Clear" },
             { '0', "Quit" },
         };
         private static readonly Menu _homeMenu = new(_homeMenuOptions, "Home Menu");
@@ -56,6 +57,10 @@ namespace Sudoku.Console
         {
             if (Puzzle is null) ShowHomeMenu();
             else ShowPuzzleMenu();
+            _console
+                .Write("Press any key to continue... ")
+                .WaitForKeyPress()
+                .LineFeed();
         }
 
         private void ShowHomeMenu()
@@ -76,85 +81,34 @@ namespace Sudoku.Console
             switch (_puzzleMenu.Run())
             {
                 case '1': Save(); break;
-                case '2': Solve(); break;
-                case '3': Print(); break;
-                case '4': Clear(); break;
+                case '2': Analyze(); break;
+                case '3': Solve(); break;
+                case '4': Print(); break;
+                case '5': Clear(); break;
                 case '0': throw new MenuExitException();
                 default: throw new SudokuException("Invalid option");
             }
         }
 
-        private void Input()
-        {
-            Puzzle = InputPuzzle.Run();
-            _console
-                .Write("Press any key to continue... ")
-                .WaitForKeyPress()
-                .LineFeed();
-        }
+        private void Input() => Puzzle = InputPuzzle.Run();
 
-        private void Load()
-        {
-            Puzzle = FilePuzzle.Load();
-            _console
-                .Write("Press any key to continue... ")
-                .WaitForKeyPress()
-                .LineFeed();
-        }
+        private void Load() => Puzzle = FilePuzzle.Load();
 
-        private void Generate()
-        {
-            Puzzle = GeneratePuzzle.Run();
-            _console
-                .Write("Press any key to continue... ")
-                .WaitForKeyPress()
-                .LineFeed();
-        }
+        private void Generate() => Puzzle = GeneratePuzzle.Run();
+
+        private void Save() => FilePuzzle.Save(Puzzle);
+
+        private void Analyze() => AnalyzePuzzle.Run(Puzzle);
+
+        private void Solve() => Puzzle = SolvePuzzle.Run(Puzzle);
+
+        private void Print() => PrintPuzzle.Run(Puzzle);
+
+        private void Clear() => Puzzle = null;
 
         private void Debug()
         {
             _console.Warning("Not implemented!");
-        }
-
-        private void Save()
-        {
-            FilePuzzle.Save(Puzzle);
-            _console
-                .Write("Press any key to continue... ")
-                .WaitForKeyPress()
-                .LineFeed();
-        }
-
-        private void Solve()
-        {
-            try
-            {
-                SolvePuzzle.Run(Puzzle);
-                _console
-                    .Write("Press any key to continue... ")
-                    .WaitForKeyPress()
-                    .LineFeed();
-            }
-            catch (MenuExitException) { }
-        }
-
-        private void Print()
-        {
-            PrintPuzzle.Run(Puzzle);
-            _console
-                .Write("Press any key to continue... ")
-                .WaitForKeyPress()
-                .LineFeed();
-        }
-
-        private void Clear()
-        {
-            Puzzle = null;
-            _console
-                .Warning("Puzzle cleared from memory!")
-                .Write("Press any key to continue... ")
-                .WaitForKeyPress()
-                .LineFeed();
         }
     }
 }

@@ -6,42 +6,6 @@ namespace Sudoku
 {
     public static class Solver
     {
-        public static bool BacktrackingSolve(Puzzle puzzle)
-        {
-            Cell nextEmptyCell = puzzle.GetNextEmptyCell();
-            if (nextEmptyCell is null) return puzzle.IsSolved();
-
-            puzzle.CalculateCandidates();
-            foreach (int candidate in nextEmptyCell.Candidates)
-            {
-                nextEmptyCell.Value = candidate;
-                if (BacktrackingSolve(puzzle)) return true;
-            }
-
-            if (puzzle.GetNextEmptyCell() is not null) nextEmptyCell.Value = null;
-
-            return false;
-        }
-
-        public static Puzzle BacktrackingSolve2(Puzzle input)
-        {
-            if (input.IsSolved()) return input;
-
-            Puzzle puzzle = new(input);
-            puzzle.CalculateCandidates();
-
-            Cell nextEmptyCell = puzzle.GetNextEmptyCell();
-            if (nextEmptyCell is null) return null;
-
-            foreach (int guess in nextEmptyCell.Candidates)
-            {
-                nextEmptyCell.Value = guess;
-                if ((puzzle = BacktrackingSolve2(puzzle)) is not null) return puzzle;
-            }
-
-            return null;
-        }
-
         public static Puzzle Solve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
         {
             if (input.IsSolved())

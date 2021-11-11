@@ -6,16 +6,4 @@ namespace Sudoku.Symmetries
 
         public abstract Cell[] GetReflections(Puzzle puzzle, Cell cell);
     }
-
-    public enum SymmetryType
-    {
-        None,
-        Horizontal,
-        Vertical,
-        DiagonalUp,
-        DiagonalDown,
-        RotationalTwoFold,
-        RotationalFourFold,
-        Random,
-    }
 }

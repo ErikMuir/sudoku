@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Sudoku.Solution
+namespace Sudoku
 {
-    public class ConstraintSolver : ISolver
+    public class Analyzer
     {
-        public ConstraintSolver(Puzzle puzzle)
+        public Analyzer(Puzzle puzzle)
         {
             Puzzle = new Puzzle(puzzle);
             Timer = new Stopwatch();

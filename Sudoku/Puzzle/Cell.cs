@@ -27,6 +27,8 @@ namespace Sudoku
 
         public virtual bool IsClue => false;
 
+        public virtual CellType Type => this.Value is not null ? CellType.Filled : CellType.Empty;
+
         protected int? _value;
         public virtual int? Value
         {
@@ -51,12 +53,12 @@ namespace Sudoku
         public virtual void RemoveCandidate(int val) => this._candidates.Remove(val);
         public virtual void FillCandidates() => Utils.Loop(i => this.AddCandidate(i + 1));
         public virtual void ClearCandidates() => this._candidates.Clear();
-        public virtual bool ContainsOnlyMatches(CandidateSet set) =>
+        public bool ContainsOnlyMatches(CandidateSet set) =>
             this._candidates.Except(set).Count() == 0 &&
             set.Except(this._candidates).Count() == 0;
-        public virtual bool ContainsAtLeastOneMatch(CandidateSet set) =>
+        public bool ContainsAtLeastOneMatch(CandidateSet set) =>
             this._candidates.Intersect(set).Any();
-        public virtual List<int> GetNonMatchingCandidates(IEnumerable<int> set) =>
+        public List<int> GetNonMatchingCandidates(IEnumerable<int> set) =>
             this._candidates.Except(set).ToList();
 
         private int ValidatedValue(int val)

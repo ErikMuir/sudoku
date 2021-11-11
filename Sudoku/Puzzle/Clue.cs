@@ -7,6 +7,7 @@ namespace Sudoku
         public Clue(Clue clue) : base(clue) { }
 
         public override bool IsClue => true;
+        public override CellType Type => CellType.Clue;
         public override int? Value
         {
             get { return this._value; }

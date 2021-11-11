@@ -12,7 +12,6 @@ namespace Sudoku.Console
         private const string PuzzleDirectory = "./puzzles";
         private static readonly List<ISerializer> _serializers = new()
         {
-            new PzlSerializer(),
             new SdkSerializer(),
             new SdmSerializer(),
             new SdxSerializer(),
@@ -22,7 +21,6 @@ namespace Sudoku.Console
             { '1', _serializers[0].FileExtension },
             { '2', _serializers[1].FileExtension },
             { '3', _serializers[2].FileExtension },
-            { '4', _serializers[3].FileExtension },
             { '0', "Go back" },
         };
         private static readonly Menu _menu = new(_menuOptions, "Choose a file format:");

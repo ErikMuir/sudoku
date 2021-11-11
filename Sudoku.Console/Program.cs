@@ -1,1 +1,1 @@
-﻿new Sudoku.Console.App().Run();
+﻿Sudoku.Console.App.Run();

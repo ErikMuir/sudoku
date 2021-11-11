@@ -38,7 +38,7 @@ namespace Sudoku.Serialization
                 throw new SudokuException("Invalid sdx file format");
 
             string[] lines = puzzleString
-                .Split(Constants.NewLines, StringSplitOptions.None)
+                .Split(SerializationUtils.NewLines, StringSplitOptions.None)
                 .ToArray();
 
             Puzzle puzzle = new();

@@ -54,7 +54,7 @@ namespace Sudoku.Serialization
                 throw new SudokuException("Invalid sdm file format");
 
             return puzzleString
-                .Split(Constants.NewLines, StringSplitOptions.None)
+                .Split(SerializationUtils.NewLines, StringSplitOptions.None)
                 .Select(x => Deserialize(x))
                 .ToList();
         }

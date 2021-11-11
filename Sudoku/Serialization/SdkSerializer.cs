@@ -48,7 +48,7 @@ namespace Sudoku.Serialization
 
             string[] rows = puzzleString
                 .Trim()
-                .Split(Constants.NewLines, StringSplitOptions.None)
+                .Split(SerializationUtils.NewLines, StringSplitOptions.None)
                 .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
                 .ToArray();
 
@@ -75,7 +75,7 @@ namespace Sudoku.Serialization
 
             Metadata metadata = new();
             IEnumerable<string> lines = puzzleString
-                .Split(Constants.NewLines, StringSplitOptions.None)
+                .Split(SerializationUtils.NewLines, StringSplitOptions.None)
                 .Where(x => x.Length >= 2)
                 .Where(x => x.Substring(0, 1) == MetadataTokens.Prefix);
 

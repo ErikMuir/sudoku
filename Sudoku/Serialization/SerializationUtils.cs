@@ -5,6 +5,8 @@ namespace Sudoku.Serialization
 {
     public static class SerializationUtils
     {
+        public static string[] NewLines => new[] { "\r\n", "\r", "\n" };
+
         public static string RemoveNewLines(this string val)
             => val.Replace('\n', ' ').Replace('\r', ' ');
 

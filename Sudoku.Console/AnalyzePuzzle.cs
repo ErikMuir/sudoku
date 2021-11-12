@@ -1,4 +1,5 @@
 using MuirDev.ConsoleTools;
+using Sudoku.Analysis;
 
 namespace Sudoku.Console
 {

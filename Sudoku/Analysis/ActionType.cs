@@ -1,4 +1,4 @@
-namespace Sudoku
+namespace Sudoku.Analysis
 {
     public enum ActionType
     {

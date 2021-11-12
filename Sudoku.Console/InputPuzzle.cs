@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MuirDev.ConsoleTools;
+using Sudoku.Logic;
 using Sudoku.Serialization;
 
 namespace Sudoku.Console

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Sudoku.Logic;
 using Xunit;
 
 namespace Sudoku.Tests
@@ -215,7 +216,7 @@ namespace Sudoku.Tests
             Cell testObject = new(0, 0);
             testObject.AddCandidate(1);
             testObject.AddCandidate(2);
-            Assert.True(testObject.ContainsOnlyMatches(new Double(1, 2)));
+            Assert.True(testObject.ContainsOnlyMatches(new DoubleSet(1, 2)));
         }
 
         [Fact]
@@ -223,7 +224,7 @@ namespace Sudoku.Tests
         {
             Cell testObject = new(0, 0);
             testObject.AddCandidate(1);
-            Assert.False(testObject.ContainsOnlyMatches(new Double(1, 2)));
+            Assert.False(testObject.ContainsOnlyMatches(new DoubleSet(1, 2)));
         }
 
         [Fact]
@@ -233,7 +234,7 @@ namespace Sudoku.Tests
             testObject.AddCandidate(1);
             testObject.AddCandidate(2);
             testObject.AddCandidate(3);
-            Assert.False(testObject.ContainsOnlyMatches(new Double(1, 2)));
+            Assert.False(testObject.ContainsOnlyMatches(new DoubleSet(1, 2)));
         }
 
         [Fact]
@@ -241,14 +242,14 @@ namespace Sudoku.Tests
         {
             Cell testObject = new(0, 0);
             testObject.AddCandidate(1);
-            Assert.True(testObject.ContainsAtLeastOneMatch(new Double(1, 2)));
+            Assert.True(testObject.ContainsAtLeastOneMatch(new DoubleSet(1, 2)));
         }
 
         [Fact]
         public void ContainsAtLeastOneMatch_Returns_False()
         {
             Cell testObject = new(0, 0);
-            Assert.False(testObject.ContainsAtLeastOneMatch(new Double(1, 2)));
+            Assert.False(testObject.ContainsAtLeastOneMatch(new DoubleSet(1, 2)));
         }
 
         [Fact]

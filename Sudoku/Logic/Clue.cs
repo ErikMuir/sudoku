@@ -1,4 +1,4 @@
-namespace Sudoku
+namespace Sudoku.Logic
 {
     public class Clue : Cell
     {

@@ -1,3 +1,5 @@
+using Sudoku.Logic;
+
 namespace Sudoku.Serialization
 {
     public interface ISerializer

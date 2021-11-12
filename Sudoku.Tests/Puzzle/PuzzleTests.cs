@@ -1,4 +1,5 @@
 using System.Linq;
+using Sudoku.Logic;
 using Xunit;
 
 namespace Sudoku.Tests

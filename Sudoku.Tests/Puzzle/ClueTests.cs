@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using Sudoku.Logic;
 using Xunit;
 
 namespace Sudoku.Tests

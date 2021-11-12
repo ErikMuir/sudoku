@@ -1,3 +1,5 @@
+using Sudoku.Logic;
+
 namespace Sudoku.Generation
 {
     public class NoSymmetry : Symmetry

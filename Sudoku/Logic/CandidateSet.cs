@@ -1,32 +1,32 @@
 using System.Collections.Generic;
 
-namespace Sudoku
+namespace Sudoku.Logic
 {
     public class CandidateSet : SortedSet<int>
     {
         protected CandidateSet() { }
     }
 
-    public class Single : CandidateSet
+    public class SingleSet : CandidateSet
     {
-        public Single(int val)
+        public SingleSet(int val)
         {
             this.Add(val);
         }
     }
 
-    public class Double : CandidateSet
+    public class DoubleSet : CandidateSet
     {
-        public Double (int val1, int val2)
+        public DoubleSet (int val1, int val2)
         {
             this.Add(val1);
             this.Add(val2);
         }
     }
 
-    public class Triple : CandidateSet
+    public class TripleSet : CandidateSet
     {
-        public Triple(int val1, int val2, int val3)
+        public TripleSet(int val1, int val2, int val3)
         {
             this.Add(val1);
             this.Add(val2);
@@ -34,9 +34,9 @@ namespace Sudoku
         }
     }
 
-    public class Quadruple : CandidateSet
+    public class QuadrupleSet : CandidateSet
     {
-        public Quadruple(int val1, int val2, int val3, int val4)
+        public QuadrupleSet(int val1, int val2, int val3, int val4)
         {
             this.Add(val1);
             this.Add(val2);

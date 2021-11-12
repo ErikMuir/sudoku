@@ -1,6 +1,6 @@
 using System;
 
-namespace Sudoku
+namespace Sudoku.Logic
 {
     public class Metadata
     {

@@ -1,3 +1,5 @@
+using Sudoku.Logic;
+
 namespace Sudoku.Analysis
 {
     public class Action

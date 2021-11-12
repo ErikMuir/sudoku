@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Sudoku.Logic;
 
 namespace Sudoku.Analysis
 {
@@ -443,15 +444,15 @@ namespace Sudoku.Analysis
                 for (int b = 1; b < Puzzle.UnitSize; b++)
                 {
                     if (b <= a) continue;
-                    Doubles.Add(new Double(a, b));
+                    Doubles.Add(new DoubleSet(a, b));
                     for (int c = 2; c < Puzzle.UnitSize; c++)
                     {
                         if (c <= a || c <= b) continue;
-                        Triples.Add(new Triple(a, b, c));
+                        Triples.Add(new TripleSet(a, b, c));
                         for (int d = 3; d < Puzzle.UnitSize; d++)
                         {
                             if (d <= a || d <= b || d <= c) continue;
-                            Quadruples.Add(new Quadruple(a, b, c, d));
+                            Quadruples.Add(new QuadrupleSet(a, b, c, d));
                         }
                     }
                 }

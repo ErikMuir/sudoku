@@ -14,12 +14,12 @@ namespace Sudoku.Console
         public static void Run(Puzzle puzzle)
         {
             List<string> rows = new();
-            Utils.Loop(i =>
+            for (int i = 0; i < Puzzle.UnitSize; i++)
             {
                 Cell[] rowCells = puzzle.GetRow(i);
                 string rowString = GridRow(rowCells);
                 rows.Add(rowString);
-            });
+            }
             _console
                 .LineFeed()
                 .WriteLine(GridBorder)
@@ -41,7 +41,8 @@ namespace Sudoku.Console
         private static string GridRow(Cell[] row)
         {
             List<string> cells = new();
-            Utils.Loop(i => cells.Add(GridCell(row[i])));
+            for (int i = 0; i < Puzzle.UnitSize; i++)
+                cells.Add(GridCell(row[i]));
 
             StringBuilder sb = new();
             sb.Append(VerticalLine);

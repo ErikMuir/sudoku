@@ -47,12 +47,16 @@ namespace Sudoku
                 }
             }
         }
-        
+
         protected SortedSet<int> _candidates = new();
         public ReadOnlyCollection<int> Candidates => this._candidates.ToList().AsReadOnly();
         public virtual void AddCandidate(int val) => this._candidates.Add(this.ValidatedValue(val));
         public virtual void RemoveCandidate(int val) => this._candidates.Remove(val);
-        public virtual void FillCandidates() => Utils.Loop(i => this.AddCandidate(i + 1));
+        public virtual void FillCandidates()
+        {
+            for (int i = 0; i < Puzzle.UnitSize; i++)
+                this.AddCandidate(i + 1);
+        }
         public virtual void ClearCandidates() => this._candidates.Clear();
         public bool ContainsOnlyMatches(CandidateSet set) =>
             this._candidates.Except(set).Count() == 0 &&

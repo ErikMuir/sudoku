@@ -18,12 +18,15 @@ namespace Sudoku.Serialization
         public string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
-            Utils.Loop(row =>
+            for (int row = 0; row < Puzzle.UnitSize; row++)
             {
                 List<string> cells = new();
-                Utils.Loop(col => cells.Add(Serialize(puzzle.GetCell(row, col))));
+                for (int col = 0; col < Puzzle.UnitSize; col++)
+                {
+                    cells.Add(Serialize(puzzle.GetCell(row, col)));
+                }
                 sb.AppendLine(string.Join(" ", cells));
-            });
+            }
             return sb.ToString();
         }
 
@@ -42,16 +45,16 @@ namespace Sudoku.Serialization
                 .ToArray();
 
             Puzzle puzzle = new();
-            Utils.Loop(row =>
+            for (int row = 0; row < Puzzle.UnitSize; row++)
             {
                 string[] cells = lines[row].Split(' ');
-                Utils.Loop(col =>
+                for (int col = 0; col < Puzzle.UnitSize; col++)
                 {
                     int index = (row * Puzzle.UnitSize) + col;
                     string cellString = cells[col];
                     puzzle.Cells[index] = DeserializeCell(cellString, col, row);
-                });
-            });
+                }
+            }
             return puzzle;
         }
 

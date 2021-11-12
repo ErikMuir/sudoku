@@ -19,7 +19,8 @@ namespace Sudoku.Console
             do
             {
                 _console.WriteLine("Input a Sudoku puzzle one line at a time. Enter a period (.) for empty cells.");
-                Utils.Loop(i => rows.Add(InputRow(i)));
+                for (int i = 0; i < Puzzle.UnitSize; i++)
+                    rows.Add(InputRow(i));
             } while (!_confirm.Run());
             Puzzle puzzle = ParsePuzzle(rows);
             PrintPuzzle.Run(puzzle);

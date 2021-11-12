@@ -17,11 +17,14 @@ namespace Sudoku.Serialization
             StringBuilder sb = new();
             string serializedMetadata = Serialize(puzzle.Metadata);
             sb.Append(serializedMetadata);
-            Utils.Loop(row =>
+            for (int row = 0; row < Puzzle.UnitSize; row++)
             {
-                Utils.Loop(col => sb.Append(Serialize(puzzle.GetCell(row, col))));
+                for (int col = 0; col < Puzzle.UnitSize; col++)
+                {
+                    sb.Append(Serialize(puzzle.GetCell(row, col)));
+                }
                 sb.AppendLine();
-            });
+            }
             return sb.ToString();
         }
 
@@ -57,15 +60,15 @@ namespace Sudoku.Serialization
 
             Puzzle puzzle = new();
             puzzle.Metadata = DeserializeMetadata(puzzleString);
-            Utils.Loop(row =>
+            for (int row = 0; row < Puzzle.UnitSize; row++)
             {
                 string line = rows[row];
-                Utils.Loop(col =>
+                for (int col = 0; col < Puzzle.UnitSize; col++)
                 {
                     int.TryParse($"{line[col]}", out int val);
                     if (val > 0) puzzle.Cells[(row * Puzzle.UnitSize) + col] = new Clue(row, col, val);
-                });
-            });
+                }
+            }
             return puzzle;
         }
 

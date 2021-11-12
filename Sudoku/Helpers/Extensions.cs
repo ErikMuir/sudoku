@@ -48,5 +48,23 @@ namespace Sudoku
 
         public static string ToUtcString(this DateTime dt)
             => dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+
+        public static bool LoopAnd(this int count, Func<int, bool> func)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (!func?.Invoke(i) ?? false) return false;
+            }
+            return true;
+        }
+
+        public static bool LoopOr(this int count, Func<int, bool> func)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (func?.Invoke(i) ?? false) return true;
+            }
+            return false;
+        }
     }
 }

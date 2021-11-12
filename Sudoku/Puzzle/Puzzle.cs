@@ -12,7 +12,9 @@ namespace Sudoku
 
         public Puzzle()
         {
-            Utils.Loop(row => Utils.Loop(col => Cells[(row * UnitSize) + col] = new Cell(row, col)));
+            for (int row = 0; row < UnitSize; row++)
+                for (int col = 0; col < UnitSize; col++)
+                    this.Cells[(row * UnitSize) + col] = new Cell(row, col);
         }
 
         public Puzzle(Puzzle puzzle)
@@ -52,14 +54,14 @@ namespace Sudoku
         private bool IsSameBox(int c1, int c2) => c1 / UnitSize / BoxSize == c2 / UnitSize / BoxSize && c1 % UnitSize / BoxSize == c2 % UnitSize / BoxSize;
 
         public bool IsSolved() =>
-            Utils.LoopAnd(i => this.GetRow(i).IsUnitSolved())
-            && Utils.LoopAnd(i => this.GetCol(i).IsUnitSolved())
-            && Utils.LoopAnd(i => this.GetBox(i).IsUnitSolved());
+            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
+            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())
+            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitSolved());
 
         public bool IsValid() =>
-            Utils.LoopAnd(i => this.GetRow(i).IsUnitValid())
-            && Utils.LoopAnd(i => this.GetCol(i).IsUnitValid())
-            && Utils.LoopAnd(i => this.GetBox(i).IsUnitValid());
+            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
+            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())
+            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitSolved());
 
         public void FillCandidates() =>
             this.GetEmptyCells()

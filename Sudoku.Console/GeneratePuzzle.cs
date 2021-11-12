@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
-using Sudoku.Symmetries;
+using Sudoku.Generation;
 
 namespace Sudoku.Console
 {

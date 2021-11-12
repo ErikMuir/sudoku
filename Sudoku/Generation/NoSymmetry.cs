@@ -1,4 +1,4 @@
-namespace Sudoku.Symmetries
+namespace Sudoku.Generation
 {
     public class NoSymmetry : Symmetry
     {

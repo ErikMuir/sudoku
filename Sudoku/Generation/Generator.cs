@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sudoku.Symmetries;
 
-namespace Sudoku
+namespace Sudoku.Generation
 {
     public static class Generator
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Sudoku.Symmetries
+namespace Sudoku.Generation
 {
     public class DiagonalDownSymmetry : Symmetry
     {

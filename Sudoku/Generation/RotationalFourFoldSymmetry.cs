@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Sudoku.Symmetries
+namespace Sudoku.Generation
 {
     public class RotationalFourFoldSymmetry : Symmetry
     {
@@ -8,7 +8,7 @@ namespace Sudoku.Symmetries
 
         public override Cell[] GetReflections(Puzzle puzzle, Cell cell)
         {
-            List<Cell> reflections = new List<Cell>{ cell };
+            List<Cell> reflections = new List<Cell> { cell };
             int axis = Puzzle.ReflectiveIndex;
             if (cell.Row == axis && cell.Col == axis)
                 return reflections.ToArray();

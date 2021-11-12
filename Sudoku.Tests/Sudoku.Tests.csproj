@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
+    <NoWarn>xUnit1026</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

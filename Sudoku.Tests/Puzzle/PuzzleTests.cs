@@ -19,8 +19,8 @@ namespace Sudoku.Tests
         }
 
         [Theory]
-        [ClassData(typeof(RowColTestData))]
-        public void GetCell_Returns_Cell(int row, int col)
+        [ClassData(typeof(CellTestData))]
+        public void GetCell_Returns_Cell(int row, int col, int box, int idx)
         {
             Cell cell = _testObject.GetCell(row, col);
             Assert.Equal(row, cell.Row);
@@ -62,6 +62,14 @@ namespace Sudoku.Tests
         }
 
         [Fact]
+        public void GetEmptyCells_Returns_EmptyList()
+        {
+            Puzzle solved = TestHelpers.GetSolvedPuzzle();
+            Cell[] emptyCells = solved.GetEmptyCells();
+            Assert.Empty(emptyCells);
+        }
+
+        [Fact]
         public void GetNextEmptyCell_Returns_EmptyCell()
         {
             _testObject.Cells[0].Value = 9;
@@ -84,14 +92,6 @@ namespace Sudoku.Tests
             Cell cell2 = new(1, 1);
             Cell[] actual = _testObject.CommonPeers(cell1, cell2);
             Assert.All(actual, x => Assert.True(x.Box == cell1.Box));
-        }
-
-        [Fact]
-        public void GetEmptyCells_Returns_EmptyList()
-        {
-            Puzzle solved = TestHelpers.GetSolvedPuzzle();
-            Cell[] emptyCells = solved.GetEmptyCells();
-            Assert.Empty(emptyCells);
         }
 
         [Fact]
@@ -124,9 +124,9 @@ namespace Sudoku.Tests
         }
 
         [Fact]
-        public void CalculateCandidates_Sets_AllCandidatesInEmptyCells()
+        public void FillCandidates()
         {
-            _testObject.CalculateCandidates();
+            _testObject.FillCandidates();
             foreach (Cell cell in _testObject.Cells)
             {
                 Assert.Equal(9, cell.Candidates.Count);
@@ -134,53 +134,8 @@ namespace Sudoku.Tests
         }
 
         [Theory]
-        [ClassData(typeof(RowColTestData))]
-        public void CalculateCandidates_Clears_Row(int col, int row)
-        {
-            int val = 9;
-            Cell cellToUpdate = _testObject.GetCell(row, col);
-            cellToUpdate.Value = val;
-            _testObject.CalculateCandidates();
-            Cell[] rowCells = _testObject.GetRow(cellToUpdate.Row);
-            foreach (Cell cell in rowCells)
-            {
-                Assert.DoesNotContain(val, cell.Candidates);
-            }
-        }
-
-        [Theory]
-        [ClassData(typeof(RowColTestData))]
-        public void CalculateCandidates_Clears_Col(int col, int row)
-        {
-            int val = 9;
-            Cell cellToUpdate = _testObject.GetCell(row, col);
-            cellToUpdate.Value = val;
-            _testObject.CalculateCandidates();
-            Cell[] colCells = _testObject.GetCol(cellToUpdate.Col);
-            foreach (Cell cell in colCells)
-            {
-                Assert.DoesNotContain(val, cell.Candidates);
-            }
-        }
-
-        [Theory]
-        [ClassData(typeof(RowColTestData))]
-        public void CalculateCandidates_Clears_Box(int col, int row)
-        {
-            int val = 9;
-            Cell cellToUpdate = _testObject.GetCell(row, col);
-            cellToUpdate.Value = val;
-            _testObject.CalculateCandidates();
-            Cell[] boxCells = _testObject.GetBox(cellToUpdate.Box);
-            foreach (Cell cell in boxCells)
-            {
-                Assert.DoesNotContain(val, cell.Candidates);
-            }
-        }
-
-        [Theory]
-        [ClassData(typeof(RowColTestData))]
-        public void ReduceCandidates_Clears_Row(int col, int row)
+        [ClassData(typeof(CellTestData))]
+        public void ReduceCandidates_Clears_Row(int row, int col, int box, int idx)
         {
             int val = 9;
             Cell cellToUpdate = _testObject.GetCell(row, col);
@@ -194,8 +149,8 @@ namespace Sudoku.Tests
         }
 
         [Theory]
-        [ClassData(typeof(RowColTestData))]
-        public void ReduceCandidates_Clears_Col(int col, int row)
+        [ClassData(typeof(CellTestData))]
+        public void ReduceCandidates_Clears_Col(int row, int col, int box, int idx)
         {
             int val = 9;
             Cell cellToUpdate = _testObject.GetCell(row, col);
@@ -209,8 +164,8 @@ namespace Sudoku.Tests
         }
 
         [Theory]
-        [ClassData(typeof(RowColTestData))]
-        public void ReduceCandidates_Clears_Box(int col, int row)
+        [ClassData(typeof(CellTestData))]
+        public void ReduceCandidates_Clears_Box(int row, int col, int box, int idx)
         {
             int val = 9;
             Cell cellToUpdate = _testObject.GetCell(row, col);

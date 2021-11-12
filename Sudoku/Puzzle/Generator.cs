@@ -12,7 +12,8 @@ namespace Sudoku
         public static Puzzle Generate()
         {
             Puzzle puzzle = new();
-            puzzle.CalculateCandidates();
+            puzzle.FillCandidates();
+            puzzle.ReduceCandidates();
 
             while (true)
             {
@@ -41,7 +42,8 @@ namespace Sudoku
             while (true)
             {
                 Puzzle puzzle = new();
-                puzzle.CalculateCandidates();
+                puzzle.FillCandidates();
+                puzzle.ReduceCandidates();
                 int puzzleIterations = 0;
 
                 while (puzzleIterations < 100)

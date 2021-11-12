@@ -61,14 +61,10 @@ namespace Sudoku
             && Utils.LoopAnd(i => this.GetCol(i).IsUnitValid())
             && Utils.LoopAnd(i => this.GetBox(i).IsUnitValid());
 
-        public void CalculateCandidates()
-        {
-            // first fill all candidates of empty cells
-            this.GetEmptyCells().ToList().ForEach(cell => cell.FillCandidates());
-
-            // then reduce candidates by col/row/box constraints
-            this.ReduceCandidates();
-        }
+        public void FillCandidates() =>
+            this.GetEmptyCells()
+                .ToList()
+                .ForEach(cell => cell.FillCandidates());
 
         public void ReduceCandidates()
         {

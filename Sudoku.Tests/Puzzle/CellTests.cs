@@ -25,11 +25,19 @@ namespace Sudoku.Tests
         }
 
         [Theory]
-        [ClassData(typeof(RowColBoxTestData))]
-        public void Constructor_Sets_Box(int row, int col, int expectedBox)
+        [ClassData(typeof(CellTestData))]
+        public void Constructor_Sets_Box(int row, int col, int box, int idx)
         {
             Cell testObject = new(row, col);
-            Assert.Equal(expectedBox, testObject.Box);
+            Assert.Equal(box, testObject.Box);
+        }
+
+        [Theory]
+        [ClassData(typeof(CellTestData))]
+        public void Constructor_Sets_Index(int row, int col, int box, int idx)
+        {
+            Cell testObject = new(row, col);
+            Assert.Equal(idx, testObject.Index);
         }
 
         [Theory]
@@ -62,7 +70,6 @@ namespace Sudoku.Tests
             Exception exception = Record.Exception(() => new Cell(0, 0, val));
             Assert.NotNull(exception);
             Assert.IsType<SudokuException>(exception);
-            Assert.Equal("Value must be between 1 and 9, inclusive.", exception.Message);
         }
 
         [Fact]
@@ -73,7 +80,25 @@ namespace Sudoku.Tests
             Cell clone = new(original);
             Assert.NotNull(clone);
             Assert.NotSame(original, clone);
-            Assert.Equal(original.ToString(), clone.ToString());
+            Assert.Equal(original.Row, clone.Row);
+            Assert.Equal(original.Col, clone.Col);
+            Assert.Equal(original.Box, clone.Box);
+            Assert.Equal(original.Index, clone.Index);
+            Assert.Equal(original.Value, clone.Value);
+            Assert.Equal(original.Candidates.Count, clone.Candidates.Count);
+            for (int i = 0; i < original.Candidates.Count; i++)
+            {
+                Assert.Equal(original.Candidates[i], clone.Candidates[i]);
+            }
+        }
+
+        [Fact]
+        public void CopyConstructor_Throws()
+        {
+            Clue original = new(1, 2, 3);
+            Exception exception = Record.Exception(() => new Cell(original));
+            Assert.NotNull(exception);
+            Assert.IsType<SudokuException>(exception);
         }
 
         [Fact]
@@ -83,9 +108,23 @@ namespace Sudoku.Tests
             Assert.False(testObject.IsClue);
         }
 
+        [Fact]
+        public void Type_Returns_Filled()
+        {
+            Cell testObject = new(0, 0, 1);
+            Assert.Equal(CellType.Filled, testObject.Type);
+        }
+
+        [Fact]
+        public void Type_Returns_Empty()
+        {
+            Cell testObject = new(0, 0);
+            Assert.Equal(CellType.Empty, testObject.Type);
+        }
+
         [Theory]
         [ClassData(typeof(OneToNineTestData))]
-        public void Value_Returns(int val)
+        public void Value_Get(int val)
         {
             Cell testObject = new(0, 0);
             testObject.Value = val;
@@ -93,7 +132,7 @@ namespace Sudoku.Tests
         }
 
         [Fact]
-        public void Value_Set_ToNull()
+        public void Value_Set_Null()
         {
             Cell testObject = new(0, 0, 1);
             testObject.Value = null;
@@ -102,7 +141,7 @@ namespace Sudoku.Tests
 
         [Theory]
         [ClassData(typeof(OneToNineTestData))]
-        public void Value_Set_ToValue(int val)
+        public void Value_Set_Value(int val)
         {
             Cell testObject = new(0, 0);
             testObject.Value = val;
@@ -112,18 +151,17 @@ namespace Sudoku.Tests
         [Theory]
         [InlineData(0)]
         [InlineData(10)]
-        public void Value_Set_Throws_InvalidValue(int val)
+        public void Value_Set_Throws(int val)
         {
             Cell testObject = new(0, 0);
             Exception exception = Record.Exception(() => testObject.Value = val);
             Assert.NotNull(exception);
             Assert.IsType<SudokuException>(exception);
-            Assert.Equal("Value must be between 1 and 9, inclusive.", exception.Message);
         }
 
         [Theory]
         [ClassData(typeof(OneToNineTestData))]
-        public void AddCandidate_Adds_Candidate(int val)
+        public void AddCandidate(int val)
         {
             Cell testObject = new(0, 0);
             testObject.AddCandidate(val);
@@ -134,17 +172,16 @@ namespace Sudoku.Tests
         [Theory]
         [InlineData(0)]
         [InlineData(10)]
-        public void AddCandidate_Throws_InvalidValue(int val)
+        public void AddCandidate_Throws(int val)
         {
             Cell testObject = new(0, 0);
             Exception exception = Record.Exception(() => testObject.AddCandidate(val));
             Assert.NotNull(exception);
             Assert.IsType<SudokuException>(exception);
-            Assert.Equal("Value must be between 1 and 9, inclusive.", exception.Message);
         }
 
         [Fact]
-        public void FillCandidates_Adds_AllCandidates()
+        public void FillCandidates()
         {
             Cell testObject = new(0, 0);
             testObject.FillCandidates();
@@ -154,7 +191,7 @@ namespace Sudoku.Tests
         }
 
         [Fact]
-        public void ClearCandidates_Removes_AllCandidates()
+        public void ClearCandidates()
         {
             Cell testObject = new(0, 0);
             testObject.ClearCandidates();
@@ -163,13 +200,22 @@ namespace Sudoku.Tests
 
         [Theory]
         [ClassData(typeof(OneToNineTestData))]
-        public void RemoveCandidate_Removes_Candidate(int val)
+        public void RemoveCandidate(int val)
         {
             Cell testObject = new(0, 0);
             testObject.FillCandidates();
             testObject.RemoveCandidate(val);
             ReadOnlyCollection<int> actual = testObject.Candidates;
             Assert.DoesNotContain(actual, x => x == val);
+        }
+
+        [Fact]
+        public void ContainsOnlyMatches_Returns_True()
+        {
+            Cell testObject = new(0, 0);
+            testObject.AddCandidate(1);
+            testObject.AddCandidate(2);
+            Assert.True(testObject.ContainsOnlyMatches(new Double(1, 2)));
         }
 
         [Fact]
@@ -191,12 +237,11 @@ namespace Sudoku.Tests
         }
 
         [Fact]
-        public void ContainsOnlyMatches_Returns_True()
+        public void ContainsAtLeastOneMatch_Returns_True()
         {
             Cell testObject = new(0, 0);
             testObject.AddCandidate(1);
-            testObject.AddCandidate(2);
-            Assert.True(testObject.ContainsOnlyMatches(new Double(1, 2)));
+            Assert.True(testObject.ContainsAtLeastOneMatch(new Double(1, 2)));
         }
 
         [Fact]
@@ -207,15 +252,7 @@ namespace Sudoku.Tests
         }
 
         [Fact]
-        public void ContainsAtLeastOneMatch_Returns_True()
-        {
-            Cell testObject = new(0, 0);
-            testObject.AddCandidate(1);
-            Assert.True(testObject.ContainsAtLeastOneMatch(new Double(1, 2)));
-        }
-
-        [Fact]
-        public void GetNonMatchingCandidates_Returns_List()
+        public void GetNonMatchingCandidates()
         {
             Cell testObject = new(0, 0);
             testObject.AddCandidate(1);

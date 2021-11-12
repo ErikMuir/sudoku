@@ -17,6 +17,7 @@ namespace Sudoku
 
         public Cell(Cell cell) : this(cell.Row, cell.Col, cell.Value)
         {
+            if (cell is Clue) throw new SudokuException("A clue cell cannot be cloned as a non-clue cell");
             cell.Candidates.ToList().ForEach(x => this.AddCandidate(x));
         }
 

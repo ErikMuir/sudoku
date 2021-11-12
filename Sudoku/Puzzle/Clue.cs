@@ -4,7 +4,7 @@ namespace Sudoku
     {
         public Clue(int row, int col, int val) : base(row, col, val) { }
 
-        public Clue(Clue clue) : base(clue) { }
+        public Clue(Clue clue) : base(clue.Row, clue.Col, clue.Value) { }
 
         public override bool IsClue => true;
         public override CellType Type => CellType.Clue;

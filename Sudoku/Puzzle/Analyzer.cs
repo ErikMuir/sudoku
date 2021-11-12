@@ -30,7 +30,8 @@ namespace Sudoku
             if (Puzzle.IsSolved()) return;
 
             Timer.Start();
-            Puzzle.CalculateCandidates();
+            Puzzle.FillCandidates();
+            Puzzle.ReduceCandidates();
 
             bool isChanged;
             do

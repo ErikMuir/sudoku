@@ -11,7 +11,8 @@ namespace Sudoku
             if (input.IsSolved())
                 return (solutionFunc is not null && solutionFunc(input)) ? null : input;
 
-            input.CalculateCandidates();
+            input.FillCandidates();
+            input.ReduceCandidates();
             Cell activeCell = FindWorkingCell(input);
             foreach (int guess in activeCell.Candidates)
             {

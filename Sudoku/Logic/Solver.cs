@@ -6,33 +6,62 @@ namespace Sudoku.Logic
 {
     public static class Solver
     {
-        public static Puzzle Solve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
-        {
-            if (input.IsSolved())
-                return (solutionFunc is not null && solutionFunc(input)) ? null : input;
+        private static int _iterationCount = 0;
 
+        public static Puzzle Solve(Puzzle input)
+        {
+            _iterationCount = 0;
             input.FillCandidates();
             input.ReduceCandidates();
+            return _doMultiSolve(input, null);
+        }
+
+        public static List<Puzzle> MultiSolve(Puzzle input, int maxSolutions = -1)
+        {
+            _iterationCount = 0;
+            input.FillCandidates();
+            input.ReduceCandidates();
+            List<Puzzle> solutions = new();
+            _doMultiSolve(input, p =>
+            {
+                _iterationCount = 0;
+                solutions.Add(p);
+                return solutions.Count() < maxSolutions || maxSolutions == -1;
+            });
+            return solutions;
+        }
+
+        private static Puzzle _doSolve(Puzzle input)
+        {
+            if (input.IsSolved()) return input;
+            if (++_iterationCount >= 1000) return null;
             Cell activeCell = _findWorkingCell(input);
+            if (activeCell is null) return null;
             foreach (int guess in activeCell.Candidates)
             {
                 Puzzle puzzle;
                 if ((puzzle = _placeValue(input, activeCell.Index, guess)) is not null)
-                    if ((puzzle = Solve(puzzle, solutionFunc)) is not null)
+                    if ((puzzle = _doSolve(puzzle)) is not null)
                         return puzzle;
             }
             return null;
         }
 
-        public static List<Puzzle> MultiSolve(Puzzle input, int maxSolutions = -1)
+        private static Puzzle _doMultiSolve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
         {
-            List<Puzzle> solutions = new();
-            Solve(input, p =>
+            if (input.IsSolved())
+                return (solutionFunc is not null && solutionFunc(input)) ? null : input;
+            if (++_iterationCount >= 1000) return null;
+            Cell activeCell = _findWorkingCell(input);
+            if (activeCell is null) return null;
+            foreach (int guess in activeCell.Candidates)
             {
-                solutions.Add(p);
-                return solutions.Count() < maxSolutions || maxSolutions == -1;
-            });
-            return solutions;
+                Puzzle puzzle;
+                if ((puzzle = _placeValue(input, activeCell.Index, guess)) is not null)
+                    if ((puzzle = _doMultiSolve(puzzle, solutionFunc)) is not null)
+                        return puzzle;
+            }
+            return null;
         }
 
         private static Puzzle _placeValue(Puzzle input, int cellIndex, int value)

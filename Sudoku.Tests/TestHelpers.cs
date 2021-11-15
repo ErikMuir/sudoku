@@ -95,5 +95,37 @@ namespace Sudoku.Tests
             string puzzleString = sb.ToString();
             return _sdkSerializer.Deserialize(puzzleString);
         }
+
+        public static Puzzle GetUnsolvablePuzzle()
+        {
+            StringBuilder sb = new();
+            sb.AppendLine("11......1");
+            sb.AppendLine(".1.......");
+            sb.AppendLine(".........");
+            sb.AppendLine(".........");
+            sb.AppendLine(".........");
+            sb.AppendLine(".........");
+            sb.AppendLine(".........");
+            sb.AppendLine(".........");
+            sb.AppendLine(".........");
+            string puzzleString = sb.ToString();
+            return _sdkSerializer.Deserialize(puzzleString);
+        }
+
+        public static Puzzle GetPuzzleWithExactlyTwoSolutions()
+        {
+            StringBuilder sb = new();
+            sb.AppendLine("435.6978.");
+            sb.AppendLine("68.57.493");
+            sb.AppendLine(".9783456.");
+            sb.AppendLine("8.6.95347");
+            sb.AppendLine("37468.9.5");
+            sb.AppendLine("95.7436.8");
+            sb.AppendLine("5.93.6874");
+            sb.AppendLine(".48957.36");
+            sb.AppendLine("7634.8.59");
+            string puzzleString = sb.ToString();
+            return _sdkSerializer.Deserialize(puzzleString);
+        }
     }
 }

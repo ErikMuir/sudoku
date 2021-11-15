@@ -17,10 +17,10 @@ namespace Sudoku.Generation
 
             while (true)
             {
-                Cell cell = GetRandomEmptyCell(puzzle);
+                Cell cell = _getRandomEmptyCell(puzzle);
                 int randomIndex = _rand.Next(cell.Candidates.Count);
                 int candidateValue = cell.Candidates[randomIndex];
-                Puzzle workingPuzzle = PlaceValue(puzzle, cell.Index, candidateValue);
+                Puzzle workingPuzzle = _placeValue(puzzle, cell.Index, candidateValue);
                 if (workingPuzzle is null) continue;
                 List<Puzzle> solutions = Solver.MultiSolve(workingPuzzle, 2);
                 switch (solutions.Count)
@@ -37,7 +37,7 @@ namespace Sudoku.Generation
             if (symmetryType == SymmetryType.None)
                 return Generate();
 
-            Symmetry symmetry = GetSymmetry(symmetryType);
+            Symmetry symmetry = _getSymmetry(symmetryType);
 
             while (true)
             {
@@ -50,13 +50,13 @@ namespace Sudoku.Generation
                 {
                     puzzleIterations++;
                     Puzzle workingPuzzle = new(puzzle);
-                    Cell randomEmptyCell = GetRandomEmptyCell(puzzle);
+                    Cell randomEmptyCell = _getRandomEmptyCell(puzzle);
                     Cell[] reflections = symmetry.GetReflections(puzzle, randomEmptyCell);
                     for (int i = 0; i < reflections.Length && workingPuzzle is not null; i++)
                     {
                         Cell cell = reflections[i];
                         int candidateValue = cell.Candidates[_rand.Next(cell.Candidates.Count)];
-                        workingPuzzle = PlaceValue(workingPuzzle, cell.Index, candidateValue);
+                        workingPuzzle = _placeValue(workingPuzzle, cell.Index, candidateValue);
                     }
 
                     if (workingPuzzle is null) continue;
@@ -72,13 +72,13 @@ namespace Sudoku.Generation
             }
         }
 
-        private static Cell GetRandomEmptyCell(Puzzle puzzle)
+        private static Cell _getRandomEmptyCell(Puzzle puzzle)
         {
             Cell[] emptyCells = puzzle.GetEmptyCells();
             return emptyCells[_rand.Next(emptyCells.Length)];
         }
 
-        private static Puzzle PlaceValue(Puzzle input, int cellIndex, int value)
+        private static Puzzle _placeValue(Puzzle input, int cellIndex, int value)
         {
             Puzzle puzzle = new(input);
             Cell cell = puzzle.Cells[cellIndex];
@@ -109,7 +109,7 @@ namespace Sudoku.Generation
             SymmetryType.RotationalFourFold,
         };
 
-        private static Symmetry GetSymmetry(SymmetryType type)
+        private static Symmetry _getSymmetry(SymmetryType type)
         {
             if (type == SymmetryType.Random)
                 type = _supportedSymmetryTypes[_rand.Next(_supportedSymmetryTypes.Length)];

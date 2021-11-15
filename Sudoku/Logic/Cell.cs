@@ -12,7 +12,7 @@ namespace Sudoku.Logic
             this.Col = col;
             this.Box = ((col / Puzzle.BoxSize) + ((row / Puzzle.BoxSize) * Puzzle.BoxSize));
             this.Index = (row * Puzzle.UnitSize) + col;
-            this._value = val.HasValue ? this.ValidatedValue(val.Value) : null;
+            this._value = val.HasValue ? this._validatedValue(val.Value) : null;
         }
 
         public Cell(Cell cell) : this(cell.Row, cell.Col, cell.Value)
@@ -38,7 +38,7 @@ namespace Sudoku.Logic
             {
                 if (value.HasValue)
                 {
-                    this._value = this.ValidatedValue(value.Value);
+                    this._value = this._validatedValue(value.Value);
                     this.ClearCandidates();
                 }
                 else
@@ -50,7 +50,7 @@ namespace Sudoku.Logic
 
         protected SortedSet<int> _candidates = new();
         public ReadOnlyCollection<int> Candidates => this._candidates.ToList().AsReadOnly();
-        public virtual void AddCandidate(int val) => this._candidates.Add(this.ValidatedValue(val));
+        public virtual void AddCandidate(int val) => this._candidates.Add(this._validatedValue(val));
         public virtual void RemoveCandidate(int val) => this._candidates.Remove(val);
         public virtual void FillCandidates()
         {
@@ -66,7 +66,7 @@ namespace Sudoku.Logic
         public List<int> GetNonMatchingCandidates(IEnumerable<int> set) =>
             this._candidates.Except(set).ToList();
 
-        private int ValidatedValue(int val)
+        private int _validatedValue(int val)
         {
             if (!val.Between(1, Puzzle.UnitSize, true))
                 throw new SudokuException($"Value must be between 1 and {Puzzle.UnitSize}, inclusive.");

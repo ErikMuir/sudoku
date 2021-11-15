@@ -43,15 +43,15 @@ namespace Sudoku.Logic
         public int[] Peers(int cellIndex)
         {
             if (!_savedPeers.ContainsKey(cellIndex))
-                _savedPeers.Add(cellIndex, Enumerable.Range(0, 81).Where(c => IsPeer(cellIndex, c)).ToArray());
+                _savedPeers.Add(cellIndex, Enumerable.Range(0, 81).Where(c => _isPeer(cellIndex, c)).ToArray());
             return _savedPeers[cellIndex];
         }
         public Cell[] Peers(Cell cell) => Peers((cell.Row * UnitSize) + cell.Col).Select(i => Cells[i]).ToArray();
         public Cell[] CommonPeers(Cell c1, Cell c2) => Peers(c1).Intersect(Peers(c2)).ToArray();
-        private bool IsPeer(int c1, int c2) => c1 != c2 && (IsSameRow(c1, c2) || IsSameColumn(c1, c2) || IsSameBox(c1, c2));
-        private bool IsSameRow(int c1, int c2) => c1 / UnitSize == c2 / UnitSize;
-        private bool IsSameColumn(int c1, int c2) => c1 % UnitSize == c2 % UnitSize;
-        private bool IsSameBox(int c1, int c2) => c1 / UnitSize / BoxSize == c2 / UnitSize / BoxSize && c1 % UnitSize / BoxSize == c2 % UnitSize / BoxSize;
+        private bool _isPeer(int c1, int c2) => c1 != c2 && (_isSameRow(c1, c2) || _isSameColumn(c1, c2) || _isSameBox(c1, c2));
+        private bool _isSameRow(int c1, int c2) => c1 / UnitSize == c2 / UnitSize;
+        private bool _isSameColumn(int c1, int c2) => c1 % UnitSize == c2 % UnitSize;
+        private bool _isSameBox(int c1, int c2) => c1 / UnitSize / BoxSize == c2 / UnitSize / BoxSize && c1 % UnitSize / BoxSize == c2 % UnitSize / BoxSize;
 
         public bool IsSolved() =>
             UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())

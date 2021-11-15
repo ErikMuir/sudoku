@@ -20,36 +20,36 @@ namespace Sudoku.Console
 
         public static Puzzle Run(Puzzle puzzle) => _menu.Run() switch
         {
-            '1' => Save(puzzle),
-            '2' => Analyze(puzzle),
-            '3' => Solve(puzzle),
-            '4' => Print(puzzle),
-            '5' => Clear(puzzle),
+            '1' => _save(puzzle),
+            '2' => _analyze(puzzle),
+            '3' => _solve(puzzle),
+            '4' => _print(puzzle),
+            '5' => _clear(puzzle),
             '0' => throw new MenuExitException(),
             _ => throw new SudokuException("Invalid option"),
         };
 
-        private static Puzzle Save(Puzzle puzzle)
+        private static Puzzle _save(Puzzle puzzle)
         {
             FilePuzzle.Save(puzzle);
             return puzzle;
         }
 
-        private static Puzzle Analyze(Puzzle puzzle)
+        private static Puzzle _analyze(Puzzle puzzle)
         {
             AnalyzePuzzle.Run(puzzle);
             return puzzle;
         }
 
-        private static Puzzle Solve(Puzzle puzzle) => SolvePuzzle.Run(puzzle);
+        private static Puzzle _solve(Puzzle puzzle) => SolvePuzzle.Run(puzzle);
 
-        private static Puzzle Print(Puzzle puzzle)
+        private static Puzzle _print(Puzzle puzzle)
         {
             PrintPuzzle.Run(puzzle);
             return puzzle;
         }
 
-        private static Puzzle Clear(Puzzle puzzle)
+        private static Puzzle _clear(Puzzle puzzle)
         {
             _console.Warning("Puzzle has been cleared from memory!");
             return null;

@@ -17,7 +17,7 @@ namespace Sudoku.Serialization
         {
             StringBuilder sb = new();
             for (int i = 0; i < Puzzle.TotalCells; i++)
-                sb.Append(Serialize(puzzle.Cells[i]));
+                sb.Append(_serializeCell(puzzle.Cells[i]));
             return sb.ToString();
         }
 
@@ -32,7 +32,7 @@ namespace Sudoku.Serialization
             return sb.ToString();
         }
 
-        private string Serialize(Cell cell) => cell.Value is not null ? $"{cell.Value}" : "0";
+        private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : "0";
 
         public Puzzle Deserialize(string puzzleString)
         {

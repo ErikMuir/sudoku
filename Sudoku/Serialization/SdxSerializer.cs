@@ -24,14 +24,14 @@ namespace Sudoku.Serialization
                 List<string> cells = new();
                 for (int col = 0; col < Puzzle.UnitSize; col++)
                 {
-                    cells.Add(Serialize(puzzle.GetCell(row, col)));
+                    cells.Add(_serializeCell(puzzle.GetCell(row, col)));
                 }
                 sb.AppendLine(string.Join(" ", cells));
             }
             return sb.ToString();
         }
 
-        private string Serialize(Cell cell)
+        private string _serializeCell(Cell cell)
             => cell.Value is not null
                 ? $"{(cell.IsClue ? "" : "u")}{cell.Value}"
                 : string.Join("", cell.Candidates.Select(x => $"{x}"));
@@ -53,15 +53,15 @@ namespace Sudoku.Serialization
                 {
                     int index = (row * Puzzle.UnitSize) + col;
                     string cellString = cells[col];
-                    puzzle.Cells[index] = DeserializeCell(cellString, col, row);
+                    puzzle.Cells[index] = _deserializeCell(cellString, col, row);
                 }
             }
             return puzzle;
         }
 
-        private Cell DeserializeCell(string cellString, int col, int row)
+        private Cell _deserializeCell(string cellString, int col, int row)
         {
-            CellType cellType = GetCellType(cellString);
+            CellType cellType = _getCellType(cellString);
             if (cellType == CellType.Invalid)
                 throw new SudokuException("Invalid sdx file format");
 
@@ -81,7 +81,7 @@ namespace Sudoku.Serialization
             return cell;
         }
 
-        private CellType GetCellType(string cell)
+        private CellType _getCellType(string cell)
         {
             if (_cluePattern.SafeIsMatch(cell))
                 return CellType.Clue;

@@ -21,25 +21,25 @@ namespace Sudoku.Console
             {
                 _console.WriteLine("Input a Sudoku puzzle one line at a time. Enter a period (.) for empty cells.");
                 for (int i = 0; i < Puzzle.UnitSize; i++)
-                    rows.Add(InputRow(i));
+                    rows.Add(_inputRow(i));
             } while (!_confirm.Run());
-            Puzzle puzzle = ParsePuzzle(rows);
+            Puzzle puzzle = _parsePuzzle(rows);
             PrintPuzzle.Run(puzzle);
             _console.Success("Puzzle is now in memory.");
             return puzzle;
         }
 
-        private static string InputRow(int i)
+        private static string _inputRow(int i)
         {
             StringBuilder sb = new();
             _console.Write($"row {i + 1}: ");
             while (sb.Length < Puzzle.UnitSize)
-                InputCell(ref sb);
+                _inputCell(ref sb);
             _console.LineFeed();
             return sb.ToString();
         }
 
-        private static void InputCell(ref StringBuilder sb)
+        private static void _inputCell(ref StringBuilder sb)
         {
             ConsoleKeyInfo key = _console.ReadKey(true);
             switch (key.Key)
@@ -69,7 +69,7 @@ namespace Sudoku.Console
             }
         }
 
-        private static Puzzle ParsePuzzle(List<string> rows)
+        private static Puzzle _parsePuzzle(List<string> rows)
         {
             StringBuilder sb = new();
             rows.ForEach(row => sb.AppendLine(row));

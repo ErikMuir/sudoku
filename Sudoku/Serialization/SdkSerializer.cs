@@ -16,20 +16,20 @@ namespace Sudoku.Serialization
         public string Serialize(Puzzle puzzle)
         {
             StringBuilder sb = new();
-            string serializedMetadata = Serialize(puzzle.Metadata);
+            string serializedMetadata = _serializeMetadata(puzzle.Metadata);
             sb.Append(serializedMetadata);
             for (int row = 0; row < Puzzle.UnitSize; row++)
             {
                 for (int col = 0; col < Puzzle.UnitSize; col++)
                 {
-                    sb.Append(Serialize(puzzle.GetCell(row, col)));
+                    sb.Append(_serializeCell(puzzle.GetCell(row, col)));
                 }
                 sb.AppendLine();
             }
             return sb.ToString();
         }
 
-        private string Serialize(Metadata metadata)
+        private string _serializeMetadata(Metadata metadata)
         {
             if (metadata is null) return null;
 
@@ -44,7 +44,7 @@ namespace Sudoku.Serialization
             return sb.ToString();
         }
 
-        private string Serialize(Cell cell) => cell.Value is not null ? $"{cell.Value}" : ".";
+        private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : ".";
 
         public Puzzle Deserialize(string puzzleString)
         {
@@ -60,7 +60,7 @@ namespace Sudoku.Serialization
                 throw new SudokuException("Invalid sdk file format");
 
             Puzzle puzzle = new();
-            puzzle.Metadata = DeserializeMetadata(puzzleString);
+            puzzle.Metadata = _deserializeMetadata(puzzleString);
             for (int row = 0; row < Puzzle.UnitSize; row++)
             {
                 string line = rows[row];
@@ -73,7 +73,7 @@ namespace Sudoku.Serialization
             return puzzle;
         }
 
-        private Metadata DeserializeMetadata(string puzzleString)
+        private Metadata _deserializeMetadata(string puzzleString)
         {
             if (puzzleString is null) return null;
 

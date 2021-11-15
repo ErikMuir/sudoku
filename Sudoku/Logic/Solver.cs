@@ -13,11 +13,11 @@ namespace Sudoku.Logic
 
             input.FillCandidates();
             input.ReduceCandidates();
-            Cell activeCell = FindWorkingCell(input);
+            Cell activeCell = _findWorkingCell(input);
             foreach (int guess in activeCell.Candidates)
             {
                 Puzzle puzzle;
-                if ((puzzle = PlaceValue(input, activeCell.Index, guess)) is not null)
+                if ((puzzle = _placeValue(input, activeCell.Index, guess)) is not null)
                     if ((puzzle = Solve(puzzle, solutionFunc)) is not null)
                         return puzzle;
             }
@@ -35,7 +35,7 @@ namespace Sudoku.Logic
             return solutions;
         }
 
-        private static Puzzle PlaceValue(Puzzle input, int cellIndex, int value)
+        private static Puzzle _placeValue(Puzzle input, int cellIndex, int value)
         {
             Puzzle puzzle = new(input);
             Cell cell = puzzle.Cells[cellIndex];
@@ -56,13 +56,13 @@ namespace Sudoku.Logic
             }
             foreach (KeyValuePair<int, int> pair in cellsToPlace)
             {
-                if ((puzzle = PlaceValue(puzzle, pair.Key, pair.Value)) is null)
+                if ((puzzle = _placeValue(puzzle, pair.Key, pair.Value)) is null)
                     return null;
             }
             return puzzle;
         }
 
-        private static Cell FindWorkingCell(Puzzle puzzle)
+        private static Cell _findWorkingCell(Puzzle puzzle)
         {
             return puzzle
                 .GetEmptyCells()

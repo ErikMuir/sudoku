@@ -18,7 +18,7 @@ namespace Sudoku.Console
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
                 Cell[] rowCells = puzzle.GetRow(i);
-                string rowString = GridRow(rowCells);
+                string rowString = _gridRow(rowCells);
                 rows.Add(rowString);
             }
             _console
@@ -39,11 +39,11 @@ namespace Sudoku.Console
                 .LineFeed();
         }
 
-        private static string GridRow(Cell[] row)
+        private static string _gridRow(Cell[] row)
         {
             List<string> cells = new();
             for (int i = 0; i < Puzzle.UnitSize; i++)
-                cells.Add(GridCell(row[i]));
+                cells.Add(_gridCell(row[i]));
 
             StringBuilder sb = new();
             sb.Append(VerticalLine);
@@ -63,6 +63,6 @@ namespace Sudoku.Console
             return sb.ToString();
         }
 
-        private static string GridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
+        private static string _gridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
     }
 }

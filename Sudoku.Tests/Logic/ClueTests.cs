@@ -8,7 +8,6 @@ namespace Sudoku.Tests
     public class ClueTests
     {
         private readonly Clue _testObject;
-        private readonly string _exceptionMessage = "Cannot change a clue";
 
         public ClueTests()
         {

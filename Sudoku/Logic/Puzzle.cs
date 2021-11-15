@@ -5,6 +5,8 @@ namespace Sudoku.Logic
 {
     public class Puzzle
     {
+        private static readonly Dictionary<int, int[]> _lazyPeers = new();
+
         public const int BoxSize = 3;
         public const int UnitSize = 9;
         public const int TotalCells = 81;
@@ -38,20 +40,21 @@ namespace Sudoku.Logic
         public Cell[] GetBox(int box) => this.Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col).ToArray();
         public Cell[] GetEmptyCells() => this.Cells.Where(x => x.Value is null).ToArray();
         public Cell GetNextEmptyCell() => this.Cells.Where(x => x.Value is null).FirstOrDefault();
-
-        private static readonly Dictionary<int, int[]> _savedPeers = new();
-        public int[] Peers(int cellIndex)
-        {
-            if (!_savedPeers.ContainsKey(cellIndex))
-                _savedPeers.Add(cellIndex, Enumerable.Range(0, 81).Where(c => _isPeer(cellIndex, c)).ToArray());
-            return _savedPeers[cellIndex];
-        }
-        public Cell[] Peers(Cell cell) => Peers((cell.Row * UnitSize) + cell.Col).Select(i => Cells[i]).ToArray();
         public Cell[] CommonPeers(Cell c1, Cell c2) => Peers(c1).Intersect(Peers(c2)).ToArray();
-        private bool _isPeer(int c1, int c2) => c1 != c2 && (_isSameRow(c1, c2) || _isSameColumn(c1, c2) || _isSameBox(c1, c2));
-        private bool _isSameRow(int c1, int c2) => c1 / UnitSize == c2 / UnitSize;
-        private bool _isSameColumn(int c1, int c2) => c1 % UnitSize == c2 % UnitSize;
-        private bool _isSameBox(int c1, int c2) => c1 / UnitSize / BoxSize == c2 / UnitSize / BoxSize && c1 % UnitSize / BoxSize == c2 % UnitSize / BoxSize;
+        public Cell[] Peers(Cell cell)
+        {
+            if (!_lazyPeers.ContainsKey(cell.Index))
+            {
+                int[] peers = this.Cells
+                    .Where(c => cell.IsPeer(c))
+                    .Select(c => c.Index)
+                    .ToArray();
+                _lazyPeers.Add(cell.Index, peers);
+            }
+            return _lazyPeers[cell.Index]
+                .Select(c => this.Cells[c])
+                .ToArray();
+        }
 
         public bool IsSolved() =>
             UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
@@ -59,9 +62,9 @@ namespace Sudoku.Logic
             && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitSolved());
 
         public bool IsValid() =>
-            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
-            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())
-            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitSolved());
+            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitValid())
+            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitValid())
+            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitValid());
 
         public void FillCandidates() =>
             this.GetEmptyCells()

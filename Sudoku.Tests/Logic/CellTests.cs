@@ -263,5 +263,45 @@ namespace Sudoku.Tests
             Assert.Single(actual);
             Assert.Equal(3, actual[0]);
         }
+
+        [Fact]
+        public void IsPeer_ReturnsTrue_WhenCellInSameRow()
+        {
+            Cell testObject = new(0, 0);
+            Cell otherCell = new(0, 9);
+            Assert.True(testObject.IsPeer(otherCell));
+        }
+
+        [Fact]
+        public void IsPeer_ReturnsTrue_WhenCellInSameCol()
+        {
+            Cell testObject = new(0, 0);
+            Cell otherCell = new(9, 0);
+            Assert.True(testObject.IsPeer(otherCell));
+        }
+
+        [Fact]
+        public void IsPeer_ReturnsTrue_WhenCellInSameBox()
+        {
+            Cell testObject = new(0, 0);
+            Cell otherCell = new(1, 1);
+            Assert.True(testObject.IsPeer(otherCell));
+        }
+
+        [Fact]
+        public void IsPeer_ReturnsFalse_WhenCellIsSame()
+        {
+            Cell testObject = new(0, 0);
+            Cell otherCell = new(0, 0);
+            Assert.False(testObject.IsPeer(otherCell));
+        }
+
+        [Fact]
+        public void IsPeer_ReturnsFalse_WhenCellHasNoCommonUnits()
+        {
+            Cell testObject = new(0, 0);
+            Cell otherCell = new(9, 9);
+            Assert.False(testObject.IsPeer(otherCell));
+        }
     }
 }

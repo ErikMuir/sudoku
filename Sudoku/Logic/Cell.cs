@@ -65,7 +65,12 @@ namespace Sudoku.Logic
             this._candidates.Intersect(set).Any();
         public List<int> GetNonMatchingCandidates(IEnumerable<int> set) =>
             this._candidates.Except(set).ToList();
+        public bool IsPeer(Cell cell) => cell.Index != this.Index
+            && (_sameRow(cell) || _sameCol(cell) || _sameBox(cell));
 
+        private bool _sameRow(Cell cell) => cell.Row == this.Row;
+        private bool _sameCol(Cell cell) => cell.Col == this.Col;
+        private bool _sameBox(Cell cell) => cell.Box == this.Box;
         private int _validatedValue(int val)
         {
             if (!val.Between(1, Puzzle.UnitSize, true))

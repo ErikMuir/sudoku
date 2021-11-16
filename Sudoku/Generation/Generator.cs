@@ -8,40 +8,25 @@ namespace Sudoku.Generation
     public static class Generator
     {
         private static readonly Random _rand = new();
-
-        public static Puzzle Generate()
+        private static readonly ISymmetry[] _supportedSymmetries = new[]
         {
-            Puzzle puzzle = new();
-            puzzle.FillCandidates();
-            puzzle.ReduceCandidates();
+            Horizontal.Symmetry,
+            Vertical.Symmetry,
+            DiagonalUp.Symmetry,
+            DiagonalDown.Symmetry,
+            RotationalTwoFold.Symmetry,
+            RotationalFourFold.Symmetry,
+        };
 
+        public static Puzzle Generate() => _generate(Asymmetric.Symmetry);
+        public static Puzzle Generate(ISymmetry symmetry) => _generate(symmetry);
+        public static Puzzle GenerateRandomSymmetry() => _generate(_supportedSymmetries[_rand.Next(_supportedSymmetries.Length)]);
+
+        private static Puzzle _generate(ISymmetry symmetry)
+        {
             while (true)
             {
-                Cell cell = _getRandomEmptyCell(puzzle);
-                int randomIndex = _rand.Next(cell.Candidates.Count);
-                int candidateValue = cell.Candidates[randomIndex];
-                Puzzle workingPuzzle = _placeValue(puzzle, cell.Index, candidateValue);
-                if (workingPuzzle is null) continue;
-                List<Puzzle> solutions = Solver.MultiSolve(workingPuzzle, 2);
-                switch (solutions.Count)
-                {
-                    case 0: continue;
-                    case 1: return workingPuzzle;
-                    default: puzzle = workingPuzzle; break;
-                }
-            }
-        }
-
-        public static Puzzle Generate(SymmetryType symmetryType)
-        {
-            if (symmetryType == SymmetryType.None)
-                return Generate();
-
-            Symmetry symmetry = _getSymmetry(symmetryType);
-
-            while (true)
-            {
-                Puzzle puzzle = new();
+                Puzzle puzzle = new(symmetry);
                 puzzle.FillCandidates();
                 puzzle.ReduceCandidates();
                 int puzzleIterations = 0;
@@ -51,10 +36,10 @@ namespace Sudoku.Generation
                     puzzleIterations++;
                     Puzzle workingPuzzle = new(puzzle);
                     Cell randomEmptyCell = _getRandomEmptyCell(puzzle);
-                    Cell[] reflections = symmetry.GetReflections(puzzle, randomEmptyCell);
+                    int[] reflections = symmetry.GetReflections(randomEmptyCell.Index);
                     for (int i = 0; i < reflections.Length && workingPuzzle is not null; i++)
                     {
-                        Cell cell = reflections[i];
+                        Cell cell = puzzle.Cells[reflections[i]];
                         int candidateValue = cell.Candidates[_rand.Next(cell.Candidates.Count)];
                         workingPuzzle = _placeValue(workingPuzzle, cell.Index, candidateValue);
                     }
@@ -65,7 +50,7 @@ namespace Sudoku.Generation
                     switch (solutions.Count)
                     {
                         case 0: continue;
-                        case 1: return workingPuzzle;
+                        case 1: return _finalizePuzzle(workingPuzzle);
                         default: puzzle = workingPuzzle; break;
                     }
                 }
@@ -99,31 +84,15 @@ namespace Sudoku.Generation
             return puzzle;
         }
 
-        private static readonly SymmetryType[] _supportedSymmetryTypes = new[]
+        private static Puzzle _finalizePuzzle(Puzzle puzzle)
         {
-            SymmetryType.Horizontal,
-            SymmetryType.Vertical,
-            SymmetryType.DiagonalUp,
-            SymmetryType.DiagonalDown,
-            SymmetryType.RotationalTwoFold,
-            SymmetryType.RotationalFourFold,
-        };
-
-        private static Symmetry _getSymmetry(SymmetryType type)
-        {
-            if (type == SymmetryType.Random)
-                type = _supportedSymmetryTypes[_rand.Next(_supportedSymmetryTypes.Length)];
-            return type switch
+            for (int i = 0; i < puzzle.Cells.Length; i++)
             {
-                SymmetryType.None => new NoSymmetry(),
-                SymmetryType.Horizontal => new HorizontalSymmetry(),
-                SymmetryType.Vertical => new VerticalSymmetry(),
-                SymmetryType.DiagonalUp => new DiagonalUpSymmetry(),
-                SymmetryType.DiagonalDown => new DiagonalDownSymmetry(),
-                SymmetryType.RotationalTwoFold => new RotationalTwoFoldSymmetry(),
-                SymmetryType.RotationalFourFold => new RotationalFourFoldSymmetry(),
-                _ => throw new SudokuException("Unsupported SymmetryType"),
-            };
+                Cell cell = puzzle.Cells[i];
+                if (cell.Value is null) continue;
+                puzzle.Cells[i] = new Clue(cell.Row, cell.Col, (int)cell.Value);
+            }
+            return puzzle;
         }
     }
 }

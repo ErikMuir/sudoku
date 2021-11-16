@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Generation;
 
 namespace Sudoku.Logic
 {
@@ -17,6 +18,16 @@ namespace Sudoku.Logic
             for (int row = 0; row < UnitSize; row++)
                 for (int col = 0; col < UnitSize; col++)
                     this.Cells[(row * UnitSize) + col] = new Cell(row, col);
+        }
+
+        public Puzzle(ISymmetry symmetry) : this()
+        {
+            this.Metadata.Symmetry = symmetry.Type;
+        }
+
+        public Puzzle(Metadata metadata) : this()
+        {
+            this.Metadata = metadata;
         }
 
         public Puzzle(Puzzle puzzle)

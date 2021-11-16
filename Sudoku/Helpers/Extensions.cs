@@ -67,5 +67,11 @@ namespace Sudoku
             }
             return false;
         }
+
+        public static int GetRowIndex(this int cellIndex)
+            => cellIndex / Puzzle.UnitSize;
+
+        public static int GetColIndex(this int cellIndex)
+            => cellIndex % Puzzle.UnitSize;
     }
 }

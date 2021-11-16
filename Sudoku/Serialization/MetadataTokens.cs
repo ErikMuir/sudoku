@@ -10,5 +10,6 @@ namespace Sudoku.Serialization
         public const string Source = "S";
         public const string Level = "L";
         public const string SourceUrl = "U";
+        public const string Symmetry = "X";
     }
 }

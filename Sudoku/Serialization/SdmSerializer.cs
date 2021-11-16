@@ -42,8 +42,8 @@ namespace Sudoku.Serialization
             Puzzle puzzle = new();
             for (int i = 0; i < Puzzle.TotalCells; i++)
             {
-                int col = i % Puzzle.UnitSize;
-                int row = i / Puzzle.UnitSize;
+                int row = i.GetRowIndex();
+                int col = i.GetColIndex();
                 int.TryParse($"{puzzleString[i]}", out int val);
                 if (val > 0) puzzle.Cells[i] = new Clue(row, col, val);
             }

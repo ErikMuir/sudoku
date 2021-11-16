@@ -2,13 +2,12 @@ namespace Sudoku.Generation
 {
     public enum SymmetryType
     {
-        None,
+        Asymmetric,
         Horizontal,
         Vertical,
         DiagonalUp,
         DiagonalDown,
         RotationalTwoFold,
         RotationalFourFold,
-        Random,
     }
 }

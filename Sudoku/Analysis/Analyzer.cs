@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Sudoku.Logic;
 
 namespace Sudoku.Analysis
@@ -13,7 +12,6 @@ namespace Sudoku.Analysis
         {
             Puzzle = new Puzzle(puzzle);
             Timer = new Stopwatch();
-            _initializeSets();
         }
 
         public Puzzle Puzzle { get; set; }
@@ -21,10 +19,6 @@ namespace Sudoku.Analysis
         public TimeSpan SolveDuration => Timer.Elapsed;
         public int SolveDepth { get; set; } = 0;
         public List<ConstraintLog> Logs { get; set; } = new();
-
-        public List<CandidateSet> Doubles { get; set; } = new();
-        public List<CandidateSet> Triples { get; set; } = new();
-        public List<CandidateSet> Quadruples { get; set; } = new();
 
         public void Solve()
         {
@@ -41,12 +35,12 @@ namespace Sudoku.Analysis
                 isChanged = false;
                 if (!isChanged) isChanged = NakedSingle();
                 if (!isChanged) isChanged = HiddenSingle();
-                if (!isChanged) isChanged = NakedSet(Doubles);
-                if (!isChanged) isChanged = NakedSet(Triples);
-                if (!isChanged) isChanged = HiddenSet(Doubles);
-                if (!isChanged) isChanged = HiddenSet(Triples);
-                if (!isChanged) isChanged = NakedSet(Quadruples);
-                if (!isChanged) isChanged = HiddenSet(Quadruples);
+                if (!isChanged) isChanged = NakedSet(CandidateSets.Doubles);
+                if (!isChanged) isChanged = NakedSet(CandidateSets.Triples);
+                if (!isChanged) isChanged = HiddenSet(CandidateSets.Doubles);
+                if (!isChanged) isChanged = HiddenSet(CandidateSets.Triples);
+                if (!isChanged) isChanged = NakedSet(CandidateSets.Quadruples);
+                if (!isChanged) isChanged = HiddenSet(CandidateSets.Quadruples);
                 if (!isChanged) isChanged = PointingSet();
                 if (!isChanged) isChanged = BoxLineReduction();
                 if (!isChanged) isChanged = XWing();
@@ -411,51 +405,6 @@ namespace Sudoku.Analysis
                 }
 
                 return false;
-            }
-        }
-
-        public string Statistics()
-        {
-            StringBuilder sb = new();
-            sb.AppendLine($"Is Solved: {Puzzle.IsSolved()}");
-            sb.AppendLine($"Solve Duration (ms): {SolveDuration.Milliseconds}");
-            sb.AppendLine($"Solve Depth: {SolveDepth}");
-            sb.AppendLine("Constraint Actions:");
-            List<ConstraintType> constraints = Logs
-                .Select(x => x.Constraint)
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
-            foreach (ConstraintType constraint in constraints)
-            {
-                int actionCount = Logs
-                    .Where(x => x.Constraint == constraint)
-                    .Select(x => x.Actions.Count())
-                    .Aggregate((result, item) => result + item);
-                sb.AppendLine($"  {constraint}: {actionCount}");
-            }
-            return sb.ToString();
-        }
-
-        private void _initializeSets()
-        {
-            for (int a = 0; a < Puzzle.UnitSize; a++)
-            {
-                for (int b = 1; b < Puzzle.UnitSize; b++)
-                {
-                    if (b <= a) continue;
-                    Doubles.Add(new DoubleSet(a, b));
-                    for (int c = 2; c < Puzzle.UnitSize; c++)
-                    {
-                        if (c <= a || c <= b) continue;
-                        Triples.Add(new TripleSet(a, b, c));
-                        for (int d = 3; d < Puzzle.UnitSize; d++)
-                        {
-                            if (d <= a || d <= b || d <= c) continue;
-                            Quadruples.Add(new QuadrupleSet(a, b, c, d));
-                        }
-                    }
-                }
             }
         }
     }

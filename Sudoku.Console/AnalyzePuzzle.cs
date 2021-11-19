@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using MuirDev.ConsoleTools;
 using Sudoku.Analysis;
 using Sudoku.Logic;
@@ -10,9 +13,33 @@ namespace Sudoku.Console
 
         public static void Run(Puzzle puzzle)
         {
-            Analyzer solver = new Analyzer(puzzle);
-            solver.Solve();
-            _console.LineFeed().Write(solver.Statistics());
+            Analyzer analyzer = new Analyzer(puzzle);
+            analyzer.Solve();
+            _statistics(analyzer);
+        }
+
+        private static void _statistics(Analyzer analyzer)
+        {
+            _console
+                .LineFeed()
+                .Info($"Is Solved: {analyzer.Puzzle.IsSolved()}")
+                .Info($"Solve Duration (ms): {analyzer.SolveDuration.Milliseconds}")
+                .Info($"Solve Depth: {analyzer.SolveDepth}")
+                .Info("Constraint Actions:");
+
+            analyzer.Logs
+                .Select(x => x.Constraint)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList()
+                .ForEach(constraint =>
+                {
+                    int actionCount = analyzer.Logs
+                        .Where(x => x.Constraint == constraint)
+                        .Select(x => x.Actions.Count())
+                        .Aggregate((result, item) => result + item);
+                    _console.Info($"  {constraint}: {actionCount}");
+                });
         }
     }
 }

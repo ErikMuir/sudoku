@@ -14,9 +14,9 @@ namespace Sudoku.Console
         private const string PuzzleDirectory = "./puzzles";
         private static readonly List<ISerializer> _serializers = new()
         {
-            new SdkSerializer(),
-            new SdmSerializer(),
-            new SdxSerializer(),
+            Sdk.Serializer,
+            Sdm.Serializer,
+            Sdx.Serializer,
         };
         private static readonly Dictionary<char, string> _menuOptions = new()
         {

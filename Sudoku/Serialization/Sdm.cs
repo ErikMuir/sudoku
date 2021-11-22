@@ -9,32 +9,20 @@ using Sudoku.Logic;
 
 namespace Sudoku.Serialization
 {
-    public class SdmSerializer : ISerializer
+    public class Sdm : ISerializer
     {
         private static readonly Regex _sdmPattern = new("^.{81}$");
 
+        private Sdm() { }
+
+        public static readonly ISerializer Serializer;
+
+        static Sdm()
+        {
+            Serializer = new Sdm();
+        }
+
         public string FileExtension => "sdm";
-
-        public string Serialize(Puzzle puzzle)
-        {
-            StringBuilder sb = new();
-            for (int i = 0; i < Puzzle.TotalCells; i++)
-                sb.Append(_serializeCell(puzzle.Cells[i]));
-            return sb.ToString();
-        }
-
-        public string Serialize(List<Puzzle> puzzles)
-        {
-            StringBuilder sb = new();
-            foreach (Puzzle puzzle in puzzles)
-            {
-                string serializedPuzzle = Serialize(puzzle);
-                sb.AppendLine(serializedPuzzle);
-            }
-            return sb.ToString();
-        }
-
-        private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : "0";
 
         public Puzzle Deserialize(string puzzleString)
         {
@@ -52,7 +40,15 @@ namespace Sudoku.Serialization
             return puzzle;
         }
 
-        public List<Puzzle> DeserializePuzzles(string puzzleString)
+        public string Serialize(Puzzle puzzle)
+        {
+            StringBuilder sb = new();
+            for (int i = 0; i < Puzzle.TotalCells; i++)
+                sb.Append(_serializeCell(puzzle.Cells[i]));
+            return sb.ToString();
+        }
+
+        public List<Puzzle> DeserializeMultiple(string puzzleString)
         {
             if (puzzleString is null)
                 throw new SudokuException("Invalid sdm file format");
@@ -62,5 +58,18 @@ namespace Sudoku.Serialization
                 .Select(x => Deserialize(x))
                 .ToList();
         }
+
+        public string SerializeMultiple(List<Puzzle> puzzles)
+        {
+            StringBuilder sb = new();
+            foreach (Puzzle puzzle in puzzles)
+            {
+                string serializedPuzzle = Serialize(puzzle);
+                sb.AppendLine(serializedPuzzle);
+            }
+            return sb.ToString();
+        }
+
+        private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : "0";
     }
 }

@@ -11,7 +11,6 @@ namespace Sudoku.Console
 {
     public static class InputPuzzle
     {
-        private static readonly SdkSerializer _serializer = new();
         private static readonly Confirm _confirm = new("Is this correct?", true);
         private static readonly FluentConsole _console = new();
 
@@ -75,7 +74,7 @@ namespace Sudoku.Console
             StringBuilder sb = new();
             rows.ForEach(row => sb.AppendLine(row));
             string puzzleString = sb.ToString();
-            return _serializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
     }
 }

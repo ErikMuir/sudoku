@@ -46,7 +46,8 @@ namespace Sudoku.Logic
         public Cell[] Cells { get; private set; } = new Cell[TotalCells];
         public Metadata Metadata { get; set; } = new();
 
-        public Cell[] EmptyCells => this.Cells.Where(x => x.Type == CellType.Empty).ToArray();
+        public Cell[] EmptyCells =>
+            this.Cells.Where(x => x.Type == CellType.Empty).ToArray();
         public bool IsSolved =>
             UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
             && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())

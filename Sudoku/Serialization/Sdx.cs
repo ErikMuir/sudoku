@@ -8,34 +8,23 @@ using Sudoku.Logic;
 
 namespace Sudoku.Serialization
 {
-    public class SdxSerializer : ISerializer
+    public class Sdx : ISerializer
     {
         private static readonly Regex _sdxPattern = new("^(u?[1-9]* ){8}u?[1-9]*(\r\n?|\n)?$", RegexOptions.Multiline);
         private static readonly Regex _cluePattern = new("^[1-9]$");
         private static readonly Regex _filledPattern = new("^u[1-9]$");
         private static readonly Regex _emptyPattern = new("^1?2?3?4?5?6?7?8?9?$");
 
-        public string FileExtension => "sdx";
+        private Sdx() { }
 
-        public string Serialize(Puzzle puzzle)
+        public static readonly ISerializer Serializer;
+
+        static Sdx()
         {
-            StringBuilder sb = new();
-            for (int row = 0; row < Puzzle.UnitSize; row++)
-            {
-                List<string> cells = new();
-                for (int col = 0; col < Puzzle.UnitSize; col++)
-                {
-                    cells.Add(_serializeCell(puzzle.GetCell(row, col)));
-                }
-                sb.AppendLine(string.Join(" ", cells));
-            }
-            return sb.ToString();
+            Serializer = new Sdx();
         }
 
-        private string _serializeCell(Cell cell)
-            => cell.Value is not null
-                ? $"{(cell.IsClue ? "" : "u")}{cell.Value}"
-                : string.Join("", cell.Candidates.Select(x => $"{x}"));
+        public string FileExtension => "sdx";
 
         public Puzzle Deserialize(string puzzleString)
         {
@@ -59,6 +48,26 @@ namespace Sudoku.Serialization
             }
             return puzzle;
         }
+
+        public string Serialize(Puzzle puzzle)
+        {
+            StringBuilder sb = new();
+            for (int row = 0; row < Puzzle.UnitSize; row++)
+            {
+                List<string> cells = new();
+                for (int col = 0; col < Puzzle.UnitSize; col++)
+                {
+                    cells.Add(_serializeCell(puzzle.GetCell(row, col)));
+                }
+                sb.AppendLine(string.Join(" ", cells));
+            }
+            return sb.ToString();
+        }
+
+        private string _serializeCell(Cell cell)
+            => cell.Value is not null
+                ? $"{(cell.IsClue ? "" : "u")}{cell.Value}"
+                : string.Join("", cell.Candidates.Select(x => $"{x}"));
 
         private Cell _deserializeCell(string cellString, int col, int row)
         {

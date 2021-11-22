@@ -6,14 +6,12 @@ namespace Sudoku.Tests
 {
     public static class TestHelpers
     {
-        private static readonly SdkSerializer _sdkSerializer = new();
-
         public static Puzzle GetEmptyPuzzle()
         {
             StringBuilder sb = new();
             for (int i = 0; i < 9; i++) sb.AppendLine(".........");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
 
         public static Puzzle GetSolvedPuzzle()
@@ -29,7 +27,7 @@ namespace Sudoku.Tests
             sb.AppendLine("248957136");
             sb.AppendLine("763418259");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
 
         public static Puzzle GetEasyPuzzle()
@@ -45,7 +43,7 @@ namespace Sudoku.Tests
             sb.AppendLine(".54...3.8");
             sb.AppendLine(".3.54....");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
 
         public static Puzzle GetMediumPuzzle()
@@ -61,7 +59,7 @@ namespace Sudoku.Tests
             sb.AppendLine("1.87..5.6");
             sb.AppendLine("..6.1..4.");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
 
         public static Puzzle GetDifficultPuzzle()
@@ -77,7 +75,7 @@ namespace Sudoku.Tests
             sb.AppendLine(".1...6.7.");
             sb.AppendLine(".3.17..8.");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
 
         public static Puzzle GetXWingPuzzle()
@@ -93,7 +91,7 @@ namespace Sudoku.Tests
             sb.AppendLine("..4..9.6.");
             sb.AppendLine("1...5.84.");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
 
         public static Puzzle GetUnsolvablePuzzle()
@@ -109,7 +107,7 @@ namespace Sudoku.Tests
             sb.AppendLine(".........");
             sb.AppendLine(".........");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
 
         public static Puzzle GetPuzzleWithExactlyTwoSolutions()
@@ -125,7 +123,7 @@ namespace Sudoku.Tests
             sb.AppendLine(".48957.36");
             sb.AppendLine("7634.8.59");
             string puzzleString = sb.ToString();
-            return _sdkSerializer.Deserialize(puzzleString);
+            return Sdk.Serializer.Deserialize(puzzleString);
         }
     }
 }

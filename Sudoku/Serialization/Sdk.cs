@@ -8,11 +8,47 @@ using Sudoku.Logic;
 
 namespace Sudoku.Serialization
 {
-    public class SdkSerializer : ISerializer
+    public class Sdk : ISerializer
     {
         private static readonly Regex _sdkLinePattern = new(@"^[1-9\.]{9}$");
 
+        private Sdk() { }
+
+        public static readonly ISerializer Serializer;
+
+        static Sdk()
+        {
+            Serializer = new Sdk();
+        }
+
         public string FileExtension => "sdk";
+
+        public Puzzle Deserialize(string puzzleString)
+        {
+            if (puzzleString is null) return null;
+
+            string[] rows = puzzleString
+                .Trim()
+                .Split(SerializationUtils.NewLines, StringSplitOptions.None)
+                .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
+                .ToArray();
+
+            if (rows.Length != Puzzle.UnitSize || rows.Any(row => !_sdkLinePattern.IsMatch(row)))
+                throw new SudokuException("Invalid sdk file format");
+
+            Puzzle puzzle = new();
+            puzzle.Metadata = _deserializeMetadata(puzzleString);
+            for (int row = 0; row < Puzzle.UnitSize; row++)
+            {
+                string line = rows[row];
+                for (int col = 0; col < Puzzle.UnitSize; col++)
+                {
+                    int.TryParse($"{line[col]}", out int val);
+                    if (val > 0) puzzle.Cells[(row * Puzzle.UnitSize) + col] = new Clue(row, col, val);
+                }
+            }
+            return puzzle;
+        }
 
         public string Serialize(Puzzle puzzle)
         {
@@ -46,33 +82,6 @@ namespace Sudoku.Serialization
         }
 
         private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : ".";
-
-        public Puzzle Deserialize(string puzzleString)
-        {
-            if (puzzleString is null) return null;
-
-            string[] rows = puzzleString
-                .Trim()
-                .Split(SerializationUtils.NewLines, StringSplitOptions.None)
-                .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
-                .ToArray();
-
-            if (rows.Length != Puzzle.UnitSize || rows.Any(row => !_sdkLinePattern.IsMatch(row)))
-                throw new SudokuException("Invalid sdk file format");
-
-            Puzzle puzzle = new();
-            puzzle.Metadata = _deserializeMetadata(puzzleString);
-            for (int row = 0; row < Puzzle.UnitSize; row++)
-            {
-                string line = rows[row];
-                for (int col = 0; col < Puzzle.UnitSize; col++)
-                {
-                    int.TryParse($"{line[col]}", out int val);
-                    if (val > 0) puzzle.Cells[(row * Puzzle.UnitSize) + col] = new Clue(row, col, val);
-                }
-            }
-            return puzzle;
-        }
 
         private Metadata _deserializeMetadata(string puzzleString)
         {

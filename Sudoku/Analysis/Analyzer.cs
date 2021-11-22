@@ -9,53 +9,53 @@ namespace Sudoku.Analysis
 {
     public class Analyzer
     {
+        private readonly Puzzle _puzzle;
+        private readonly Stopwatch _timer;
+
         public Analyzer(Puzzle puzzle)
         {
-            Puzzle = new Puzzle(puzzle);
-            Timer = new Stopwatch();
+            _puzzle = new Puzzle(puzzle);
+            _timer = new Stopwatch();
         }
 
-        public Puzzle Puzzle { get; set; }
-        public Stopwatch Timer { get; }
-        public TimeSpan SolveDuration => Timer.Elapsed;
+        public bool IsSolved => _puzzle.IsSolved;
+        public TimeSpan SolveDuration => _timer.Elapsed;
         public int SolveDepth { get; set; } = 0;
         public List<ConstraintLog> Logs { get; set; } = new();
 
-        public void Solve()
+        public void Analyze()
         {
-            if (Puzzle.IsSolved()) return;
+            if (_puzzle.IsSolved) return;
 
-            Timer.Start();
-            Puzzle.FillCandidates();
-            Puzzle.ReduceCandidates();
+            _timer.Start();
+            _puzzle.FillCandidates();
+            _puzzle.ReduceCandidates();
 
             bool isChanged;
             do
             {
                 SolveDepth++;
-                isChanged = false;
-                if (!isChanged) isChanged = NakedSingle();
-                if (!isChanged) isChanged = HiddenSingle();
-                if (!isChanged) isChanged = NakedSet(CandidateSets.Doubles);
-                if (!isChanged) isChanged = NakedSet(CandidateSets.Triples);
-                if (!isChanged) isChanged = HiddenSet(CandidateSets.Doubles);
-                if (!isChanged) isChanged = HiddenSet(CandidateSets.Triples);
-                if (!isChanged) isChanged = NakedSet(CandidateSets.Quadruples);
-                if (!isChanged) isChanged = HiddenSet(CandidateSets.Quadruples);
-                if (!isChanged) isChanged = PointingSet();
-                if (!isChanged) isChanged = BoxLineReduction();
-                if (!isChanged) isChanged = XWing();
-                if (!isChanged) isChanged = YWing();
+                isChanged = _nakedSingle();
+                if (!isChanged) isChanged = _hiddenSingle();
+                if (!isChanged) isChanged = _nakedSet(CandidateSets.Doubles);
+                if (!isChanged) isChanged = _nakedSet(CandidateSets.Triples);
+                if (!isChanged) isChanged = _hiddenSet(CandidateSets.Doubles);
+                if (!isChanged) isChanged = _hiddenSet(CandidateSets.Triples);
+                if (!isChanged) isChanged = _nakedSet(CandidateSets.Quadruples);
+                if (!isChanged) isChanged = _hiddenSet(CandidateSets.Quadruples);
+                if (!isChanged) isChanged = _pointingSet();
+                if (!isChanged) isChanged = _boxLineReduction();
+                if (!isChanged) isChanged = _xWing();
+                if (!isChanged) isChanged = _yWing();
             }
             while (isChanged);
 
-            Timer.Stop();
+            _timer.Stop();
         }
 
-        public bool NakedSingle()
+        private bool _nakedSingle()
         {
-            Cell cell = Puzzle.Cells
-                .Where(x => !x.Value.HasValue)
+            Cell cell = _puzzle.EmptyCells
                 .Where(x => x.Candidates.Count == 1)
                 .FirstOrDefault();
 
@@ -63,25 +63,25 @@ namespace Sudoku.Analysis
 
             cell.Value = cell.Candidates[0];
             Logs.Add(new ConstraintLog(ConstraintType.NakedSingle, cell, (int)cell.Value));
-            Puzzle.ReduceCandidates();
+            _puzzle.ReduceCandidates();
             return true;
         }
 
-        public bool HiddenSingle()
+        private bool _hiddenSingle()
         {
-            foreach (Cell cell in Puzzle.GetEmptyCells())
+            foreach (Cell cell in _puzzle.EmptyCells)
             {
                 foreach (int candidate in cell.Candidates)
                 {
                     if (
-                        Puzzle.GetCol(cell.Col).IsCandidateUnique(candidate) ||
-                        Puzzle.GetCol(cell.Row).IsCandidateUnique(candidate) ||
-                        Puzzle.GetBox(cell.Box).IsCandidateUnique(candidate)
+                        _puzzle.GetCol(cell.Col).IsCandidateUnique(candidate) ||
+                        _puzzle.GetCol(cell.Row).IsCandidateUnique(candidate) ||
+                        _puzzle.GetBox(cell.Box).IsCandidateUnique(candidate)
                         )
                     {
                         cell.Value = candidate;
                         Logs.Add(new ConstraintLog(ConstraintType.HiddenSingle, cell, candidate));
-                        Puzzle.ReduceCandidates();
+                        _puzzle.ReduceCandidates();
                         return true;
                     }
                 }
@@ -89,21 +89,21 @@ namespace Sudoku.Analysis
             return false;
         }
 
-        public bool NakedSet(List<CandidateSet> sets)
+        private bool _nakedSet(List<CandidateSet> sets)
         {
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                if (NakedSetUnitCheck(Puzzle.GetCol(i), sets))
+                if (_nakedSetUnitCheck(_puzzle.GetCol(i), sets))
                     return true;
-                if (NakedSetUnitCheck(Puzzle.GetRow(i), sets))
+                if (_nakedSetUnitCheck(_puzzle.GetRow(i), sets))
                     return true;
-                if (NakedSetUnitCheck(Puzzle.GetBox(i), sets))
+                if (_nakedSetUnitCheck(_puzzle.GetBox(i), sets))
                     return true;
             }
             return false;
         }
 
-        public bool NakedSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
+        private bool _nakedSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
         {
             int setLength = sets.First().Count;
 
@@ -145,21 +145,21 @@ namespace Sudoku.Analysis
             return false;
         }
 
-        public bool HiddenSet(List<CandidateSet> sets)
+        private bool _hiddenSet(List<CandidateSet> sets)
         {
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                if (HiddenSetUnitCheck(Puzzle.GetCol(i), sets))
+                if (_hiddenSetUnitCheck(_puzzle.GetCol(i), sets))
                     return true;
-                if (HiddenSetUnitCheck(Puzzle.GetRow(i), sets))
+                if (_hiddenSetUnitCheck(_puzzle.GetRow(i), sets))
                     return true;
-                if (HiddenSetUnitCheck(Puzzle.GetBox(i), sets))
+                if (_hiddenSetUnitCheck(_puzzle.GetBox(i), sets))
                     return true;
             }
             return false;
         }
 
-        public bool HiddenSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
+        private bool _hiddenSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
         {
             int setLength = sets.First().Count;
 
@@ -201,11 +201,11 @@ namespace Sudoku.Analysis
             return false;
         }
 
-        public bool PointingSet()
+        private bool _pointingSet()
         {
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                Cell[] box = Puzzle.GetBox(i);
+                Cell[] box = _puzzle.GetBox(i);
                 for (int candidate = 1; candidate < 10; candidate++)
                 {
                     Cell[] matches = box.Where(cell => cell.Candidates.Contains(candidate)).ToArray();
@@ -216,7 +216,7 @@ namespace Sudoku.Analysis
                     if (col is null && row is null) continue;
 
                     List<Action> actions = new();
-                    Cell[] unit = col.HasValue ? Puzzle.GetCol(col.Value) : Puzzle.GetRow(row.Value);
+                    Cell[] unit = col is not null ? _puzzle.GetCol(col.Value) : _puzzle.GetRow(row.Value);
                     unit.Where(cell => cell.Candidates.Contains(candidate))
                         .Where(cell => cell.Box != i)
                         .ToList()
@@ -237,12 +237,12 @@ namespace Sudoku.Analysis
             return false;
         }
 
-        public bool BoxLineReduction()
+        private bool _boxLineReduction()
         {
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                Cell[] col = Puzzle.GetCol(i);
-                Cell[] row = Puzzle.GetRow(i);
+                Cell[] col = _puzzle.GetCol(i);
+                Cell[] row = _puzzle.GetRow(i);
 
                 for (int candidate = 1; candidate < 10; candidate++)
                 {
@@ -261,7 +261,7 @@ namespace Sudoku.Analysis
                     return false;
 
                 List<Action> actions = new();
-                Puzzle.GetBox(matches[0].Box)
+                _puzzle.GetBox(matches[0].Box)
                     .Where(cell => cell.Candidates.Contains(candidate))
                     .Where(cell => !matches.Contains(cell))
                     .ToList()
@@ -281,7 +281,7 @@ namespace Sudoku.Analysis
             }
         }
 
-        public bool XWing()
+        private bool _xWing()
         {
             for (int candidate = 1; candidate < 10; candidate++)
             {
@@ -295,13 +295,13 @@ namespace Sudoku.Analysis
             {
                 for (int iUnit = 0; iUnit < Puzzle.UnitSize; iUnit++)
                 {
-                    Cell[] unit = isCol ? Puzzle.GetCol(iUnit) : Puzzle.GetRow(iUnit);
+                    Cell[] unit = isCol ? _puzzle.GetCol(iUnit) : _puzzle.GetRow(iUnit);
                     Cell[] matches = unit.GetCandidateMatches(candidate);
                     if (matches.Length != 2) continue;
 
                     for (int iTestUnit = iUnit + 1; iTestUnit < Puzzle.UnitSize; iTestUnit++)
                     {
-                        Cell[] testUnit = isCol ? Puzzle.GetCol(iTestUnit) : Puzzle.GetRow(iTestUnit);
+                        Cell[] testUnit = isCol ? _puzzle.GetCol(iTestUnit) : _puzzle.GetRow(iTestUnit);
                         Cell[] testMatches = testUnit.GetCandidateMatches(candidate);
                         if (testMatches.Length != 2) continue;
                         if (isCol && matches[0].Row != testMatches[0].Row) continue;
@@ -313,8 +313,8 @@ namespace Sudoku.Analysis
                         for (int iActionUnit = 0; iActionUnit < 2; iActionUnit++)
                         {
                             Cell[] actionUnit = isCol
-                                ? Puzzle.GetRow(testMatches[iActionUnit].Row)
-                                : Puzzle.GetCol(testMatches[iActionUnit].Col);
+                                ? _puzzle.GetRow(testMatches[iActionUnit].Row)
+                                : _puzzle.GetCol(testMatches[iActionUnit].Col);
                             actionUnit
                                 .Where(cell => cell.Candidates.Contains(candidate))
                                 .Where(cell => cell != matches[iActionUnit])
@@ -339,18 +339,18 @@ namespace Sudoku.Analysis
             }
         }
 
-        public bool YWing()
+        private bool _yWing()
         {
             for (int iCol = 0; iCol < Puzzle.UnitSize; iCol++)
             {
                 for (int iRow = 0; iRow < Puzzle.UnitSize; iRow++)
                 {
-                    Cell hinge = Puzzle.GetCell(iRow, iCol);
+                    Cell hinge = _puzzle.GetCell(iRow, iCol);
                     if (hinge.Candidates.Count != 2) continue;
 
-                    Cell[] hingeCol = Puzzle.GetCol(hinge.Col);
-                    Cell[] hingeRow = Puzzle.GetRow(hinge.Row);
-                    Cell[] hingeBox = Puzzle.GetBox(hinge.Box);
+                    Cell[] hingeCol = _puzzle.GetCol(hinge.Col);
+                    Cell[] hingeRow = _puzzle.GetRow(hinge.Row);
+                    Cell[] hingeBox = _puzzle.GetBox(hinge.Box);
 
                     if (hingeAndWings(hinge, hingeCol, hingeRow)) return true;
                     if (hingeAndWings(hinge, hingeBox, hingeCol)) return true;
@@ -385,7 +385,7 @@ namespace Sudoku.Analysis
                         !x.Candidates.Contains(confluence)))
                     {
                         List<Action> actions = new();
-                        Puzzle.CommonPeers(wing1, wing2)
+                        _puzzle.CommonPeers(wing1, wing2)
                             .Where(x => x.Candidates.Contains(confluence))
                             .Where(x => x != hinge)
                             .Where(x => x != wing1)

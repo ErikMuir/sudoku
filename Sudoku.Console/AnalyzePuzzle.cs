@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MuirDev.ConsoleTools;
 using Sudoku.Analysis;
 using Sudoku.Logic;
@@ -14,7 +12,7 @@ namespace Sudoku.Console
         public static void Run(Puzzle puzzle)
         {
             Analyzer analyzer = new Analyzer(puzzle);
-            analyzer.Solve();
+            analyzer.Analyze();
             _statistics(analyzer);
         }
 
@@ -22,7 +20,7 @@ namespace Sudoku.Console
         {
             _console
                 .LineFeed()
-                .Info($"Is Solved: {analyzer.Puzzle.IsSolved()}")
+                .Info($"Is Solved: {analyzer.IsSolved}")
                 .Info($"Solve Duration (ms): {analyzer.SolveDuration.Milliseconds}")
                 .Info($"Solve Depth: {analyzer.SolveDepth}")
                 .Info("Constraint Actions:");

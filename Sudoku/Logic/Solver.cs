@@ -33,7 +33,7 @@ namespace Sudoku.Logic
 
         private static Puzzle _doSolve(Puzzle input)
         {
-            if (input.IsSolved()) return input;
+            if (input.IsSolved) return input;
             if (++_iterationCount >= 1000) return null;
             Cell activeCell = _findWorkingCell(input);
             if (activeCell is null) return null;
@@ -49,7 +49,7 @@ namespace Sudoku.Logic
 
         private static Puzzle _doMultiSolve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
         {
-            if (input.IsSolved())
+            if (input.IsSolved)
                 return (solutionFunc is not null && solutionFunc(input)) ? null : input;
             if (++_iterationCount >= 1000) return null;
             Cell activeCell = _findWorkingCell(input);
@@ -94,7 +94,7 @@ namespace Sudoku.Logic
         private static Cell _findWorkingCell(Puzzle puzzle)
         {
             return puzzle
-                .GetEmptyCells()
+                .EmptyCells
                 .OrderBy(cell => cell.Candidates.Count)
                 .FirstOrDefault();
         }

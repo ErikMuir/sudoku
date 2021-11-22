@@ -46,12 +46,20 @@ namespace Sudoku.Logic
         public Cell[] Cells { get; private set; } = new Cell[TotalCells];
         public Metadata Metadata { get; set; } = new();
 
+        public Cell[] EmptyCells => this.Cells.Where(x => x.Type == CellType.Empty).ToArray();
+        public bool IsSolved =>
+            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
+            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())
+            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitSolved());
+        public bool IsValid =>
+            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitValid())
+            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitValid())
+            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitValid());
+
         public Cell GetCell(int row, int col) => this.Cells[(row * UnitSize) + col];
         public Cell[] GetRow(int row) => this.Cells.Where(x => x.Row == row).OrderBy(x => x.Col).ToArray();
         public Cell[] GetCol(int col) => this.Cells.Where(x => x.Col == col).OrderBy(x => x.Row).ToArray();
         public Cell[] GetBox(int box) => this.Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col).ToArray();
-        public Cell[] GetEmptyCells() => this.Cells.Where(x => x.Value is null).ToArray();
-        public Cell GetNextEmptyCell() => this.Cells.Where(x => x.Value is null).FirstOrDefault();
         public Cell[] CommonPeers(Cell c1, Cell c2) => Peers(c1).Intersect(Peers(c2)).ToArray();
         public Cell[] Peers(Cell cell)
         {
@@ -68,18 +76,8 @@ namespace Sudoku.Logic
                 .ToArray();
         }
 
-        public bool IsSolved() =>
-            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
-            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())
-            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitSolved());
-
-        public bool IsValid() =>
-            UnitSize.LoopAnd(i => this.GetRow(i).IsUnitValid())
-            && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitValid())
-            && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitValid());
-
         public void FillCandidates() =>
-            this.GetEmptyCells()
+            this.EmptyCells
                 .ToList()
                 .ForEach(cell => cell.FillCandidates());
 

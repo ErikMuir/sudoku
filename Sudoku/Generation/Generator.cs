@@ -58,10 +58,7 @@ namespace Sudoku.Generation
         }
 
         private static Cell _getRandomEmptyCell(Puzzle puzzle)
-        {
-            Cell[] emptyCells = puzzle.GetEmptyCells();
-            return emptyCells[_rand.Next(emptyCells.Length)];
-        }
+            => puzzle.EmptyCells[_rand.Next(puzzle.EmptyCells.Length)];
 
         private static Puzzle _placeValue(Puzzle input, int cellIndex, int value)
         {

@@ -56,26 +56,16 @@ namespace Sudoku.Tests
         }
 
         [Fact]
-        public void GetEmptyCells_Returns_EmptyCells()
+        public void EmptyCells_Returns_EmptyCells()
         {
-            Cell[] emptyCells = _testObject.GetEmptyCells();
-            Assert.Equal(81, emptyCells.Length);
+            Assert.Equal(81, _testObject.EmptyCells.Length);
         }
 
         [Fact]
-        public void GetEmptyCells_Returns_EmptyList()
+        public void EmptyCells_Returns_EmptyList()
         {
             Puzzle solved = TestHelpers.GetSolvedPuzzle();
-            Cell[] emptyCells = solved.GetEmptyCells();
-            Assert.Empty(emptyCells);
-        }
-
-        [Fact]
-        public void GetNextEmptyCell_Returns_EmptyCell()
-        {
-            _testObject.Cells[0].Value = 9;
-            Cell actual = _testObject.GetNextEmptyCell();
-            Assert.Same(_testObject.Cells[1], actual);
+            Assert.Empty(solved.EmptyCells);
         }
 
         [Fact]
@@ -99,20 +89,20 @@ namespace Sudoku.Tests
         public void IsSolved_Returns_True()
         {
             Puzzle solved = TestHelpers.GetSolvedPuzzle();
-            Assert.True(solved.IsSolved());
+            Assert.True(solved.IsSolved);
         }
 
         [Fact]
         public void IsSolved_Returns_False()
         {
-            Assert.False(_testObject.IsSolved());
+            Assert.False(_testObject.IsSolved);
         }
 
         [Fact]
         public void IsValid_Returns_True()
         {
-            Assert.True(_testObject.IsValid());
-            Assert.True(TestHelpers.GetSolvedPuzzle().IsValid());
+            Assert.True(_testObject.IsValid);
+            Assert.True(TestHelpers.GetSolvedPuzzle().IsValid);
         }
 
         [Fact]
@@ -121,7 +111,7 @@ namespace Sudoku.Tests
             Cell[] row = _testObject.GetRow(0);
             row[0].Value = 1;
             row[1].Value = 1;
-            Assert.False(_testObject.IsValid());
+            Assert.False(_testObject.IsValid);
         }
 
         [Fact]

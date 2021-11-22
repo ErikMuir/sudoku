@@ -11,7 +11,7 @@ namespace Sudoku.Tests
         {
             Puzzle puzzle = TestHelpers.GetEasyPuzzle();
             Puzzle actual = Solver.Solve(puzzle);
-            Assert.True(actual.IsSolved());
+            Assert.True(actual.IsSolved);
         }
 
         [Fact]

@@ -7,78 +7,53 @@ namespace Sudoku.Tests
 {
     public class AnalyzerTests
     {
-        [Fact]
-        public void Analyze_Solves_Puzzle()
+        private Puzzle _puzzle;
+
+        public AnalyzerTests()
         {
-            Puzzle puzzle = TestHelpers.GetEasyPuzzle();
-            Analyzer analyzer = new(puzzle);
-            Assert.False(analyzer.IsSolved);
-            analyzer.Analyze();
-            Assert.True(analyzer.IsSolved);
+            _puzzle = TestHelpers.GetEasyPuzzle();
         }
 
         [Fact]
         public void Analyze_DoesNotMutateInput()
         {
-            Puzzle puzzle = TestHelpers.GetEasyPuzzle();
-            Analyzer analyzer = new(puzzle);
-            analyzer.Analyze();
-            Assert.True(analyzer.IsSolved);
-            Assert.False(puzzle.IsSolved);
+            Puzzle clone = new(_puzzle);
+            Analyzer analyzer = new(_puzzle);
+            for (int i = 0; i < Puzzle.TotalCells; i++)
+            {
+                Cell expected = clone.Cells[i];
+                Cell actual = _puzzle.Cells[i];
+                Assert.Equal(expected.Type, actual.Type);
+                Assert.Equal(expected.Value, actual.Value);
+            }
         }
 
         [Fact]
         public void Analyze_Sets_SolveDuration()
         {
-            Puzzle puzzle = TestHelpers.GetEasyPuzzle();
-            Analyzer analyzer = new(puzzle);
-            analyzer.Analyze();
+            Analyzer analyzer = new(_puzzle);
             Assert.True(analyzer.SolveDuration > TimeSpan.MinValue);
-        }
-
-        [Fact]
-        public void Analyze_DoesNotSet_SolveDuration()
-        {
-            Puzzle puzzle = TestHelpers.GetSolvedPuzzle();
-            Analyzer analyzer = new(puzzle);
-            analyzer.Analyze();
-            Assert.Equal(TimeSpan.FromMilliseconds(0), analyzer.SolveDuration);
         }
 
         [Fact]
         public void Analyze_Sets_SolveDepth()
         {
-            Puzzle puzzle = TestHelpers.GetEasyPuzzle();
-            Analyzer analyzer = new(puzzle);
-            analyzer.Analyze();
+            Analyzer analyzer = new(_puzzle);
             Assert.True(analyzer.SolveDepth > 0);
-        }
-
-        [Fact]
-        public void Analyze_DoesNotSet_SolveDepth()
-        {
-            Puzzle puzzle = TestHelpers.GetSolvedPuzzle();
-            Analyzer analyzer = new(puzzle);
-            analyzer.Analyze();
-            Assert.Equal(0, analyzer.SolveDepth);
         }
 
         [Fact]
         public void Analyze_Adds_Logs()
         {
-            Puzzle puzzle = TestHelpers.GetEasyPuzzle();
-            Analyzer analyzer = new(puzzle);
-            analyzer.Analyze();
+            Analyzer analyzer = new(_puzzle);
             Assert.NotEmpty(analyzer.Logs);
         }
 
         [Fact]
-        public void Analyze_DoesNotAdd_Logs()
+        public void Analyze_Sets_Level()
         {
-            Puzzle puzzle = TestHelpers.GetSolvedPuzzle();
-            Analyzer analyzer = new(puzzle);
-            analyzer.Analyze();
-            Assert.Empty(analyzer.Logs);
+            Analyzer analyzer = new(_puzzle);
+            Assert.NotEqual(Level.Uninitialized, analyzer.Level);
         }
     }
 }

@@ -16,18 +16,18 @@ namespace Sudoku.Analysis
         {
             _puzzle = new Puzzle(puzzle);
             _timer = new Stopwatch();
+            _analyze();
         }
 
-        public bool IsSolved => _puzzle.IsSolved;
         public TimeSpan SolveDuration => _timer.Elapsed;
         public int SolveDepth { get; set; } = 0;
+        public Level Level { get; set; } = Level.Uninitialized;
         public List<ConstraintLog> Logs { get; set; } = new();
 
-        public void Analyze()
+        private void _analyze()
         {
-            if (_puzzle.IsSolved) return;
-
             _timer.Start();
+            _puzzle.ResetFilledCells();
             _puzzle.FillCandidates();
             _puzzle.ReduceCandidates();
 
@@ -49,9 +49,13 @@ namespace Sudoku.Analysis
                 if (!isChanged) isChanged = _yWing();
             }
             while (isChanged);
-
             _timer.Stop();
+            if (!_puzzle.IsSolved)
+                Level = Level.Unsolvable;
         }
+
+        private void _setLevel(Level level)
+            => this.Level = level > this.Level ? level : this.Level;
 
         private bool _nakedSingle()
         {
@@ -64,6 +68,7 @@ namespace Sudoku.Analysis
             cell.Value = cell.Candidates[0];
             Logs.Add(new ConstraintLog(ConstraintType.NakedSingle, cell, (int)cell.Value));
             _puzzle.ReduceCandidates();
+            _setLevel(Level.Easy);
             return true;
         }
 
@@ -82,6 +87,7 @@ namespace Sudoku.Analysis
                         cell.Value = candidate;
                         Logs.Add(new ConstraintLog(ConstraintType.HiddenSingle, cell, candidate));
                         _puzzle.ReduceCandidates();
+                        _setLevel(Level.Easy);
                         return true;
                     }
                 }
@@ -138,6 +144,7 @@ namespace Sudoku.Analysis
                         default: throw new Exception();
                     }
                     Logs.Add(new ConstraintLog(constraint, actions));
+                    _setLevel(Level.Medium);
                     return true;
                 }
             }
@@ -194,6 +201,7 @@ namespace Sudoku.Analysis
                         default: throw new Exception();
                     }
                     Logs.Add(new ConstraintLog(constraint, actions));
+                    _setLevel(Level.Difficult);
                     return true;
                 }
             }
@@ -229,6 +237,7 @@ namespace Sudoku.Analysis
                     if (actions.Any())
                     {
                         Logs.Add(new ConstraintLog(ConstraintType.PointingSet, actions));
+                        _setLevel(Level.Difficult);
                         return true;
                     }
                 }
@@ -274,6 +283,7 @@ namespace Sudoku.Analysis
                 if (actions.Any())
                 {
                     Logs.Add(new ConstraintLog(ConstraintType.BoxLineReduction, actions));
+                    _setLevel(Level.Difficult);
                     return true;
                 }
 
@@ -330,6 +340,7 @@ namespace Sudoku.Analysis
                         if (actions.Any())
                         {
                             Logs.Add(new ConstraintLog(ConstraintType.XWing, actions));
+                            _setLevel(Level.Extreme);
                             return true;
                         }
                     }
@@ -400,6 +411,7 @@ namespace Sudoku.Analysis
                         if (actions.Any())
                         {
                             Logs.Add(new ConstraintLog(ConstraintType.YWing, actions));
+                            _setLevel(Level.Extreme);
                             return true;
                         }
                     }

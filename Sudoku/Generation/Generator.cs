@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Analysis;
 using Sudoku.Logic;
 
 namespace Sudoku.Generation
@@ -22,11 +23,18 @@ namespace Sudoku.Generation
         public static Puzzle Generate(ISymmetry symmetry) => _generate(symmetry);
         public static Puzzle GenerateRandomSymmetry() => _generate(_supportedSymmetries[_rand.Next(_supportedSymmetries.Length)]);
 
-        private static Puzzle _generate(ISymmetry symmetry)
+        private static Puzzle _generate(ISymmetry symmetry, Level level = Level.Uninitialized)
         {
+            Metadata metadata = new()
+            {
+                Source = "MuirDev.Sudoku",
+                Level = level,
+                Symmetry = symmetry.Type,
+            };
+
             while (true)
             {
-                Puzzle puzzle = new(symmetry);
+                Puzzle puzzle = new(metadata);
                 puzzle.FillCandidates();
                 puzzle.ReduceCandidates();
                 int puzzleIterations = 0;
@@ -49,9 +57,16 @@ namespace Sudoku.Generation
                     List<Puzzle> solutions = Solver.MultiSolve(workingPuzzle, 2);
                     switch (solutions.Count)
                     {
-                        case 0: continue;
-                        case 1: return _finalizePuzzle(workingPuzzle);
-                        default: puzzle = workingPuzzle; break;
+                        case 0:
+                            continue;
+                        case 1:
+                            Analyzer analyzer = new(workingPuzzle);
+                            if (level > Level.Uninitialized && level != analyzer.Level)
+                                continue;
+                            return _finalizePuzzle(workingPuzzle);
+                        default:
+                            puzzle = workingPuzzle;
+                            break;
                     }
                 }
             }
@@ -83,12 +98,17 @@ namespace Sudoku.Generation
 
         private static Puzzle _finalizePuzzle(Puzzle puzzle)
         {
+            // convert filled cells to clues
             for (int i = 0; i < puzzle.Cells.Length; i++)
             {
                 Cell cell = puzzle.Cells[i];
                 if (cell.Value is null) continue;
                 puzzle.Cells[i] = new Clue(cell.Row, cell.Col, (int)cell.Value);
             }
+
+            // update metadata
+            puzzle.Metadata.DatePublished = DateTime.Now;
+
             return puzzle;
         }
     }

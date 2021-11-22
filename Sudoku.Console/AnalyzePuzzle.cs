@@ -12,7 +12,6 @@ namespace Sudoku.Console
         public static void Run(Puzzle puzzle)
         {
             Analyzer analyzer = new Analyzer(puzzle);
-            analyzer.Analyze();
             _statistics(analyzer);
         }
 
@@ -20,7 +19,7 @@ namespace Sudoku.Console
         {
             _console
                 .LineFeed()
-                .Info($"Is Solved: {analyzer.IsSolved}")
+                .Info($"Level: {analyzer.Level}")
                 .Info($"Solve Duration (ms): {analyzer.SolveDuration.Milliseconds}")
                 .Info($"Solve Depth: {analyzer.SolveDepth}")
                 .Info("Constraint Actions:");

@@ -21,11 +21,6 @@ namespace Sudoku.Logic
                     this.Cells[(row * UnitSize) + col] = new Cell(row, col);
         }
 
-        public Puzzle(ISymmetry symmetry) : this()
-        {
-            this.Metadata.Symmetry = symmetry.Type;
-        }
-
         public Puzzle(Metadata metadata) : this()
         {
             this.Metadata = metadata;
@@ -48,6 +43,8 @@ namespace Sudoku.Logic
 
         public Cell[] EmptyCells =>
             this.Cells.Where(x => x.Type == CellType.Empty).ToArray();
+        public Cell[] FilledCells =>
+            this.Cells.Where(x => x.Type == CellType.Filled).ToArray();
         public bool IsSolved =>
             UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
             && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())
@@ -76,6 +73,11 @@ namespace Sudoku.Logic
                 .Select(c => this.Cells[c])
                 .ToArray();
         }
+
+        public void ResetFilledCells() =>
+            this.FilledCells
+                .ToList()
+                .ForEach(cell => cell.Value = null);
 
         public void FillCandidates() =>
             this.EmptyCells

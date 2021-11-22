@@ -1,4 +1,5 @@
 using System;
+using Sudoku.Exceptions;
 
 namespace Sudoku.Console
 {

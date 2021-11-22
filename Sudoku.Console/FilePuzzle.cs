@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MuirDev.ConsoleTools;
+using Sudoku.Exceptions;
 using Sudoku.Logic;
 using Sudoku.Serialization;
 

@@ -1,3 +1,5 @@
+using Sudoku.Exceptions;
+
 namespace Sudoku.Logic
 {
     public class Clue : Cell

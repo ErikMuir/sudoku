@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using Sudoku.Extensions;
 using Sudoku.Logic;
 
 namespace Sudoku.Serialization
@@ -15,7 +16,7 @@ namespace Sudoku.Serialization
             => $"{MetadataTokens.Prefix}{token}{value.RemoveNewLines()}";
 
         public static string SerializeMetadataEntry(this DateTime value, string token)
-            => $"{MetadataTokens.Prefix}{token}{value.ToUtcString()}";
+            => $"{MetadataTokens.Prefix}{token}{value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")}";
 
         public static string SerializeMetadataEntry(this Uri value, string token)
             => $"{MetadataTokens.Prefix}{token}{value.ToString()}";

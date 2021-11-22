@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Extensions;
 using Sudoku.Generation;
 
 namespace Sudoku.Logic

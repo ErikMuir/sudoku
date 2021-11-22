@@ -1,5 +1,6 @@
 using System;
 using MuirDev.ConsoleTools;
+using Sudoku.Exceptions;
 using Sudoku.Logic;
 
 namespace Sudoku.Console

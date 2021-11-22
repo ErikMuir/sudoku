@@ -2,31 +2,35 @@ using System;
 using System.Linq;
 using Sudoku.Logic;
 
-namespace Sudoku
+namespace Sudoku.Extensions
 {
     public static class Extensions
     {
-        public static bool Between(this int num, int lower, int upper, bool inclusive = false)
-            => inclusive ? lower <= num && num <= upper : lower < num && num < upper;
-
-        public static bool Between(this int? num, int lower, int upper, bool inclusive = false)
-            => inclusive ? lower <= num && num <= upper : lower < num && num < upper;
-
         private static bool IsUnit(this Cell[] unit)
-            => (unit is not null && unit.Length == 9);
+            => (unit is not null && unit.Length == Puzzle.UnitSize);
+
+        private static int ValueCount(this Cell[] unit)
+            => unit.Count(x => x.Value is not null);
+
+        private static int DistinctValueCount(this Cell[] unit)
+            => unit
+                .Where(x => x.Value is not null)
+                .Select(x => x.Value)
+                .Distinct()
+                .Count();
+
 
         public static bool IsUnitSolved(this Cell[] unit)
-            => (unit.IsUnit() && unit.All(x => x.Value.HasValue) && unit.Select(x => x.Value).Distinct().Count() == 9);
+            => (
+                unit.IsUnit() &&
+                unit.All(x => x.Value is not null) &&
+                unit.DistinctValueCount() == Puzzle.UnitSize
+            );
 
         public static bool IsUnitValid(this Cell[] unit)
             => (
                 unit.IsUnit() &&
-                unit.Where(x => x.Value.HasValue)
-                    .Select(x => x.Value)
-                    .Count() == unit.Where(x => x.Value.HasValue)
-                                    .Select(x => x.Value)
-                                    .Distinct()
-                                    .Count()
+                unit.ValueCount() == unit.DistinctValueCount()
             );
 
         public static bool IsCandidateUnique(this Cell[] cells, int candidate)
@@ -47,24 +51,19 @@ namespace Sudoku
         public static Cell[] GetCandidateMatches(this Cell[] cells, int candidate)
             => cells.Where(x => x.Candidates.Contains(candidate)).ToArray();
 
-        public static string ToUtcString(this DateTime dt)
-            => dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
-
         public static bool LoopAnd(this int count, Func<int, bool> func)
         {
             for (int i = 0; i < count; i++)
-            {
-                if (!func?.Invoke(i) ?? false) return false;
-            }
+                if (!func?.Invoke(i) ?? false)
+                    return false;
             return true;
         }
 
         public static bool LoopOr(this int count, Func<int, bool> func)
         {
             for (int i = 0; i < count; i++)
-            {
-                if (func?.Invoke(i) ?? false) return true;
-            }
+                if (func?.Invoke(i) ?? false)
+                    return true;
             return false;
         }
 

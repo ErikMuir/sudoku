@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MuirDev.ConsoleTools;
+using Sudoku.Exceptions;
 using Sudoku.Generation;
 using Sudoku.Logic;
 

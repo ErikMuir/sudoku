@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using Sudoku.Exceptions;
 using Sudoku.Logic;
 using Xunit;
 

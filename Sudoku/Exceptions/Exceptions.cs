@@ -1,6 +1,6 @@
 using System;
 
-namespace Sudoku
+namespace Sudoku.Exceptions
 {
     public class SudokuException : Exception
     {

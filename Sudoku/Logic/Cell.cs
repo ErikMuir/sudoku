@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Sudoku.Exceptions;
+using Sudoku.Extensions;
 
 namespace Sudoku.Logic
 {
@@ -73,7 +75,7 @@ namespace Sudoku.Logic
         private bool _sameBox(Cell cell) => cell.Box == this.Box;
         private int _validatedValue(int val)
         {
-            if (!val.Between(1, Puzzle.UnitSize, true))
+            if (val < 1 || val > Puzzle.UnitSize)
                 throw new SudokuException($"Value must be between 1 and {Puzzle.UnitSize}, inclusive.");
             return val;
         }

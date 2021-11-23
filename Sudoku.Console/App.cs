@@ -17,7 +17,7 @@ namespace Sudoku.Console
                 try
                 {
                     puzzle = puzzle is null
-                        ? HomeMenu.Run()
+                        ? MainMenu.Run()
                         : PuzzleMenu.Run(puzzle);
                     _console
                         .Write("Press any key to continue... ")
@@ -25,6 +25,10 @@ namespace Sudoku.Console
                         .LineFeed();
                 }
                 catch (MenuExitException)
+                {
+                    // gulp!
+                }
+                catch (ProgramExitException)
                 {
                     return;
                 }

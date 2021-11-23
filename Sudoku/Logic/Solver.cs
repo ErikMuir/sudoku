@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Extensions;
 
 namespace Sudoku.Logic
 {
@@ -93,8 +94,8 @@ namespace Sudoku.Logic
 
         private static Cell _findWorkingCell(Puzzle puzzle)
         {
-            return puzzle
-                .EmptyCells
+            return puzzle.Cells
+                .EmptyCells()
                 .OrderBy(cell => cell.Candidates.Count)
                 .FirstOrDefault();
         }

@@ -22,7 +22,7 @@ namespace Sudoku.Generation
             List<int> reflections = new() { cellIndex };
             int row = cellIndex.GetRowIndex();
             int col = cellIndex.GetColIndex();
-            if (row + col == Puzzle.UnitSize - 1)
+            if (row + col != Puzzle.UnitSize - 1)
             {
                 int reflectedRow = (Puzzle.UnitSize - 1) - col;
                 int reflectedCol = (Puzzle.UnitSize - 1) - row;

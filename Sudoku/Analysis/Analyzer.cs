@@ -59,7 +59,8 @@ namespace Sudoku.Analysis
 
         private bool _nakedSingle()
         {
-            Cell cell = _puzzle.EmptyCells
+            Cell cell = _puzzle.Cells
+                .EmptyCells()
                 .Where(x => x.Candidates.Count == 1)
                 .FirstOrDefault();
 
@@ -74,7 +75,7 @@ namespace Sudoku.Analysis
 
         private bool _hiddenSingle()
         {
-            foreach (Cell cell in _puzzle.EmptyCells)
+            foreach (Cell cell in _puzzle.Cells.EmptyCells())
             {
                 foreach (int candidate in cell.Candidates)
                 {
@@ -109,7 +110,7 @@ namespace Sudoku.Analysis
             return false;
         }
 
-        private bool _nakedSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
+        private bool _nakedSetUnitCheck(IEnumerable<Cell> unit, List<CandidateSet> sets)
         {
             int setLength = sets.First().Count;
 
@@ -166,7 +167,7 @@ namespace Sudoku.Analysis
             return false;
         }
 
-        private bool _hiddenSetUnitCheck(Cell[] unit, List<CandidateSet> sets)
+        private bool _hiddenSetUnitCheck(IEnumerable<Cell> unit, List<CandidateSet> sets)
         {
             int setLength = sets.First().Count;
 
@@ -213,18 +214,18 @@ namespace Sudoku.Analysis
         {
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                Cell[] box = _puzzle.GetBox(i);
+                IEnumerable<Cell> box = _puzzle.GetBox(i);
                 for (int candidate = 1; candidate < 10; candidate++)
                 {
-                    Cell[] matches = box.Where(cell => cell.Candidates.Contains(candidate)).ToArray();
-                    if (matches.Length < 2) continue;
+                    List<Cell> matches = box.Where(cell => cell.Candidates.Contains(candidate)).ToList();
+                    if (matches.Count < 2) continue;
 
                     int? col = matches.AllInSameCol() ? matches.First().Col : null as int?;
                     int? row = matches.AllInSameRow() ? matches.First().Row : null as int?;
                     if (col is null && row is null) continue;
 
                     List<Action> actions = new();
-                    Cell[] unit = col is not null ? _puzzle.GetCol(col.Value) : _puzzle.GetRow(row.Value);
+                    IEnumerable<Cell> unit = col is not null ? _puzzle.GetCol(col.Value) : _puzzle.GetRow(row.Value);
                     unit.Where(cell => cell.Candidates.Contains(candidate))
                         .Where(cell => cell.Box != i)
                         .ToList()
@@ -250,8 +251,8 @@ namespace Sudoku.Analysis
         {
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                Cell[] col = _puzzle.GetCol(i);
-                Cell[] row = _puzzle.GetRow(i);
+                IEnumerable<Cell> col = _puzzle.GetCol(i);
+                IEnumerable<Cell> row = _puzzle.GetRow(i);
 
                 for (int candidate = 1; candidate < 10; candidate++)
                 {
@@ -262,11 +263,11 @@ namespace Sudoku.Analysis
 
             return false;
 
-            bool reduce(Cell[] unit, int candidate)
+            bool reduce(IEnumerable<Cell> unit, int candidate)
             {
-                Cell[] matches = unit.Where(x => x.Candidates.Contains(candidate)).ToArray();
+                List<Cell> matches = unit.Where(x => x.Candidates.Contains(candidate)).ToList();
 
-                if (matches.Length < 2 || !matches.AllInSameBox())
+                if (matches.Count < 2 || !matches.AllInSameBox())
                     return false;
 
                 List<Action> actions = new();
@@ -305,14 +306,14 @@ namespace Sudoku.Analysis
             {
                 for (int iUnit = 0; iUnit < Puzzle.UnitSize; iUnit++)
                 {
-                    Cell[] unit = isCol ? _puzzle.GetCol(iUnit) : _puzzle.GetRow(iUnit);
-                    Cell[] matches = unit.GetCandidateMatches(candidate);
+                    IEnumerable<Cell> unit = isCol ? _puzzle.GetCol(iUnit) : _puzzle.GetRow(iUnit);
+                    Cell[] matches = unit.GetCandidateMatches(candidate).ToArray();
                     if (matches.Length != 2) continue;
 
                     for (int iTestUnit = iUnit + 1; iTestUnit < Puzzle.UnitSize; iTestUnit++)
                     {
-                        Cell[] testUnit = isCol ? _puzzle.GetCol(iTestUnit) : _puzzle.GetRow(iTestUnit);
-                        Cell[] testMatches = testUnit.GetCandidateMatches(candidate);
+                        IEnumerable<Cell> testUnit = isCol ? _puzzle.GetCol(iTestUnit) : _puzzle.GetRow(iTestUnit);
+                        Cell[] testMatches = testUnit.GetCandidateMatches(candidate).ToArray();
                         if (testMatches.Length != 2) continue;
                         if (isCol && matches[0].Row != testMatches[0].Row) continue;
                         if (isCol && matches[1].Row != testMatches[1].Row) continue;
@@ -322,7 +323,7 @@ namespace Sudoku.Analysis
                         List<Action> actions = new();
                         for (int iActionUnit = 0; iActionUnit < 2; iActionUnit++)
                         {
-                            Cell[] actionUnit = isCol
+                            IEnumerable<Cell> actionUnit = isCol
                                 ? _puzzle.GetRow(testMatches[iActionUnit].Row)
                                 : _puzzle.GetCol(testMatches[iActionUnit].Col);
                             actionUnit
@@ -352,26 +353,20 @@ namespace Sudoku.Analysis
 
         private bool _yWing()
         {
-            for (int iCol = 0; iCol < Puzzle.UnitSize; iCol++)
+            foreach (Cell hinge in _puzzle.Cells.Where(x => x.Candidates.Count == 2))
             {
-                for (int iRow = 0; iRow < Puzzle.UnitSize; iRow++)
-                {
-                    Cell hinge = _puzzle.GetCell(iRow, iCol);
-                    if (hinge.Candidates.Count != 2) continue;
+                IEnumerable<Cell> hingeCol = _puzzle.GetCol(hinge.Col);
+                IEnumerable<Cell> hingeRow = _puzzle.GetRow(hinge.Row);
+                IEnumerable<Cell> hingeBox = _puzzle.GetBox(hinge.Box);
 
-                    Cell[] hingeCol = _puzzle.GetCol(hinge.Col);
-                    Cell[] hingeRow = _puzzle.GetRow(hinge.Row);
-                    Cell[] hingeBox = _puzzle.GetBox(hinge.Box);
-
-                    if (hingeAndWings(hinge, hingeCol, hingeRow)) return true;
-                    if (hingeAndWings(hinge, hingeBox, hingeCol)) return true;
-                    if (hingeAndWings(hinge, hingeBox, hingeRow)) return true;
-                }
+                if (hingeAndWings(hinge, hingeCol, hingeRow)) return true;
+                if (hingeAndWings(hinge, hingeBox, hingeCol)) return true;
+                if (hingeAndWings(hinge, hingeBox, hingeRow)) return true;
             }
 
             return false;
 
-            bool hingeAndWings(Cell hinge, Cell[] wing1Unit, Cell[] wing2Unit)
+            bool hingeAndWings(Cell hinge, IEnumerable<Cell> wing1Unit, IEnumerable<Cell> wing2Unit)
             {
                 if (reduce(hinge, wing1Unit, wing2Unit, hinge.Candidates[0], hinge.Candidates[1]))
                     return true;
@@ -382,7 +377,7 @@ namespace Sudoku.Analysis
                 return false;
             }
 
-            bool reduce(Cell hinge, Cell[] wing1Unit, Cell[] wing2Unit, int wing1Candidate, int wing2Candidate)
+            bool reduce(Cell hinge, IEnumerable<Cell> wing1Unit, IEnumerable<Cell> wing2Unit, int wing1Candidate, int wing2Candidate)
             {
                 foreach (Cell wing1 in wing1Unit
                         .Where(x => x.Candidates.Count == 2)

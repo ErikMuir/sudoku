@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using MuirDev.ConsoleTools;
 using Sudoku.Logic;
@@ -17,7 +18,7 @@ namespace Sudoku.Console
             List<string> rows = new();
             for (int i = 0; i < Puzzle.UnitSize; i++)
             {
-                Cell[] rowCells = puzzle.GetRow(i);
+                Cell[] rowCells = puzzle.GetRow(i).ToArray();
                 string rowString = _gridRow(rowCells);
                 rows.Add(rowString);
             }

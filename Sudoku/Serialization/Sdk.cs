@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Sudoku.Exceptions;
+using Sudoku.Generation;
 using Sudoku.Logic;
 
 namespace Sudoku.Serialization
@@ -76,8 +77,9 @@ namespace Sudoku.Serialization
             if (metadata.Comment is not null) sb.AppendLine(metadata.Comment.SerializeMetadataEntry(MetadataTokens.Comment));
             if (metadata.DatePublished != default(DateTime)) sb.AppendLine(metadata.DatePublished.SerializeMetadataEntry(MetadataTokens.DatePublished));
             if (metadata.Source is not null) sb.AppendLine(metadata.Source.SerializeMetadataEntry(MetadataTokens.Source));
-            if (metadata.Level != Level.Uninitialized) sb.AppendLine(metadata.Level.SerializeMetadataEntry(MetadataTokens.Level));
+            if (metadata.Level != Level.Uninitialized) sb.AppendLine(metadata.Level.SerializeMetadataEntry());
             if (metadata.SourceUrl is not null) sb.AppendLine(metadata.SourceUrl.SerializeMetadataEntry(MetadataTokens.SourceUrl));
+            if (metadata.Symmetry != SymmetryType.Uninitialized) sb.AppendLine(metadata.Symmetry.SerializeMetadataEntry());
             return sb.ToString();
         }
 
@@ -121,6 +123,9 @@ namespace Sudoku.Serialization
                             break;
                         case MetadataTokens.SourceUrl:
                             metadata.SourceUrl = new Uri(value);
+                            break;
+                        case MetadataTokens.Symmetry:
+                            metadata.Symmetry = (SymmetryType)Enum.Parse(typeof(SymmetryType), value, true);
                             break;
                     }
                 }

@@ -26,7 +26,7 @@ namespace Sudoku.Console
             '3' => _solve(puzzle),
             '4' => _print(puzzle),
             '5' => _clear(puzzle),
-            '0' => throw new MenuExitException(),
+            '0' => throw new ProgramExitException(),
             _ => throw new SudokuException("Invalid option"),
         };
 

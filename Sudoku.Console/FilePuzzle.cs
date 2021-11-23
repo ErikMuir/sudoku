@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MuirDev.ConsoleTools;
+using Sudoku.Analysis;
 using Sudoku.Exceptions;
+using Sudoku.Extensions;
+using Sudoku.Generation;
 using Sudoku.Logic;
 using Sudoku.Serialization;
 
@@ -38,9 +41,19 @@ namespace Sudoku.Console
 
             try
             {
-                string fileExtension = _menuOptions.GetValueOrDefault(choice);
-                string path = $"{PuzzleDirectory}/{DateTime.Now:yyyyMMdd_HHmmss}.{fileExtension}";
-                ISerializer serializer = _serializers.Single(x => x.FileExtension == fileExtension);
+                Level level = puzzle.Metadata.Level;
+                if (level == Level.Uninitialized)
+                {
+                    Analyzer analyzer = new(puzzle);
+                    level = analyzer.Level;
+                }
+                string timestamp = $"{DateTime.Now:yyyyMMddHHmmss}";
+                int clues = puzzle.Cells.ClueCells().Count();
+                SymmetryType symmetry = puzzle.Metadata.Symmetry;
+                string extension = _menuOptions.GetValueOrDefault(choice);
+                string filename = $"{timestamp}_{level}_{clues}_{symmetry}.{extension}";
+                string path = $"{PuzzleDirectory}/{filename}";
+                ISerializer serializer = _serializers.Single(x => x.FileExtension == extension);
                 string contents = serializer.Serialize(puzzle);
                 File.WriteAllText(path, contents);
                 _console.Success($"File successfully saved: {path}");

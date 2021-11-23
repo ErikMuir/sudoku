@@ -5,7 +5,7 @@ using Sudoku.Logic;
 
 namespace Sudoku.Console
 {
-    public static class HomeMenu
+    public static class MainMenu
     {
         private static readonly FluentConsole _console = new();
         private static readonly Dictionary<char, string> _options = new()
@@ -16,7 +16,7 @@ namespace Sudoku.Console
             // { '4', "** debug **" },
             { '0', "Quit" },
         };
-        private static readonly Menu _menu = new(_options, "Home Menu");
+        private static readonly Menu _menu = new(_options, "Main Menu");
 
         public static Puzzle Run() => _menu.Run() switch
         {
@@ -24,7 +24,7 @@ namespace Sudoku.Console
             '2' => _load(),
             '3' => _generate(),
             '4' => _debug(),
-            '0' => throw new MenuExitException(),
+            '0' => throw new ProgramExitException(),
             _ => throw new SudokuException("Invalid option"),
         };
 

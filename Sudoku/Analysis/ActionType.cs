@@ -1,10 +1,9 @@
-namespace Sudoku.Analysis
+namespace Sudoku.Analysis;
+
+public enum ActionType
 {
-    public enum ActionType
-    {
-        SetValue,
-        ClearValue,
-        SetCandidate,
-        RemoveCandidate,
-    }
+    SetValue,
+    ClearValue,
+    SetCandidate,
+    RemoveCandidate,
 }

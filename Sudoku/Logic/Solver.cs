@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Sudoku.Extensions;
 
-namespace Sudoku.Logic
-{
+namespace Sudoku.Logic;
+
     public static class Solver
     {
         private static int _iterationCount = 0;
@@ -98,6 +98,5 @@ namespace Sudoku.Logic
                 .EmptyCells()
                 .OrderBy(cell => cell.Candidates.Count)
                 .FirstOrDefault();
-        }
     }
 }

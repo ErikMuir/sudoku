@@ -1,11 +1,10 @@
 using Sudoku.Logic;
 
-namespace Sudoku.Serialization
+namespace Sudoku.Serialization;
+
+public interface ISerializer
 {
-    public interface ISerializer
-    {
-        string FileExtension { get; }
-        Puzzle Deserialize(string puzzleString);
-        string Serialize(Puzzle puzzle);
-    }
+    string FileExtension { get; }
+    Puzzle Deserialize(string puzzleString);
+    string Serialize(Puzzle puzzle);
 }

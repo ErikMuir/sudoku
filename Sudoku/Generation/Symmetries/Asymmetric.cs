@@ -1,21 +1,20 @@
-namespace Sudoku.Generation
+namespace Sudoku.Generation;
+
+public class Asymmetric : ISymmetry
 {
-    public class Asymmetric : ISymmetry
+    private Asymmetric() { }
+
+    public static readonly ISymmetry Symmetry;
+
+    static Asymmetric()
     {
-        private Asymmetric() { }
+        Symmetry = new Asymmetric();
+    }
 
-        public static readonly ISymmetry Symmetry;
+    public SymmetryType Type => SymmetryType.Asymmetric;
 
-        static Asymmetric()
-        {
-            Symmetry = new Asymmetric();
-        }
-
-        public SymmetryType Type => SymmetryType.Asymmetric;
-
-        public int[] GetReflections(int cellIndex)
-        {
-            return new[] { cellIndex };
-        }
+    public int[] GetReflections(int cellIndex)
+    {
+        return new[] { cellIndex };
     }
 }

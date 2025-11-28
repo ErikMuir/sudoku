@@ -1,18 +1,17 @@
-namespace Sudoku.Analysis
+namespace Sudoku.Analysis;
+
+public enum ConstraintType
 {
-    public enum ConstraintType
-    {
-        NakedSingle,
-        HiddenSingle,
-        NakedDouble,
-        HiddenDouble,
-        NakedTriple,
-        HiddenTriple,
-        NakedQuadruple,
-        HiddenQuadruple,
-        PointingSet,
-        BoxLineReduction,
-        XWing,
-        YWing,
-    }
+    NakedSingle,
+    HiddenSingle,
+    NakedDouble,
+    HiddenDouble,
+    NakedTriple,
+    HiddenTriple,
+    NakedQuadruple,
+    HiddenQuadruple,
+    PointingSet,
+    BoxLineReduction,
+    XWing,
+    YWing,
 }

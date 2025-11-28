@@ -3,8 +3,8 @@ using MuirDev.ConsoleTools;
 using Sudoku.Exceptions;
 using Sudoku.Logic;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class PuzzleMenu
     {
         private static readonly FluentConsole _console = new();
@@ -54,6 +54,5 @@ namespace Sudoku.Console
         {
             _console.Warning("Puzzle has been cleared from memory!");
             return null;
-        }
     }
 }

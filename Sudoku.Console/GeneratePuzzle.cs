@@ -4,8 +4,8 @@ using Sudoku.Exceptions;
 using Sudoku.Generation;
 using Sudoku.Logic;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class GeneratePuzzle
     {
         private static readonly FluentConsole _console = new();
@@ -88,6 +88,5 @@ namespace Sudoku.Console
                 .ReadLine();
             int.TryParse(input, out int maxClues);
             return maxClues;
-        }
     }
 }

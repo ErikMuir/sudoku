@@ -3,8 +3,8 @@ using System.Linq;
 using Sudoku.Logic;
 using Xunit;
 
-namespace Sudoku.Tests
-{
+namespace Sudoku.Tests;
+
     public class PuzzleTests
     {
         private readonly Puzzle _testObject;
@@ -154,7 +154,6 @@ namespace Sudoku.Tests
             foreach (Cell cell in boxCells)
             {
                 Assert.DoesNotContain(val, cell.Candidates);
-            }
         }
     }
 }

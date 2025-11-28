@@ -4,8 +4,8 @@ using System.Linq;
 using Sudoku.Exceptions;
 using Sudoku.Extensions;
 
-namespace Sudoku.Logic
-{
+namespace Sudoku.Logic;
+
     public class Cell
     {
         public Cell(int row, int col, int? val = null)
@@ -78,6 +78,5 @@ namespace Sudoku.Logic
             if (val < 1 || val > Puzzle.UnitSize)
                 throw new SudokuException($"Value must be between 1 and {Puzzle.UnitSize}, inclusive.");
             return val;
-        }
     }
 }

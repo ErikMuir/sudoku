@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Sudoku.Logic;
 
-namespace Sudoku.Extensions
-{
+namespace Sudoku.Extensions;
+
     public static class Extensions
     {
         private static bool IsUnit(this IEnumerable<Cell> unit)
@@ -97,5 +97,4 @@ namespace Sudoku.Extensions
 
         public static int GetColIndex(this int cellIndex)
             => cellIndex % Puzzle.UnitSize;
-    }
 }

@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Sudoku.Extensions;
 using Sudoku.Logic;
 
-namespace Sudoku.Generation
-{
+namespace Sudoku.Generation;
+
     public class Horizontal : ISymmetry
     {
         private Horizontal() { }
@@ -29,6 +29,5 @@ namespace Sudoku.Generation
                 reflections.Add(reflectedIndex);
             }
             return reflections.ToArray();
-        }
     }
 }

@@ -7,8 +7,8 @@ using Sudoku.Exceptions;
 using Sudoku.Generation;
 using Sudoku.Logic;
 
-namespace Sudoku.Serialization
-{
+namespace Sudoku.Serialization;
+
     public class Sdk : ISerializer
     {
         private static readonly Regex _sdkLinePattern = new(@"^[1-9\.]{9}$");
@@ -132,6 +132,5 @@ namespace Sudoku.Serialization
                 catch (Exception) { }
             }
             return metadata;
-        }
     }
 }

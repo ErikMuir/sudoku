@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
-namespace Sudoku.Logic
-{
+namespace Sudoku.Logic;
+
     public class CandidateSet : SortedSet<int>
     {
         protected CandidateSet() { }
@@ -92,6 +92,5 @@ namespace Sudoku.Logic
                 }
             }
             _initialized = true;
-        }
     }
 }

@@ -10,8 +10,8 @@ using Sudoku.Generation;
 using Sudoku.Logic;
 using Sudoku.Serialization;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class FilePuzzle
     {
         private const string PuzzleDirectory = "./puzzles";
@@ -107,6 +107,5 @@ namespace Sudoku.Console
             }
 
             return puzzle;
-        }
     }
 }

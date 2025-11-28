@@ -2,8 +2,8 @@
 using System.Linq;
 using Sudoku.Extensions;
 
-namespace Sudoku.Logic
-{
+namespace Sudoku.Logic;
+
     public class Puzzle
     {
         private static readonly Dictionary<int, int[]> _lazyPeers = new();
@@ -121,5 +121,4 @@ namespace Sudoku.Logic
         //         });
         //     });
         // }
-    }
 }

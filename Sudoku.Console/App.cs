@@ -3,8 +3,8 @@ using MuirDev.ConsoleTools;
 using Sudoku.Exceptions;
 using Sudoku.Logic;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class App
     {
         private static readonly FluentConsole _console = new();
@@ -40,7 +40,6 @@ namespace Sudoku.Console
                 {
                     _console.LineFeed().Failure($"Unhandled Error: {e}");
                     return;
-                }
             }
         }
     }

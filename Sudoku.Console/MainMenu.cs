@@ -3,8 +3,8 @@ using MuirDev.ConsoleTools;
 using Sudoku.Exceptions;
 using Sudoku.Logic;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class MainMenu
     {
         private static readonly FluentConsole _console = new();
@@ -38,6 +38,5 @@ namespace Sudoku.Console
         {
             _console.Warning("Not implemented!");
             return null;
-        }
     }
 }

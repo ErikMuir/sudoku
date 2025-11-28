@@ -3,8 +3,8 @@ using Sudoku.Analysis;
 using Sudoku.Logic;
 using Xunit;
 
-namespace Sudoku.Tests
-{
+namespace Sudoku.Tests;
+
     public class AnalyzerTests
     {
         private Puzzle _puzzle;
@@ -54,6 +54,5 @@ namespace Sudoku.Tests
         {
             Analyzer analyzer = new(_puzzle);
             Assert.NotEqual(Level.Uninitialized, analyzer.Level);
-        }
     }
 }

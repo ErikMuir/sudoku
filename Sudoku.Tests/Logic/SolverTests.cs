@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Sudoku.Logic;
 using Xunit;
 
-namespace Sudoku.Tests
-{
+namespace Sudoku.Tests;
+
     public class SolverTests
     {
         [Fact]
@@ -57,6 +57,5 @@ namespace Sudoku.Tests
             Puzzle puzzle = TestHelpers.GetEmptyPuzzle();
             List<Puzzle> solutions = Solver.MultiSolve(puzzle, 3);
             Assert.Equal(3, solutions.Count);
-        }
     }
 }

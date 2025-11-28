@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 using Sudoku.Exceptions;
 using Sudoku.Logic;
 
-namespace Sudoku.Serialization
-{
+namespace Sudoku.Serialization;
+
     public class Sdx : ISerializer
     {
         private static readonly Regex _sdxPattern = new("^(u?[1-9]* ){8}u?[1-9]*(\r\n?|\n)?$", RegexOptions.Multiline);
@@ -100,6 +100,5 @@ namespace Sudoku.Serialization
             if (_emptyPattern.SafeIsMatch(cell))
                 return CellType.Empty;
             return CellType.Invalid;
-        }
     }
 }

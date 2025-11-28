@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Sudoku.Logic;
 
-namespace Sudoku.Analysis
-{
+namespace Sudoku.Analysis;
+
     public class ConstraintLog
     {
         public ConstraintType Constraint { get; set; }
@@ -33,5 +33,4 @@ namespace Sudoku.Analysis
         }
 
         public override string ToString() => $"{Constraint}\n  {string.Join("\n  ", Actions)}";
-    }
 }

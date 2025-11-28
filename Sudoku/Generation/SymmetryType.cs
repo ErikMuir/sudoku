@@ -1,14 +1,13 @@
-namespace Sudoku.Generation
+namespace Sudoku.Generation;
+
+public enum SymmetryType
 {
-    public enum SymmetryType
-    {
-        Uninitialized,
-        Asymmetric,
-        Horizontal,
-        Vertical,
-        DiagonalUp,
-        DiagonalDown,
-        RotationalTwoFold,
-        RotationalFourFold,
-    }
+    Uninitialized,
+    Asymmetric,
+    Horizontal,
+    Vertical,
+    DiagonalUp,
+    DiagonalDown,
+    RotationalTwoFold,
+    RotationalFourFold,
 }

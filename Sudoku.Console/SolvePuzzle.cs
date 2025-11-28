@@ -1,8 +1,8 @@
 using MuirDev.ConsoleTools;
 using Sudoku.Logic;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class SolvePuzzle
     {
         private static readonly FluentConsole _console = new();
@@ -15,6 +15,5 @@ namespace Sudoku.Console
             LogType type = puzzle.IsSolved ? LogType.Success : LogType.Failure;
             _console.Log(message, type);
             return puzzle.IsSolved ? puzzle : input;
-        }
     }
 }

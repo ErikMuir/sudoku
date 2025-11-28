@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Sudoku.Extensions;
 using Sudoku.Logic;
 
-namespace Sudoku.Generation
-{
+namespace Sudoku.Generation;
+
     public class DiagonalUp : ISymmetry
     {
         private DiagonalUp() { }
@@ -31,6 +31,5 @@ namespace Sudoku.Generation
             }
             return reflections.ToArray();
             throw new System.NotImplementedException();
-        }
     }
 }

@@ -6,8 +6,8 @@ using Sudoku.Exceptions;
 using Sudoku.Logic;
 using Xunit;
 
-namespace Sudoku.Tests
-{
+namespace Sudoku.Tests;
+
     public class CellTests
     {
         [Theory]
@@ -303,6 +303,5 @@ namespace Sudoku.Tests
             Cell testObject = new(0, 0);
             Cell otherCell = new(9, 9);
             Assert.False(testObject.IsPeer(otherCell));
-        }
     }
 }

@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Sudoku.Extensions;
 using Sudoku.Logic;
 
-namespace Sudoku.Generation
-{
+namespace Sudoku.Generation;
+
     public class RotationalFourFold : ISymmetry
     {
         private RotationalFourFold() { }
@@ -43,6 +43,5 @@ namespace Sudoku.Generation
             int targetCol = (Puzzle.UnitSize - 1) - row;
             int targetIndex = (targetRow * Puzzle.UnitSize) + targetCol;
             return targetIndex;
-        }
     }
 }

@@ -2,8 +2,8 @@ using System.Text;
 using Sudoku.Logic;
 using Sudoku.Serialization;
 
-namespace Sudoku.Tests
-{
+namespace Sudoku.Tests;
+
     public static class TestHelpers
     {
         public static Puzzle GetEmptyPuzzle()
@@ -124,6 +124,5 @@ namespace Sudoku.Tests
             sb.AppendLine("7634.8.59");
             string puzzleString = sb.ToString();
             return Sdk.Serializer.Deserialize(puzzleString);
-        }
     }
 }

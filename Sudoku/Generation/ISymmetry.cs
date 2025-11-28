@@ -1,8 +1,7 @@
-namespace Sudoku.Generation
+namespace Sudoku.Generation;
+
+public interface ISymmetry
 {
-    public interface ISymmetry
-    {
-        SymmetryType Type { get; }
-        int[] GetReflections(int cellIndex);
-    }
+    SymmetryType Type { get; }
+    int[] GetReflections(int cellIndex);
 }

@@ -4,8 +4,8 @@ using Sudoku.Exceptions;
 using Sudoku.Logic;
 using Xunit;
 
-namespace Sudoku.Tests
-{
+namespace Sudoku.Tests;
+
     public class ClueTests
     {
         private readonly Clue _testObject;
@@ -86,6 +86,5 @@ namespace Sudoku.Tests
             Exception exception = Record.Exception(() => _testObject.ClearCandidates());
             Assert.NotNull(exception);
             Assert.IsType<SudokuException>(exception);
-        }
     }
 }

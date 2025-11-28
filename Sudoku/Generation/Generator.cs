@@ -6,8 +6,8 @@ using Sudoku.Analysis;
 using Sudoku.Extensions;
 using Sudoku.Logic;
 
-namespace Sudoku.Generation
-{
+namespace Sudoku.Generation;
+
     public static class Generator
     {
         private static readonly Random _rand = new();
@@ -132,6 +132,5 @@ namespace Sudoku.Generation
             puzzle.Metadata.DatePublished = DateTime.Now;
 
             return puzzle;
-        }
     }
 }

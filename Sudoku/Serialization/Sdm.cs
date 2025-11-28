@@ -7,8 +7,8 @@ using Sudoku.Exceptions;
 using Sudoku.Extensions;
 using Sudoku.Logic;
 
-namespace Sudoku.Serialization
-{
+namespace Sudoku.Serialization;
+
     public class Sdm : ISerializer
     {
         private static readonly Regex _sdmPattern = new("^.{81}$");
@@ -71,5 +71,4 @@ namespace Sudoku.Serialization
         }
 
         private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : "0";
-    }
 }

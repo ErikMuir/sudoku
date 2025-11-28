@@ -7,8 +7,8 @@ using Sudoku.Exceptions;
 using Sudoku.Logic;
 using Sudoku.Serialization;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class InputPuzzle
     {
         private static readonly Confirm _confirm = new("Is this correct?", true);
@@ -75,6 +75,5 @@ namespace Sudoku.Console
             rows.ForEach(row => sb.AppendLine(row));
             string puzzleString = sb.ToString();
             return Sdk.Serializer.Deserialize(puzzleString);
-        }
     }
 }

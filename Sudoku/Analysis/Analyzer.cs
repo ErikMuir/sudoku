@@ -5,8 +5,8 @@ using System.Linq;
 using Sudoku.Extensions;
 using Sudoku.Logic;
 
-namespace Sudoku.Analysis
-{
+namespace Sudoku.Analysis;
+
     public class Analyzer
     {
         private readonly Puzzle _puzzle;
@@ -413,7 +413,6 @@ namespace Sudoku.Analysis
                 }
 
                 return false;
-            }
         }
     }
 }

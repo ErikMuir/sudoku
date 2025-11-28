@@ -4,8 +4,8 @@ using System.Text;
 using MuirDev.ConsoleTools;
 using Sudoku.Logic;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class PrintPuzzle
     {
         const string GridBorder = " ----------------------------- ";
@@ -65,5 +65,4 @@ namespace Sudoku.Console
         }
 
         private static string _gridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
-    }
 }

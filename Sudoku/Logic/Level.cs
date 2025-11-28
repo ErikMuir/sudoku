@@ -1,12 +1,11 @@
-namespace Sudoku.Logic
+namespace Sudoku.Logic;
+
+public enum Level
 {
-    public enum Level
-    {
-        Unsolvable = -1,
-        Uninitialized,
-        Easy,
-        Medium,
-        Difficult,
-        Extreme,
-    }
+    Unsolvable = -1,
+    Uninitialized,
+    Easy,
+    Medium,
+    Difficult,
+    Extreme,
 }

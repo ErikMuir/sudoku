@@ -1,10 +1,9 @@
 using System.Linq;
 using MuirDev.ConsoleTools;
 using Sudoku.Analysis;
-using Sudoku.Logic;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public static class AnalyzePuzzle
     {
         private static readonly FluentConsole _console = new();
@@ -37,6 +36,5 @@ namespace Sudoku.Console
                         .Aggregate((result, item) => result + item);
                     _console.Info($"  {constraint}: {actionCount}");
                 });
-        }
     }
 }

@@ -1,10 +1,9 @@
-namespace Sudoku.Logic
+namespace Sudoku.Logic;
+
+public enum CellType
 {
-    public enum CellType
-    {
-        Invalid,
-        Empty,
-        Filled,
-        Clue,
-    }
+    Invalid,
+    Empty,
+    Filled,
+    Clue,
 }

@@ -1,8 +1,8 @@
 using System;
 using Sudoku.Exceptions;
 
-namespace Sudoku.Console
-{
+namespace Sudoku.Console;
+
     public class MenuExitException : SudokuException
     {
         public MenuExitException() : base() { }
@@ -15,5 +15,4 @@ namespace Sudoku.Console
         public ProgramExitException() : base() { }
         public ProgramExitException(string message) : base(message) { }
         public ProgramExitException(string message, Exception innerException) : base(message, innerException) { }
-    }
 }

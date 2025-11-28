@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Sudoku.Tests
-{
+namespace Sudoku.Tests;
+
     public class OneToNineTestData : IEnumerable<object[]>
     {
         public IEnumerator<object[]> GetEnumerator()
@@ -135,5 +135,4 @@ namespace Sudoku.Tests
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    }
 }

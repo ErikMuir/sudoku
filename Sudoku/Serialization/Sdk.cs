@@ -19,7 +19,7 @@ public class Sdk : ISerializer
     {
         if (puzzleString is null) return null;
 
-        string[] rows = puzzleString
+        var rows = puzzleString
             .Trim()
             .Split(SerializationUtils.NewLines, StringSplitOptions.None)
             .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
@@ -28,14 +28,16 @@ public class Sdk : ISerializer
         if (rows.Length != Puzzle.UnitSize || rows.Any(row => !_sdkLinePattern.IsMatch(row)))
             throw new SudokuException("Invalid sdk file format");
 
-        Puzzle puzzle = new();
-        puzzle.Metadata = _deserializeMetadata(puzzleString);
-        for (int row = 0; row < Puzzle.UnitSize; row++)
+        var puzzle = new Puzzle
         {
-            string line = rows[row];
-            for (int col = 0; col < Puzzle.UnitSize; col++)
+            Metadata = DeserializeMetadata(puzzleString)
+        };
+        for (var row = 0; row < Puzzle.UnitSize; row++)
+        {
+            var line = rows[row];
+            for (var col = 0; col < Puzzle.UnitSize; col++)
             {
-                int.TryParse($"{line[col]}", out int val);
+                var _ = int.TryParse($"{line[col]}", out int val);
                 if (val > 0) puzzle.Cells[(row * Puzzle.UnitSize) + col] = new Clue(row, col, val);
             }
         }
@@ -44,52 +46,52 @@ public class Sdk : ISerializer
 
     public string Serialize(Puzzle puzzle)
     {
-        StringBuilder sb = new();
-        string serializedMetadata = _serializeMetadata(puzzle.Metadata);
+        var sb = new StringBuilder();
+        var serializedMetadata = SerializeMetadata(puzzle.Metadata);
         sb.Append(serializedMetadata);
-        for (int row = 0; row < Puzzle.UnitSize; row++)
+        for (var row = 0; row < Puzzle.UnitSize; row++)
         {
-            for (int col = 0; col < Puzzle.UnitSize; col++)
+            for (var col = 0; col < Puzzle.UnitSize; col++)
             {
-                sb.Append(_serializeCell(puzzle.GetCell(row, col)));
+                sb.Append(SerializeCell(puzzle.GetCell(row, col)));
             }
             sb.AppendLine();
         }
         return sb.ToString();
     }
 
-    private string _serializeMetadata(Metadata metadata)
+    private static string SerializeMetadata(Metadata metadata)
     {
-        if (metadata is null) return null;
+        if (metadata == null) return null;
 
-        StringBuilder sb = new();
-        if (metadata.Author is not null) sb.AppendLine(metadata.Author.SerializeMetadataEntry(MetadataTokens.Author));
-        if (metadata.Description is not null) sb.AppendLine(metadata.Description.SerializeMetadataEntry(MetadataTokens.Description));
-        if (metadata.Comment is not null) sb.AppendLine(metadata.Comment.SerializeMetadataEntry(MetadataTokens.Comment));
-        if (metadata.DatePublished != default(DateTime)) sb.AppendLine(metadata.DatePublished.SerializeMetadataEntry(MetadataTokens.DatePublished));
-        if (metadata.Source is not null) sb.AppendLine(metadata.Source.SerializeMetadataEntry(MetadataTokens.Source));
+        var sb = new StringBuilder();
+        if (metadata.Author != null) sb.AppendLine(metadata.Author.SerializeMetadataEntry(MetadataTokens.Author));
+        if (metadata.Description != null) sb.AppendLine(metadata.Description.SerializeMetadataEntry(MetadataTokens.Description));
+        if (metadata.Comment != null) sb.AppendLine(metadata.Comment.SerializeMetadataEntry(MetadataTokens.Comment));
+        if (metadata.DatePublished != default) sb.AppendLine(metadata.DatePublished.SerializeMetadataEntry(MetadataTokens.DatePublished));
+        if (metadata.Source != null) sb.AppendLine(metadata.Source.SerializeMetadataEntry(MetadataTokens.Source));
         if (metadata.Level != Level.Uninitialized) sb.AppendLine(metadata.Level.SerializeMetadataEntry());
-        if (metadata.SourceUrl is not null) sb.AppendLine(metadata.SourceUrl.SerializeMetadataEntry(MetadataTokens.SourceUrl));
+        if (metadata.SourceUrl != null) sb.AppendLine(metadata.SourceUrl.SerializeMetadataEntry(MetadataTokens.SourceUrl));
         if (metadata.Symmetry != SymmetryType.Uninitialized) sb.AppendLine(metadata.Symmetry.SerializeMetadataEntry());
         return sb.ToString();
     }
 
-    private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : ".";
+    private static string SerializeCell(Cell cell) => cell.Value != null ? $"{cell.Value}" : ".";
 
-    private Metadata _deserializeMetadata(string puzzleString)
+    private static Metadata DeserializeMetadata(string puzzleString)
     {
-        if (puzzleString is null) return null;
+        if (puzzleString == null) return null;
 
-        Metadata metadata = new();
-        IEnumerable<string> lines = puzzleString
+        var metadata = new Metadata();
+        var lines = puzzleString
             .Split(SerializationUtils.NewLines, StringSplitOptions.None)
             .Where(x => x.Length >= 2)
             .Where(x => x.Substring(0, 1) == MetadataTokens.Prefix);
 
-        foreach (string line in lines)
+        foreach (var line in lines)
         {
-            string token = line.Substring(1, 1);
-            string value = line.Substring(2);
+            var token = line.Substring(1, 1);
+            var value = line.Substring(2);
             try
             {
                 switch (token)

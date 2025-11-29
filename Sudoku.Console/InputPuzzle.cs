@@ -7,32 +7,32 @@ public static class InputPuzzle
 
     public static Puzzle Run()
     {
-        List<string> rows = new();
+        var rows = new List<string>();
         do
         {
             _console.WriteLine("Input a Sudoku puzzle one line at a time. Enter a period (.) for empty cells.");
-            for (int i = 0; i < Puzzle.UnitSize; i++)
-                rows.Add(_inputRow(i));
+            for (var i = 0; i < Puzzle.UnitSize; i++)
+                rows.Add(InputRow(i));
         } while (!_confirm.Run());
-        Puzzle puzzle = _parsePuzzle(rows);
+        var puzzle = _parsePuzzle(rows);
         PrintPuzzle.Run(puzzle);
         _console.Success("Puzzle is now in memory.");
         return puzzle;
     }
 
-    private static string _inputRow(int i)
+    private static string InputRow(int i)
     {
-        StringBuilder sb = new();
+        var sb = new StringBuilder();
         _console.Write($"row {i + 1}: ");
         while (sb.Length < Puzzle.UnitSize)
-            _inputCell(ref sb);
+            InputCell(ref sb);
         _console.LineFeed();
         return sb.ToString();
     }
 
-    private static void _inputCell(ref StringBuilder sb)
+    private static void InputCell(ref StringBuilder sb)
     {
-        ConsoleKeyInfo key = _console.ReadKey(true);
+        var key = _console.ReadKey(true);
         switch (key.Key)
         {
             case ConsoleKey.Escape:
@@ -50,7 +50,7 @@ public static class InputPuzzle
                 _console.Write(key.KeyChar);
                 break;
             default:
-                char[] allowedChars = ".123456789".ToCharArray();
+                var allowedChars = ".123456789".ToCharArray();
                 if (allowedChars.Contains(key.KeyChar))
                 {
                     sb.Append(key.KeyChar);
@@ -62,9 +62,9 @@ public static class InputPuzzle
 
     private static Puzzle _parsePuzzle(List<string> rows)
     {
-        StringBuilder sb = new();
+        var sb = new StringBuilder();
         rows.ForEach(row => sb.AppendLine(row));
-        string puzzleString = sb.ToString();
+        var puzzleString = sb.ToString();
         return Sdk.Serializer.Deserialize(puzzleString);
     }
 }

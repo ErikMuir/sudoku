@@ -20,12 +20,12 @@ public class Sdm : ISerializer
         if (!_sdmPattern.SafeIsMatch(puzzleString))
             throw new SudokuException("Invalid sdm file format");
 
-        Puzzle puzzle = new();
-        for (int i = 0; i < Puzzle.TotalCells; i++)
+        var puzzle = new Puzzle();
+        for (var i = 0; i < Puzzle.TotalCells; i++)
         {
-            int row = i.GetRowIndex();
-            int col = i.GetColIndex();
-            int.TryParse($"{puzzleString[i]}", out int val);
+            var row = i.GetRowIndex();
+            var col = i.GetColIndex();
+            var _ = int.TryParse($"{puzzleString[i]}", out var val);
             if (val > 0) puzzle.Cells[i] = new Clue(row, col, val);
         }
         return puzzle;
@@ -33,33 +33,32 @@ public class Sdm : ISerializer
 
     public string Serialize(Puzzle puzzle)
     {
-        StringBuilder sb = new();
-        for (int i = 0; i < Puzzle.TotalCells; i++)
-            sb.Append(_serializeCell(puzzle.Cells[i]));
+        var sb = new StringBuilder();
+        for (var i = 0; i < Puzzle.TotalCells; i++)
+            sb.Append(SerializeCell(puzzle.Cells[i]));
         return sb.ToString();
     }
 
     public List<Puzzle> DeserializeMultiple(string puzzleString)
     {
-        if (puzzleString is null)
+        if (puzzleString == null)
             throw new SudokuException("Invalid sdm file format");
 
-        return puzzleString
+        return [.. puzzleString
             .Split(SerializationUtils.NewLines, StringSplitOptions.None)
-            .Select(x => Deserialize(x))
-            .ToList();
+            .Select(x => Deserialize(x))];
     }
 
     public string SerializeMultiple(List<Puzzle> puzzles)
     {
-        StringBuilder sb = new();
-        foreach (Puzzle puzzle in puzzles)
+        var sb = new StringBuilder();
+        foreach (var puzzle in puzzles)
         {
-            string serializedPuzzle = Serialize(puzzle);
+            var serializedPuzzle = Serialize(puzzle);
             sb.AppendLine(serializedPuzzle);
         }
         return sb.ToString();
     }
 
-    private string _serializeCell(Cell cell) => cell.Value is not null ? $"{cell.Value}" : "0";
+    private static string SerializeCell(Cell cell) => cell.Value != null ? $"{cell.Value}" : "0";
 }

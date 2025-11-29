@@ -6,10 +6,10 @@ public static class SolvePuzzle
 
     public static Puzzle Run(Puzzle input)
     {
-        Puzzle puzzle = new(input);
+        var puzzle = new Puzzle(input);
         puzzle = Solver.Solve(puzzle);
-        string message = puzzle.IsSolved ? "Puzzle was successfully solved!" : "Failed to solve puzzle!";
-        LogType type = puzzle.IsSolved ? LogType.Success : LogType.Failure;
+        var message = puzzle.IsSolved ? "Puzzle was successfully solved!" : "Failed to solve puzzle!";
+        var type = puzzle.IsSolved ? LogType.Success : LogType.Failure;
         _console.Log(message, type);
         return puzzle.IsSolved ? puzzle : input;
     }

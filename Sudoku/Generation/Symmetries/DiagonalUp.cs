@@ -15,17 +15,17 @@ public class DiagonalUp : ISymmetry
 
     public int[] GetReflections(int cellIndex)
     {
-        List<int> reflections = new() { cellIndex };
-        int row = cellIndex.GetRowIndex();
-        int col = cellIndex.GetColIndex();
-        if (row + col != Puzzle.UnitSize - 1)
+        List<int> reflections = [cellIndex];
+        var row = cellIndex.GetRowIndex();
+        var col = cellIndex.GetColIndex();
+        var lastIndex = Puzzle.UnitSize - 1;
+        if (row + col != lastIndex)
         {
-            int reflectedRow = (Puzzle.UnitSize - 1) - col;
-            int reflectedCol = (Puzzle.UnitSize - 1) - row;
-            int reflectedIndex = (reflectedRow * Puzzle.UnitSize) + reflectedCol;
+            var reflectedRow = lastIndex - col;
+            var reflectedCol = lastIndex - row;
+            var reflectedIndex = (reflectedRow * Puzzle.UnitSize) + reflectedCol;
             reflections.Add(reflectedIndex);
         }
-        return reflections.ToArray();
-        throw new System.NotImplementedException();
+        return [.. reflections];
     }
 }

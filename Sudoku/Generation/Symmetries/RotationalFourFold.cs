@@ -15,29 +15,30 @@ public class RotationalFourFold : ISymmetry
 
     public int[] GetReflections(int cellIndex)
     {
-        List<int> reflections = new() { cellIndex };
-        int row = cellIndex.GetRowIndex();
-        int col = cellIndex.GetColIndex();
-        int axis = Puzzle.ReflectiveIndex;
+        List<int> reflections = [cellIndex];
+        var row = cellIndex.GetRowIndex();
+        var col = cellIndex.GetColIndex();
+        var axis = Puzzle.ReflectiveIndex;
         if (row != axis || col != axis)
         {
-            int reflectedIndex = cellIndex;
-            for (int i = 0; i < 3; i++)
+            var reflectedIndex = cellIndex;
+            for (var i = 0; i < 3; i++)
             {
-                reflectedIndex = _rotateCell(reflectedIndex);
+                reflectedIndex = RotateCell(reflectedIndex);
                 reflections.Add(reflectedIndex);
             }
         }
-        return reflections.ToArray();
+        return [.. reflections];
     }
 
-    private int _rotateCell(int cellIndex)
+    private static int RotateCell(int cellIndex)
     {
-        int row = cellIndex.GetRowIndex();
-        int col = cellIndex.GetColIndex();
-        int targetRow = col;
-        int targetCol = (Puzzle.UnitSize - 1) - row;
-        int targetIndex = (targetRow * Puzzle.UnitSize) + targetCol;
+        var row = cellIndex.GetRowIndex();
+        var col = cellIndex.GetColIndex();
+        var lastIndex = Puzzle.UnitSize - 1;
+        var targetRow = col;
+        var targetCol = lastIndex - row;
+        var targetIndex = (targetRow * Puzzle.UnitSize) + targetCol;
         return targetIndex;
     }
 }

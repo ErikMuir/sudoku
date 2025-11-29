@@ -15,21 +15,20 @@ public static class MainMenu
 
     public static Puzzle Run() => _menu.Run() switch
     {
-        '1' => _input(),
-        '2' => _load(),
-        '3' => _generate(),
-        '4' => _debug(),
+        '1' => Input(),
+        '2' => Load(),
+        '3' => Generate(),
+        '4' => Debug(),
         '0' => throw new ProgramExitException(),
         _ => throw new SudokuException("Invalid option"),
     };
 
-    private static Puzzle _input() => InputPuzzle.Run();
+    private static Puzzle Input() => InputPuzzle.Run();
 
-    private static Puzzle _load() => FilePuzzle.Load();
+    private static Puzzle Load() => FilePuzzle.Load();
 
-    private static Puzzle _generate() => GeneratePuzzle.Run();
-
-    private static Puzzle _debug()
+    private static Puzzle Generate() => GeneratePuzzle.Run();
+    private static Puzzle Debug()
     {
         _console.Warning("Not implemented!");
         return null;

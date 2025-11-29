@@ -23,19 +23,19 @@ public class Sdx : ISerializer
         if (!_sdxPattern.SafeIsMatch(puzzleString))
             throw new SudokuException("Invalid sdx file format");
 
-        string[] lines = puzzleString
+        var lines = puzzleString
             .Split(SerializationUtils.NewLines, StringSplitOptions.None)
             .ToArray();
 
-        Puzzle puzzle = new();
-        for (int row = 0; row < Puzzle.UnitSize; row++)
+        var puzzle = new Puzzle();
+        for (var row = 0; row < Puzzle.UnitSize; row++)
         {
-            string[] cells = lines[row].Split(' ');
-            for (int col = 0; col < Puzzle.UnitSize; col++)
+            var cells = lines[row].Split(' ');
+            for (var col = 0; col < Puzzle.UnitSize; col++)
             {
-                int index = (row * Puzzle.UnitSize) + col;
-                string cellString = cells[col];
-                puzzle.Cells[index] = _deserializeCell(cellString, col, row);
+                var index = (row * Puzzle.UnitSize) + col;
+                var cellString = cells[col];
+                puzzle.Cells[index] = DeserializeCell(cellString, col, row);
             }
         }
         return puzzle;
@@ -43,31 +43,31 @@ public class Sdx : ISerializer
 
     public string Serialize(Puzzle puzzle)
     {
-        StringBuilder sb = new();
-        for (int row = 0; row < Puzzle.UnitSize; row++)
+        var sb = new StringBuilder();
+        for (var row = 0; row < Puzzle.UnitSize; row++)
         {
-            List<string> cells = new();
-            for (int col = 0; col < Puzzle.UnitSize; col++)
+            var cells = new List<string>();
+            for (var col = 0; col < Puzzle.UnitSize; col++)
             {
-                cells.Add(_serializeCell(puzzle.GetCell(row, col)));
+                cells.Add(SerializeCell(puzzle.GetCell(row, col)));
             }
             sb.AppendLine(string.Join(" ", cells));
         }
         return sb.ToString();
     }
 
-    private string _serializeCell(Cell cell)
-        => cell.Value is not null
+    private static string SerializeCell(Cell cell)
+        => cell.Value != null
             ? $"{(cell.IsClue ? "" : "u")}{cell.Value}"
             : string.Join("", cell.Candidates.Select(x => $"{x}"));
 
-    private Cell _deserializeCell(string cellString, int col, int row)
+    private Cell DeserializeCell(string cellString, int col, int row)
     {
-        CellType cellType = _getCellType(cellString);
+        var cellType = GetCellType(cellString);
         if (cellType == CellType.Invalid)
             throw new SudokuException("Invalid sdx file format");
 
-        Cell cell = cellType switch
+        var cell = cellType switch
         {
             CellType.Clue => new Clue(row, col, int.Parse(cellString)),
             CellType.Filled => new Cell(row, col, int.Parse(cellString.Replace("u", ""))),
@@ -83,7 +83,7 @@ public class Sdx : ISerializer
         return cell;
     }
 
-    private CellType _getCellType(string cell)
+    private static CellType GetCellType(string cell)
     {
         if (_cluePattern.SafeIsMatch(cell))
             return CellType.Clue;

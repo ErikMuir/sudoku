@@ -9,8 +9,8 @@ public class DoubleSet : CandidateSet
 {
     public DoubleSet(int val1, int val2)
     {
-        this.Add(val1);
-        this.Add(val2);
+        Add(val1);
+        Add(val2);
     }
 }
 
@@ -18,9 +18,9 @@ public class TripleSet : CandidateSet
 {
     public TripleSet(int val1, int val2, int val3)
     {
-        this.Add(val1);
-        this.Add(val2);
-        this.Add(val3);
+        Add(val1);
+        Add(val2);
+        Add(val3);
     }
 }
 
@@ -28,25 +28,25 @@ public class QuadrupleSet : CandidateSet
 {
     public QuadrupleSet(int val1, int val2, int val3, int val4)
     {
-        this.Add(val1);
-        this.Add(val2);
-        this.Add(val3);
-        this.Add(val4);
+        Add(val1);
+        Add(val2);
+        Add(val3);
+        Add(val4);
     }
 }
 
 public static class CandidateSets
 {
+    private static readonly List<CandidateSet> _doubles = [];
+    private static readonly List<CandidateSet> _triples = [];
+    private static readonly List<CandidateSet> _quadruples = [];
     private static bool _initialized = false;
-    private static List<CandidateSet> _doubles = new();
-    private static List<CandidateSet> _triples = new();
-    private static List<CandidateSet> _quadruples = new();
 
     public static List<CandidateSet> Doubles
     {
         get
         {
-            if (!_initialized) _initialize();
+            if (!_initialized) Initialize();
             return _doubles;
         }
     }
@@ -55,7 +55,7 @@ public static class CandidateSets
     {
         get
         {
-            if (!_initialized) _initialize();
+            if (!_initialized) Initialize();
             return _triples;
         }
     }
@@ -64,24 +64,24 @@ public static class CandidateSets
     {
         get
         {
-            if (!_initialized) _initialize();
+            if (!_initialized) Initialize();
             return _quadruples;
         }
     }
 
-    private static void _initialize()
+    private static void Initialize()
     {
-        for (int a = 0; a < Puzzle.UnitSize; a++)
+        for (var a = 0; a < Puzzle.UnitSize; a++)
         {
-            for (int b = 1; b < Puzzle.UnitSize; b++)
+            for (var b = 1; b < Puzzle.UnitSize; b++)
             {
                 if (b <= a) continue;
                 _doubles.Add(new DoubleSet(a, b));
-                for (int c = 2; c < Puzzle.UnitSize; c++)
+                for (var c = 2; c < Puzzle.UnitSize; c++)
                 {
                     if (c <= a || c <= b) continue;
                     _triples.Add(new TripleSet(a, b, c));
-                    for (int d = 3; d < Puzzle.UnitSize; d++)
+                    for (var d = 3; d < Puzzle.UnitSize; d++)
                     {
                         if (d <= a || d <= b || d <= c) continue;
                         _quadruples.Add(new QuadrupleSet(a, b, c, d));

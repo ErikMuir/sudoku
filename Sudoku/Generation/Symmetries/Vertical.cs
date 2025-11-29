@@ -15,15 +15,16 @@ public class Vertical : ISymmetry
 
     public int[] GetReflections(int cellIndex)
     {
-        List<int> reflections = new() { cellIndex };
-        int row = cellIndex.GetRowIndex();
-        int col = cellIndex.GetColIndex();
+        List<int> reflections = [cellIndex];
+        var row = cellIndex.GetRowIndex();
+        var col = cellIndex.GetColIndex();
+        var lastIndex = Puzzle.UnitSize - 1;
         if (col != Puzzle.ReflectiveIndex)
         {
-            int reflectedCol = (Puzzle.UnitSize - 1) - col;
-            int reflectedIndex = (row * Puzzle.UnitSize) + reflectedCol;
+            var reflectedCol = lastIndex - col;
+            var reflectedIndex = (row * Puzzle.UnitSize) + reflectedCol;
             reflections.Add(reflectedIndex);
         }
-        return reflections.ToArray();
+        return [.. reflections];
     }
 }

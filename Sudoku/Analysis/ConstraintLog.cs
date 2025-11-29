@@ -1,14 +1,10 @@
 namespace Sudoku.Analysis;
 
-public class ConstraintLog
+public class ConstraintLog(ConstraintType type)
 {
-    public ConstraintType Constraint { get; set; }
-    public List<Action> Actions { get; set; } = new();
+    public ConstraintType Constraint { get; set; } = type;
 
-    public ConstraintLog(ConstraintType type)
-    {
-        Constraint = type;
-    }
+    public List<Action> Actions { get; set; } = [];
 
     public ConstraintLog(ConstraintType type, List<Action> actions) : this(type)
     {

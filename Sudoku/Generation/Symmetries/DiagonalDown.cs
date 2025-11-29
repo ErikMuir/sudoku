@@ -15,14 +15,14 @@ public class DiagonalDown : ISymmetry
 
     public int[] GetReflections(int cellIndex)
     {
-        List<int> reflections = new() { cellIndex };
-        int row = cellIndex.GetRowIndex();
-        int col = cellIndex.GetColIndex();
+        List<int> reflections = [cellIndex];
+        var row = cellIndex.GetRowIndex();
+        var col = cellIndex.GetColIndex();
         if (row != col)
         {
-            int reflectedIndex = (col * Puzzle.UnitSize) + row;
+            var reflectedIndex = (col * Puzzle.UnitSize) + row;
             reflections.Add(reflectedIndex);
         }
-        return reflections.ToArray();
+        return [.. reflections];
     }
 }

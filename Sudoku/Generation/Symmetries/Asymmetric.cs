@@ -1,4 +1,4 @@
-namespace Sudoku.Generation;
+namespace Sudoku.Generation.Symmetries;
 
 public class Asymmetric : ISymmetry
 {
@@ -15,6 +15,6 @@ public class Asymmetric : ISymmetry
 
     public int[] GetReflections(int cellIndex)
     {
-        return new[] { cellIndex };
+        return [cellIndex];
     }
 }

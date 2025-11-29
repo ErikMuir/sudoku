@@ -6,11 +6,11 @@ public static class AnalyzePuzzle
 
     public static void Run(Puzzle puzzle)
     {
-        Analyzer analyzer = new Analyzer(puzzle);
-        _statistics(analyzer);
+        var analyzer = new Analyzer(puzzle);
+        Statistics(analyzer);
     }
 
-    private static void _statistics(Analyzer analyzer)
+    private static void Statistics(Analyzer analyzer)
     {
         _console
             .LineFeed()
@@ -26,9 +26,9 @@ public static class AnalyzePuzzle
             .ToList()
             .ForEach(constraint =>
             {
-                int actionCount = analyzer.Logs
+                var actionCount = analyzer.Logs
                     .Where(x => x.Constraint == constraint)
-                    .Select(x => x.Actions.Count())
+                    .Select(x => x.Actions.Count)
                     .Aggregate((result, item) => result + item);
                 _console.Info($"  {constraint}: {actionCount}");
             });

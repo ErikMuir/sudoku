@@ -1,5 +1,3 @@
-using System;
-
 namespace Sudoku.Exceptions;
 
 public class SudokuException : Exception

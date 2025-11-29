@@ -2,7 +2,7 @@
 
 public class Puzzle
 {
-    private static readonly Dictionary<int, int[]> _lazyPeers = new();
+    private static readonly Dictionary<int, int[]> _lazyPeers = [];
 
     public const int BoxSize = 3;
     public const int UnitSize = 9;
@@ -13,21 +13,21 @@ public class Puzzle
     {
         UnitSize.Loop(row =>
             UnitSize.Loop(col =>
-                this.Cells[(row * UnitSize) + col] = new Cell(row, col)));
+                Cells[(row * UnitSize) + col] = new Cell(row, col)));
     }
 
     public Puzzle(Metadata metadata) : this()
     {
-        this.Metadata = metadata;
+        Metadata = metadata;
     }
 
     public Puzzle(Puzzle puzzle)
     {
-        this.Metadata = puzzle.Metadata;
+        Metadata = puzzle.Metadata;
         TotalCells.Loop(i =>
         {
-            Cell cell = puzzle.Cells[i];
-            this.Cells[i] = cell.IsClue
+            var cell = puzzle.Cells[i];
+            Cells[i] = cell.IsClue
                 ? new Clue(cell as Clue)
                 : new Cell(cell);
         });
@@ -36,50 +36,50 @@ public class Puzzle
     public Cell[] Cells { get; private set; } = new Cell[TotalCells];
     public Metadata Metadata { get; set; } = new();
 
-    public Cell GetCell(int row, int col) => this.Cells[(row * UnitSize) + col];
-    public IEnumerable<Cell> GetRow(int row) => this.Cells.Where(x => x.Row == row).OrderBy(x => x.Col);
-    public IEnumerable<Cell> GetCol(int col) => this.Cells.Where(x => x.Col == col).OrderBy(x => x.Row);
-    public IEnumerable<Cell> GetBox(int box) => this.Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col);
+    public Cell GetCell(int row, int col) => Cells[(row * UnitSize) + col];
+    public IEnumerable<Cell> GetRow(int row) => Cells.Where(x => x.Row == row).OrderBy(x => x.Col);
+    public IEnumerable<Cell> GetCol(int col) => Cells.Where(x => x.Col == col).OrderBy(x => x.Row);
+    public IEnumerable<Cell> GetBox(int box) => Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col);
     public IEnumerable<Cell> CommonPeers(Cell c1, Cell c2) => Peers(c1).Intersect(Peers(c2));
     public IEnumerable<Cell> Peers(Cell cell)
     {
         if (!_lazyPeers.ContainsKey(cell.Index))
         {
-            int[] peers = this.Cells
-                .Where(c => cell.IsPeer(c))
+            var peers = Cells
+                .Where(cell.IsPeer)
                 .Select(c => c.Index)
                 .ToArray();
             _lazyPeers.Add(cell.Index, peers);
         }
-        return _lazyPeers[cell.Index].Select(c => this.Cells[c]);
+        return _lazyPeers[cell.Index].Select(c => Cells[c]);
     }
 
     public bool IsSolved =>
-        UnitSize.LoopAnd(i => this.GetRow(i).IsUnitSolved())
-        && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitSolved())
-        && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitSolved());
+        UnitSize.LoopAnd(i => GetRow(i).IsUnitSolved())
+        && UnitSize.LoopAnd(i => GetCol(i).IsUnitSolved())
+        && UnitSize.LoopAnd(i => GetBox(i).IsUnitSolved());
 
     public bool IsValid =>
-        UnitSize.LoopAnd(i => this.GetRow(i).IsUnitValid())
-        && UnitSize.LoopAnd(i => this.GetCol(i).IsUnitValid())
-        && UnitSize.LoopAnd(i => this.GetBox(i).IsUnitValid());
+        UnitSize.LoopAnd(i => GetRow(i).IsUnitValid())
+        && UnitSize.LoopAnd(i => GetCol(i).IsUnitValid())
+        && UnitSize.LoopAnd(i => GetBox(i).IsUnitValid());
 
     public void ResetFilledCells() =>
-        this.Cells
+        Cells
             .FilledCells()
             .ToList()
             .ForEach(cell => cell.Value = null);
 
     public void FillCandidates() =>
-        this.Cells
+        Cells
             .EmptyCells()
             .ToList()
             .ForEach(cell => cell.FillCandidates());
 
     public void ReduceCandidates()
     {
-        foreach (Cell cell in this.Cells.NonEmptyCells())
-            foreach (Cell peer in this.Peers(cell).NonClueCells())
+        foreach (var cell in Cells.NonEmptyCells())
+            foreach (var peer in Peers(cell).NonClueCells())
                 peer.RemoveCandidate((int)cell.Value);
     }
 
@@ -87,9 +87,9 @@ public class Puzzle
     // {
     //     UnitSize.Loop(iUnit =>
     //     {
-    //         Cell[] row = this.GetRow(iUnit);
-    //         Cell[] col = this.GetCol(iUnit);
-    //         Cell[] box = this.GetBox(iUnit);
+    //         Cell[] row = GetRow(iUnit);
+    //         Cell[] col = GetCol(iUnit);
+    //         Cell[] box = GetBox(iUnit);
 
     //         UnitSize.Loop(iCell =>
     //         {

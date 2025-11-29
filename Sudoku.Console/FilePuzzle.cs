@@ -22,27 +22,27 @@ public static class FilePuzzle
     public static void Save(Puzzle puzzle)
     {
         _console.LineFeed();
-        char choice = _menu.Run();
+        var choice = _menu.Run();
         _console.LineFeed();
 
         if (choice == '0') throw new MenuExitException();
 
         try
         {
-            Level level = puzzle.Metadata.Level;
+            var level = puzzle.Metadata.Level;
             if (level == Level.Uninitialized)
             {
-                Analyzer analyzer = new(puzzle);
+                var analyzer = new Analyzer(puzzle);
                 level = analyzer.Level;
             }
-            string timestamp = $"{DateTime.Now:yyyyMMddHHmmss}";
-            int clues = puzzle.Cells.ClueCells().Count();
-            SymmetryType symmetry = puzzle.Metadata.Symmetry;
-            string extension = _menuOptions.GetValueOrDefault(choice);
-            string filename = $"{timestamp}_{level}_{clues}_{symmetry}.{extension}";
-            string path = $"{PuzzleDirectory}/{filename}";
-            ISerializer serializer = _serializers.Single(x => x.FileExtension == extension);
-            string contents = serializer.Serialize(puzzle);
+            var timestamp = $"{DateTime.Now:yyyyMMddHHmmss}";
+            var clues = puzzle.Cells.ClueCells().Count();
+            var symmetry = puzzle.Metadata.Symmetry;
+            var extension = _menuOptions.GetValueOrDefault(choice);
+            var filename = $"{timestamp}_{level}_{clues}_{symmetry}.{extension}";
+            var path = $"{PuzzleDirectory}/{filename}";
+            var serializer = _serializers.Single(x => x.FileExtension == extension);
+            var contents = serializer.Serialize(puzzle);
             File.WriteAllText(path, contents);
             _console.Success($"File successfully saved: {path}");
         }
@@ -70,17 +70,17 @@ public static class FilePuzzle
                 serializer = _serializers.FirstOrDefault(x => x.FileExtension == fileExtension);
                 validationMessage =
                     !File.Exists(fullPath) ? "File cannot be found!" :
-                    serializer is null ? "File type not supported!" :
+                    serializer == null ? "File type not supported!" :
                     null;
-                if (validationMessage is not null)
+                if (validationMessage != null)
                 {
                     Confirm confirm = new($"{validationMessage} Try again?", true);
                     bool tryAgain = confirm.Run(LogType.Warning);
                     if (!tryAgain) return null;
                 }
-            } while (validationMessage is not null);
+            } while (validationMessage != null);
 
-            string puzzleString = File.ReadAllText(fullPath);
+            var puzzleString = File.ReadAllText(fullPath);
             puzzle = serializer.Deserialize(puzzleString);
             PrintPuzzle.Run(puzzle);
             _console.Success("Successfully loaded puzzle from file!");

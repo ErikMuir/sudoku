@@ -9,15 +9,17 @@ public class Analyzer
     {
         _puzzle = new Puzzle(puzzle);
         _timer = new Stopwatch();
-        _analyze();
+        Analyze();
     }
 
     public TimeSpan SolveDuration => _timer.Elapsed;
     public int SolveDepth { get; set; } = 0;
     public Level Level { get; set; } = Level.Uninitialized;
-    public List<ConstraintLog> Logs { get; set; } = new();
+    public List<ConstraintLog> Logs { get; set; } = [];
 
-    private void _analyze()
+    private void SetLevel(Level level) => Level = (level > Level) ? level : Level;
+
+    private void Analyze()
     {
         _timer.Start();
         _puzzle.ResetFilledCells();
@@ -28,18 +30,18 @@ public class Analyzer
         do
         {
             SolveDepth++;
-            isChanged = _nakedSingle();
-            if (!isChanged) isChanged = _hiddenSingle();
-            if (!isChanged) isChanged = _nakedSet(CandidateSets.Doubles);
-            if (!isChanged) isChanged = _nakedSet(CandidateSets.Triples);
-            if (!isChanged) isChanged = _hiddenSet(CandidateSets.Doubles);
-            if (!isChanged) isChanged = _hiddenSet(CandidateSets.Triples);
-            if (!isChanged) isChanged = _nakedSet(CandidateSets.Quadruples);
-            if (!isChanged) isChanged = _hiddenSet(CandidateSets.Quadruples);
-            if (!isChanged) isChanged = _pointingSet();
-            if (!isChanged) isChanged = _boxLineReduction();
-            if (!isChanged) isChanged = _xWing();
-            if (!isChanged) isChanged = _yWing();
+            isChanged = NakedSingle();
+            if (!isChanged) isChanged = HiddenSingle();
+            if (!isChanged) isChanged = NakedSet(CandidateSets.Doubles);
+            if (!isChanged) isChanged = NakedSet(CandidateSets.Triples);
+            if (!isChanged) isChanged = HiddenSet(CandidateSets.Doubles);
+            if (!isChanged) isChanged = HiddenSet(CandidateSets.Triples);
+            if (!isChanged) isChanged = NakedSet(CandidateSets.Quadruples);
+            if (!isChanged) isChanged = HiddenSet(CandidateSets.Quadruples);
+            if (!isChanged) isChanged = PointingSet();
+            if (!isChanged) isChanged = BoxLineReduction();
+            if (!isChanged) isChanged = XWing();
+            if (!isChanged) isChanged = YWing();
         }
         while (isChanged);
         _timer.Stop();
@@ -47,30 +49,29 @@ public class Analyzer
             Level = Level.Unsolvable;
     }
 
-    private void _setLevel(Level level)
-        => this.Level = level > this.Level ? level : this.Level;
+    #region Constraint Methods
 
-    private bool _nakedSingle()
+    private bool NakedSingle()
     {
-        Cell cell = _puzzle.Cells
+        var cell = _puzzle.Cells
             .EmptyCells()
             .Where(x => x.Candidates.Count == 1)
             .FirstOrDefault();
 
-        if (cell is null) return false;
+        if (cell == null) return false;
 
         cell.Value = cell.Candidates[0];
         Logs.Add(new ConstraintLog(ConstraintType.NakedSingle, cell, (int)cell.Value));
         _puzzle.ReduceCandidates();
-        _setLevel(Level.Easy);
+        SetLevel(Level.Easy);
         return true;
     }
 
-    private bool _hiddenSingle()
+    private bool HiddenSingle()
     {
-        foreach (Cell cell in _puzzle.Cells.EmptyCells())
+        foreach (var cell in _puzzle.Cells.EmptyCells())
         {
-            foreach (int candidate in cell.Candidates)
+            foreach (var candidate in cell.Candidates)
             {
                 if (
                     _puzzle.GetCol(cell.Col).IsCandidateUnique(candidate) ||
@@ -81,7 +82,7 @@ public class Analyzer
                     cell.Value = candidate;
                     Logs.Add(new ConstraintLog(ConstraintType.HiddenSingle, cell, candidate));
                     _puzzle.ReduceCandidates();
-                    _setLevel(Level.Easy);
+                    SetLevel(Level.Easy);
                     return true;
                 }
             }
@@ -89,35 +90,35 @@ public class Analyzer
         return false;
     }
 
-    private bool _nakedSet(List<CandidateSet> sets)
+    private bool NakedSet(List<CandidateSet> sets)
     {
-        for (int i = 0; i < Puzzle.UnitSize; i++)
+        for (var i = 0; i < Puzzle.UnitSize; i++)
         {
-            if (_nakedSetUnitCheck(_puzzle.GetCol(i), sets))
+            if (NakedSetUnitCheck(_puzzle.GetCol(i), sets))
                 return true;
-            if (_nakedSetUnitCheck(_puzzle.GetRow(i), sets))
+            if (NakedSetUnitCheck(_puzzle.GetRow(i), sets))
                 return true;
-            if (_nakedSetUnitCheck(_puzzle.GetBox(i), sets))
+            if (NakedSetUnitCheck(_puzzle.GetBox(i), sets))
                 return true;
         }
         return false;
     }
 
-    private bool _nakedSetUnitCheck(IEnumerable<Cell> unit, List<CandidateSet> sets)
+    private bool NakedSetUnitCheck(IEnumerable<Cell> unit, List<CandidateSet> sets)
     {
-        int setLength = sets.First().Count;
+        var setLength = sets.First().Count;
 
-        foreach (CandidateSet set in sets)
+        foreach (var set in sets)
         {
-            List<Cell> matches = unit.Where(x => x.ContainsOnlyMatches(set)).ToList();
+            var matches = unit.Where(x => x.ContainsOnlyMatches(set)).ToList();
 
             if (matches.Count != setLength) continue;
 
-            List<Action> actions = new();
-            IEnumerable<Cell> nonMatches = unit.Where(x => !matches.Any(y => y.Col == x.Col && y.Row == x.Row));
-            foreach (Cell cell in nonMatches)
+            var actions = new List<Action>();
+            var nonMatches = unit.Where(x => !matches.Any(y => y.Col == x.Col && y.Row == x.Row));
+            foreach (var cell in nonMatches)
             {
-                foreach (int candidate in set)
+                foreach (var candidate in set)
                 {
                     if (cell.Candidates.Contains(candidate))
                     {
@@ -127,18 +128,17 @@ public class Analyzer
                 }
             }
 
-            if (actions.Any())
+            if (actions.Count > 0)
             {
-                ConstraintType constraint;
-                switch (setLength)
+                var constraint = setLength switch
                 {
-                    case 2: constraint = ConstraintType.NakedDouble; break;
-                    case 3: constraint = ConstraintType.NakedTriple; break;
-                    case 4: constraint = ConstraintType.NakedQuadruple; break;
-                    default: throw new Exception();
-                }
+                    2 => ConstraintType.NakedDouble,
+                    3 => ConstraintType.NakedTriple,
+                    4 => ConstraintType.NakedQuadruple,
+                    _ => throw new SudokuException($"Unsupported naked set length: {setLength}."),
+                };
                 Logs.Add(new ConstraintLog(constraint, actions));
-                _setLevel(Level.Medium);
+                SetLevel(Level.Medium);
                 return true;
             }
         }
@@ -146,35 +146,34 @@ public class Analyzer
         return false;
     }
 
-    private bool _hiddenSet(List<CandidateSet> sets)
+    private bool HiddenSet(List<CandidateSet> sets)
     {
-        for (int i = 0; i < Puzzle.UnitSize; i++)
+        for (var i = 0; i < Puzzle.UnitSize; i++)
         {
-            if (_hiddenSetUnitCheck(_puzzle.GetCol(i), sets))
+            if (HiddenSetUnitCheck(_puzzle.GetCol(i), sets))
                 return true;
-            if (_hiddenSetUnitCheck(_puzzle.GetRow(i), sets))
+            if (HiddenSetUnitCheck(_puzzle.GetRow(i), sets))
                 return true;
-            if (_hiddenSetUnitCheck(_puzzle.GetBox(i), sets))
+            if (HiddenSetUnitCheck(_puzzle.GetBox(i), sets))
                 return true;
         }
         return false;
     }
 
-    private bool _hiddenSetUnitCheck(IEnumerable<Cell> unit, List<CandidateSet> sets)
+    private bool HiddenSetUnitCheck(IEnumerable<Cell> unit, List<CandidateSet> sets)
     {
-        int setLength = sets.First().Count;
+        var setLength = sets.First().Count;
 
-        foreach (CandidateSet set in sets)
+        foreach (var set in sets)
         {
-            Cell[] matches = unit.Where(x => x.ContainsAtLeastOneMatch(set)).ToArray();
-
+            var matches = unit.Where(x => x.ContainsAtLeastOneMatch(set)).ToArray();
             if (matches.Length != setLength || !matches.ContainsEveryCandidate(set))
                 continue;
 
-            List<Action> actions = new();
-            foreach (Cell cell in matches)
+            var actions = new List<Action>();
+            foreach (var cell in matches)
             {
-                foreach (int candidate in cell.Candidates)
+                foreach (var candidate in cell.Candidates)
                 {
                     if (!set.Contains(candidate))
                     {
@@ -184,41 +183,40 @@ public class Analyzer
                 }
             }
 
-            if (actions.Any())
+            if (actions.Count > 0)
             {
-                ConstraintType constraint;
-                switch (setLength)
+                var constraint = setLength switch
                 {
-                    case 2: constraint = ConstraintType.HiddenDouble; break;
-                    case 3: constraint = ConstraintType.HiddenTriple; break;
-                    case 4: constraint = ConstraintType.HiddenQuadruple; break;
-                    default: throw new Exception();
-                }
+                    2 => ConstraintType.HiddenDouble,
+                    3 => ConstraintType.HiddenTriple,
+                    4 => ConstraintType.HiddenQuadruple,
+                    _ => throw new SudokuException($"Unsupported hidden set length: {setLength}."),
+                };
                 Logs.Add(new ConstraintLog(constraint, actions));
-                _setLevel(Level.Difficult);
+                SetLevel(Level.Difficult);
                 return true;
             }
         }
 
         return false;
     }
-
-    private bool _pointingSet()
+    
+    private bool PointingSet()
     {
-        for (int i = 0; i < Puzzle.UnitSize; i++)
+        for (var i = 0; i < Puzzle.UnitSize; i++)
         {
-            IEnumerable<Cell> box = _puzzle.GetBox(i);
-            for (int candidate = 1; candidate < 10; candidate++)
+            var box = _puzzle.GetBox(i);
+            for (var candidate = 1; candidate < 10; candidate++)
             {
-                List<Cell> matches = box.Where(cell => cell.Candidates.Contains(candidate)).ToList();
+                var matches = box.Where(cell => cell.Candidates.Contains(candidate)).ToList();
                 if (matches.Count < 2) continue;
 
-                int? col = matches.AllInSameCol() ? matches.First().Col : null as int?;
-                int? row = matches.AllInSameRow() ? matches.First().Row : null as int?;
+                var col = matches.AllInSameCol() ? matches.First().Col : null as int?;
+                var row = matches.AllInSameRow() ? matches.First().Row : null as int?;
                 if (col is null && row is null) continue;
 
-                List<Action> actions = new();
-                IEnumerable<Cell> unit = col is not null ? _puzzle.GetCol(col.Value) : _puzzle.GetRow(row.Value);
+                var actions = new List<Action>();
+                var unit = col is not null ? _puzzle.GetCol(col.Value) : _puzzle.GetRow(row.Value);
                 unit.Where(cell => cell.Candidates.Contains(candidate))
                     .Where(cell => cell.Box != i)
                     .ToList()
@@ -228,10 +226,10 @@ public class Analyzer
                         actions.Add(Action.RemoveCandidate(cell, candidate));
                     });
 
-                if (actions.Any())
+                if (actions.Count > 0)
                 {
                     Logs.Add(new ConstraintLog(ConstraintType.PointingSet, actions));
-                    _setLevel(Level.Difficult);
+                    SetLevel(Level.Difficult);
                     return true;
                 }
             }
@@ -240,14 +238,14 @@ public class Analyzer
         return false;
     }
 
-    private bool _boxLineReduction()
+    private bool BoxLineReduction()
     {
-        for (int i = 0; i < Puzzle.UnitSize; i++)
+        for (var i = 0; i < Puzzle.UnitSize; i++)
         {
-            IEnumerable<Cell> col = _puzzle.GetCol(i);
-            IEnumerable<Cell> row = _puzzle.GetRow(i);
+            var col = _puzzle.GetCol(i);
+            var row = _puzzle.GetRow(i);
 
-            for (int candidate = 1; candidate < 10; candidate++)
+            for (var candidate = 1; candidate < 10; candidate++)
             {
                 if (reduce(col, candidate)) return true;
                 if (reduce(row, candidate)) return true;
@@ -258,12 +256,12 @@ public class Analyzer
 
         bool reduce(IEnumerable<Cell> unit, int candidate)
         {
-            List<Cell> matches = unit.Where(x => x.Candidates.Contains(candidate)).ToList();
+            var matches = unit.Where(x => x.Candidates.Contains(candidate)).ToList();
 
             if (matches.Count < 2 || !matches.AllInSameBox())
                 return false;
 
-            List<Action> actions = new();
+            var actions = new List<Action>();
             _puzzle.GetBox(matches[0].Box)
                 .Where(cell => cell.Candidates.Contains(candidate))
                 .Where(cell => !matches.Contains(cell))
@@ -274,10 +272,10 @@ public class Analyzer
                     actions.Add(Action.RemoveCandidate(cell, candidate));
                 });
 
-            if (actions.Any())
+            if (actions.Count > 0)
             {
                 Logs.Add(new ConstraintLog(ConstraintType.BoxLineReduction, actions));
-                _setLevel(Level.Difficult);
+                SetLevel(Level.Difficult);
                 return true;
             }
 
@@ -285,9 +283,9 @@ public class Analyzer
         }
     }
 
-    private bool _xWing()
+    private bool XWing()
     {
-        for (int candidate = 1; candidate < 10; candidate++)
+        for (var candidate = 1; candidate < 10; candidate++)
         {
             if (reduce(candidate, true)) return true;
             if (reduce(candidate, false)) return true;
@@ -297,26 +295,26 @@ public class Analyzer
 
         bool reduce(int candidate, bool isCol)
         {
-            for (int iUnit = 0; iUnit < Puzzle.UnitSize; iUnit++)
+            for (var iUnit = 0; iUnit < Puzzle.UnitSize; iUnit++)
             {
-                IEnumerable<Cell> unit = isCol ? _puzzle.GetCol(iUnit) : _puzzle.GetRow(iUnit);
-                Cell[] matches = unit.GetCandidateMatches(candidate).ToArray();
+                var unit = isCol ? _puzzle.GetCol(iUnit) : _puzzle.GetRow(iUnit);
+                var matches = unit.GetCandidateMatches(candidate).ToArray();
                 if (matches.Length != 2) continue;
 
-                for (int iTestUnit = iUnit + 1; iTestUnit < Puzzle.UnitSize; iTestUnit++)
+                for (var iTestUnit = iUnit + 1; iTestUnit < Puzzle.UnitSize; iTestUnit++)
                 {
-                    IEnumerable<Cell> testUnit = isCol ? _puzzle.GetCol(iTestUnit) : _puzzle.GetRow(iTestUnit);
-                    Cell[] testMatches = testUnit.GetCandidateMatches(candidate).ToArray();
+                    var testUnit = isCol ? _puzzle.GetCol(iTestUnit) : _puzzle.GetRow(iTestUnit);
+                    var testMatches = testUnit.GetCandidateMatches(candidate).ToArray();
                     if (testMatches.Length != 2) continue;
                     if (isCol && matches[0].Row != testMatches[0].Row) continue;
                     if (isCol && matches[1].Row != testMatches[1].Row) continue;
                     if (!isCol && matches[0].Col != testMatches[0].Col) continue;
                     if (!isCol && matches[1].Col != testMatches[1].Col) continue;
 
-                    List<Action> actions = new();
-                    for (int iActionUnit = 0; iActionUnit < 2; iActionUnit++)
+                    var actions = new List<Action>();
+                    for (var iActionUnit = 0; iActionUnit < 2; iActionUnit++)
                     {
-                        IEnumerable<Cell> actionUnit = isCol
+                        var actionUnit = isCol
                             ? _puzzle.GetRow(testMatches[iActionUnit].Row)
                             : _puzzle.GetCol(testMatches[iActionUnit].Col);
                         actionUnit
@@ -331,10 +329,10 @@ public class Analyzer
                             });
                     }
 
-                    if (actions.Any())
+                    if (actions.Count > 0)
                     {
                         Logs.Add(new ConstraintLog(ConstraintType.XWing, actions));
-                        _setLevel(Level.Extreme);
+                        SetLevel(Level.Extreme);
                         return true;
                     }
                 }
@@ -344,14 +342,13 @@ public class Analyzer
         }
     }
 
-    private bool _yWing()
+    private bool YWing()
     {
-        foreach (Cell hinge in _puzzle.Cells.Where(x => x.Candidates.Count == 2))
+        foreach (var hinge in _puzzle.Cells.Where(x => x.Candidates.Count == 2))
         {
-            IEnumerable<Cell> hingeCol = _puzzle.GetCol(hinge.Col);
-            IEnumerable<Cell> hingeRow = _puzzle.GetRow(hinge.Row);
-            IEnumerable<Cell> hingeBox = _puzzle.GetBox(hinge.Box);
-
+            var hingeCol = _puzzle.GetCol(hinge.Col);
+            var hingeRow = _puzzle.GetRow(hinge.Row);
+            var hingeBox = _puzzle.GetBox(hinge.Box);
             if (hingeAndWings(hinge, hingeCol, hingeRow)) return true;
             if (hingeAndWings(hinge, hingeBox, hingeCol)) return true;
             if (hingeAndWings(hinge, hingeBox, hingeRow)) return true;
@@ -372,18 +369,18 @@ public class Analyzer
 
         bool reduce(Cell hinge, IEnumerable<Cell> wing1Unit, IEnumerable<Cell> wing2Unit, int wing1Candidate, int wing2Candidate)
         {
-            foreach (Cell wing1 in wing1Unit
+            foreach (var wing1 in wing1Unit
                     .Where(x => x.Candidates.Count == 2)
                     .Where(x => x.Candidates.Contains(wing1Candidate))
                     .Where(x => !x.Candidates.Contains(wing2Candidate)))
             {
                 int confluence = wing1.GetNonMatchingCandidates(hinge.Candidates)[0];
-                foreach (Cell wing2 in wing2Unit.Where(x =>
+                foreach (var wing2 in wing2Unit.Where(x =>
                     x.Candidates.Count != 2 ||
                     !x.Candidates.Contains(wing2Candidate) ||
                     !x.Candidates.Contains(confluence)))
                 {
-                    List<Action> actions = new();
+                    var actions = new List<Action>();
                     _puzzle.CommonPeers(wing1, wing2)
                         .Where(x => x.Candidates.Contains(confluence))
                         .Where(x => x != hinge)
@@ -396,10 +393,10 @@ public class Analyzer
                             actions.Add(Action.RemoveCandidate(x, confluence));
                         });
 
-                    if (actions.Any())
+                    if (actions.Count > 0)
                     {
                         Logs.Add(new ConstraintLog(ConstraintType.YWing, actions));
-                        _setLevel(Level.Extreme);
+                        SetLevel(Level.Extreme);
                         return true;
                     }
                 }
@@ -408,4 +405,6 @@ public class Analyzer
             return false;
         }
     }
+
+    #endregion
 }

@@ -2,17 +2,17 @@
 
 // public class GeneratorTests
 // {
-//     private static readonly SymmetryType[] _supportedSymmetries = new[]
-//     {
+//     private static readonly SymmetryType[] _supportedSymmetries =
+//     [
 //         Horizontal.Symmetry.Type,
 //         Vertical.Symmetry.Type,
 //         DiagonalUp.Symmetry.Type,
 //         DiagonalDown.Symmetry.Type,
 //         RotationalTwoFold.Symmetry.Type,
 //         RotationalFourFold.Symmetry.Type,
-//     };
+//     ];
 
-//     private void _puzzleAssertions(Puzzle puzzle, ISymmetry symmetry = null)
+//     private static void PuzzleAssertions(Puzzle puzzle, ISymmetry symmetry = null)
 //     {
 //         Assert.NotNull(puzzle);
 //         var clues = puzzle.Cells.Where(cell => cell.Type == CellType.Clue);
@@ -33,7 +33,7 @@
 //         var symmetry = Asymmetric.Symmetry;
 //         var options = new GenerationOptions { Symmetry = symmetry };
 //         var puzzle = Generator.Generate(options);
-//         _puzzleAssertions(puzzle, symmetry);
+//         PuzzleAssertions(puzzle, symmetry);
 //     }
 
 //     [Fact]
@@ -42,7 +42,7 @@
 //         var symmetry = Horizontal.Symmetry;
 //         var options = new GenerationOptions { Symmetry = symmetry };
 //         var puzzle = Generator.Generate(options);
-//         _puzzleAssertions(puzzle, symmetry);
+//         PuzzleAssertions(puzzle, symmetry);
 //     }
 
 //     [Fact]
@@ -51,7 +51,7 @@
 //         var symmetry = Vertical.Symmetry;
 //         var options = new GenerationOptions { Symmetry = symmetry };
 //         var puzzle = Generator.Generate(options);
-//         _puzzleAssertions(puzzle, symmetry);
+//         PuzzleAssertions(puzzle, symmetry);
 //     }
 
 //     [Fact]
@@ -60,7 +60,7 @@
 //         var symmetry = DiagonalUp.Symmetry;
 //         var options = new GenerationOptions { Symmetry = symmetry };
 //         var puzzle = Generator.Generate(options);
-//         _puzzleAssertions(puzzle, symmetry);
+//         PuzzleAssertions(puzzle, symmetry);
 //     }
 
 //     [Fact]
@@ -69,7 +69,7 @@
 //         var symmetry = DiagonalDown.Symmetry;
 //         var options = new GenerationOptions { Symmetry = symmetry };
 //         var puzzle = Generator.Generate(options);
-//         _puzzleAssertions(puzzle, symmetry);
+//         PuzzleAssertions(puzzle, symmetry);
 //     }
 
 //     [Fact]
@@ -78,7 +78,7 @@
 //         var symmetry = RotationalTwoFold.Symmetry;
 //         var options = new GenerationOptions { Symmetry = symmetry };
 //         var puzzle = Generator.Generate(options);
-//         _puzzleAssertions(puzzle, symmetry);
+//         PuzzleAssertions(puzzle, symmetry);
 //     }
 
 //     [Fact]
@@ -87,6 +87,6 @@
 //         var symmetry = RotationalFourFold.Symmetry;
 //         var options = new GenerationOptions { Symmetry = symmetry };
 //         var puzzle = Generator.Generate(options);
-//         _puzzleAssertions(puzzle, symmetry);
+//         PuzzleAssertions(puzzle, symmetry);
 //     }
 // }

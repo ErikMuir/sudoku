@@ -3,7 +3,7 @@ namespace Sudoku.Extensions;
 public static class Extensions
 {
     private static bool IsUnit(this IEnumerable<Cell> unit)
-        => (unit is not null && unit.Count() == Puzzle.UnitSize);
+        => unit != null && unit.Count() == Puzzle.UnitSize;
 
     private static int ValueCount(this IEnumerable<Cell> unit)
         => unit.Count(x => x.Value is not null);
@@ -67,13 +67,13 @@ public static class Extensions
 
     public static void Loop(this int count, Action<int> action)
     {
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
             action(i);
     }
 
     public static bool LoopAnd(this int count, Func<int, bool> func)
     {
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
             if (!func?.Invoke(i) ?? false)
                 return false;
         return true;
@@ -81,7 +81,7 @@ public static class Extensions
 
     public static bool LoopOr(this int count, Func<int, bool> func)
     {
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
             if (func?.Invoke(i) ?? false)
                 return true;
         return false;

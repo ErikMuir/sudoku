@@ -6,14 +6,14 @@ public static class PrintPuzzle
     const string GridDivide = "|---------+---------+---------|";
     const char VerticalLine = '|';
     private static readonly FluentConsole _console = new();
-
+    
     public static void Run(Puzzle puzzle)
     {
-        List<string> rows = new();
-        for (int i = 0; i < Puzzle.UnitSize; i++)
+        var rows = new List<string>();
+        for (var i = 0; i < Puzzle.UnitSize; i++)
         {
-            Cell[] rowCells = puzzle.GetRow(i).ToArray();
-            string rowString = _gridRow(rowCells);
+            var rowCells = puzzle.GetRow(i).ToArray();
+            var rowString = GridRow(rowCells);
             rows.Add(rowString);
         }
         _console
@@ -34,13 +34,12 @@ public static class PrintPuzzle
             .LineFeed();
     }
 
-    private static string _gridRow(Cell[] row)
+    private static string GridRow(Cell[] row)
     {
-        List<string> cells = new();
-        for (int i = 0; i < Puzzle.UnitSize; i++)
-            cells.Add(_gridCell(row[i]));
-
-        StringBuilder sb = new();
+        var cells = new List<string>();
+        for (var i = 0; i < Puzzle.UnitSize; i++)
+            cells.Add(GridCell(row[i]));
+        var sb = new StringBuilder();
         sb.Append(VerticalLine);
         sb.Append(cells[0]);
         sb.Append(cells[1]);
@@ -58,5 +57,5 @@ public static class PrintPuzzle
         return sb.ToString();
     }
 
-    private static string _gridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
+    private static string GridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
 }

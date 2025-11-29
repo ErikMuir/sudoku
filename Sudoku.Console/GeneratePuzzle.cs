@@ -29,19 +29,19 @@ public static class GeneratePuzzle
 
     public static Puzzle Run()
     {
-        GenerationOptions options = new()
+        var options = new GenerationOptions()
         {
-            Level = _getLevel(),
-            Symmetry = _getSymmetry(),
-            MaxClues = _getMaxClues(),
+            Level = GetLevel(),
+            Symmetry = GetSymmetry(),
+            MaxClues = GetMaxClues(),
         };
-        Puzzle puzzle = Generator.Generate(options);
+        var puzzle = Generator.Generate(options);
         PrintPuzzle.Run(puzzle);
         _console.Success("Puzzle is now in memory.");
         return puzzle;
     }
 
-    private static Level _getLevel()
+    private static Level GetLevel()
     {
         _console.LineFeed();
         return _levelMenu.Run() switch
@@ -56,7 +56,7 @@ public static class GeneratePuzzle
         };
     }
 
-    private static ISymmetry _getSymmetry()
+    private static ISymmetry GetSymmetry()
     {
         _console.LineFeed();
         return _symmetryMenu.Run() switch
@@ -74,13 +74,13 @@ public static class GeneratePuzzle
         };
     }
 
-    private static int _getMaxClues()
+    private static int GetMaxClues()
     {
-        string input = _console
+        var input = _console
             .LineFeed()
             .Write("Max Clues (default none): ")
             .ReadLine();
-        int.TryParse(input, out int maxClues);
+        var _ = int.TryParse(input, out int maxClues);
         return maxClues;
     }
 }

@@ -11,7 +11,7 @@ public static class App
         {
             try
             {
-                puzzle = puzzle is null
+                puzzle = puzzle == null
                     ? MainMenu.Run()
                     : PuzzleMenu.Run(puzzle);
                 _console

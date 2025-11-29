@@ -9,7 +9,7 @@ public static class Solver
         _iterationCount = 0;
         input.FillCandidates();
         input.ReduceCandidates();
-        return _doMultiSolve(input, null);
+        return DoMultiSolve(input, null);
     }
 
     public static List<Puzzle> MultiSolve(Puzzle input, int maxSolutions = -1)
@@ -17,77 +17,77 @@ public static class Solver
         _iterationCount = 0;
         input.FillCandidates();
         input.ReduceCandidates();
-        List<Puzzle> solutions = new();
-        _doMultiSolve(input, p =>
+        var solutions = new List<Puzzle>();
+        DoMultiSolve(input, p =>
         {
             _iterationCount = 0;
             solutions.Add(p);
-            return solutions.Count() < maxSolutions || maxSolutions == -1;
+            return solutions.Count < maxSolutions || maxSolutions == -1;
         });
         return solutions;
     }
 
-    private static Puzzle _doSolve(Puzzle input)
+    private static Puzzle DoSolve(Puzzle input)
     {
         if (input.IsSolved) return input;
         if (++_iterationCount >= 1000) return null;
-        Cell activeCell = _findWorkingCell(input);
-        if (activeCell is null) return null;
-        foreach (int guess in activeCell.Candidates)
+        var activeCell = FindWorkingCell(input);
+        if (activeCell == null) return null;
+        foreach (var guess in activeCell.Candidates)
         {
             Puzzle puzzle;
-            if ((puzzle = _placeValue(input, activeCell.Index, guess)) is not null)
-                if ((puzzle = _doSolve(puzzle)) is not null)
+            if ((puzzle = PlaceValue(input, activeCell.Index, guess)) != null)
+                if ((puzzle = DoSolve(puzzle)) != null)
                     return puzzle;
         }
         return null;
     }
 
-    private static Puzzle _doMultiSolve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
+    private static Puzzle DoMultiSolve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
     {
         if (input.IsSolved)
-            return (solutionFunc is not null && solutionFunc(input)) ? null : input;
+            return (solutionFunc != null && solutionFunc(input)) ? null : input;
         if (++_iterationCount >= 1000) return null;
-        Cell activeCell = _findWorkingCell(input);
-        if (activeCell is null) return null;
-        foreach (int guess in activeCell.Candidates)
+        var activeCell = FindWorkingCell(input);
+        if (activeCell == null) return null;
+        foreach (var guess in activeCell.Candidates)
         {
             Puzzle puzzle;
-            if ((puzzle = _placeValue(input, activeCell.Index, guess)) is not null)
-                if ((puzzle = _doMultiSolve(puzzle, solutionFunc)) is not null)
+            if ((puzzle = PlaceValue(input, activeCell.Index, guess)) != null)
+                if ((puzzle = DoMultiSolve(puzzle, solutionFunc)) != null)
                     return puzzle;
         }
         return null;
     }
 
-    private static Puzzle _placeValue(Puzzle input, int cellIndex, int value)
+    private static Puzzle PlaceValue(Puzzle input, int cellIndex, int value)
     {
-        Puzzle puzzle = new(input);
-        Cell cell = puzzle.Cells[cellIndex];
+        var puzzle = new Puzzle(input);
+        var cell = puzzle.Cells[cellIndex];
         if (!cell.Candidates.Contains(value))
             return null;
         cell.Value = value;
-        Dictionary<int, int> cellsToPlace = new();
-        foreach (Cell peer in puzzle.Peers(cell))
+        var cellsToPlace = new Dictionary<int, int>();
+        foreach (var peer in puzzle.Peers(cell))
         {
-            if (peer.Value is not null)
+            if (peer.Value != null)
                 continue;
-            SortedSet<int> newCandidates = new(peer.Candidates.Except(new int[] { value }));
-            if (!newCandidates.Any())
+            var newCandidates = new SortedSet<int>(peer.Candidates.Except([value]));
+            if (newCandidates.Count == 0)
                 return null;
             if (newCandidates.Count == 1 && peer.Candidates.Count > 1)
                 cellsToPlace.Add(peer.Index, newCandidates.Single());
             peer.RemoveCandidate(value);
         }
-        foreach (KeyValuePair<int, int> pair in cellsToPlace)
+        foreach (var pair in cellsToPlace)
         {
-            if ((puzzle = _placeValue(puzzle, pair.Key, pair.Value)) is null)
+            if ((puzzle = PlaceValue(puzzle, pair.Key, pair.Value)) == null)
                 return null;
         }
         return puzzle;
     }
 
-    private static Cell _findWorkingCell(Puzzle puzzle)
+    private static Cell FindWorkingCell(Puzzle puzzle)
     {
         return puzzle.Cells
             .EmptyCells()

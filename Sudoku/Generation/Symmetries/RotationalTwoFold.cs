@@ -15,17 +15,18 @@ public class RotationalTwoFold : ISymmetry
 
     public int[] GetReflections(int cellIndex)
     {
-        List<int> reflections = new() { cellIndex };
-        int row = cellIndex.GetRowIndex();
-        int col = cellIndex.GetColIndex();
-        int axis = Puzzle.ReflectiveIndex;
+        List<int> reflections = [cellIndex];
+        var row = cellIndex.GetRowIndex();
+        var col = cellIndex.GetColIndex();
+        var lastIndex = Puzzle.UnitSize - 1;
+        var axis = Puzzle.ReflectiveIndex;
         if (row != axis || col != axis)
         {
-            int reflectedRow = (Puzzle.UnitSize - 1) - row;
-            int reflectedCol = (Puzzle.UnitSize - 1) - col;
-            int reflectedIndex = (reflectedRow * Puzzle.UnitSize) + reflectedCol;
+            var reflectedRow = lastIndex - row;
+            var reflectedCol = lastIndex - col;
+            var reflectedIndex = (reflectedRow * Puzzle.UnitSize) + reflectedCol;
             reflections.Add(reflectedIndex);
         }
-        return reflections.ToArray();
+        return [.. reflections];
     }
 }

@@ -1,5 +1,3 @@
-using Sudoku.Exceptions;
-
 namespace Sudoku.Logic;
 
 public class Clue : Cell
@@ -12,7 +10,7 @@ public class Clue : Cell
     public override CellType Type => CellType.Clue;
     public override int? Value
     {
-        get { return this._value; }
+        get { return _value; }
         set { throw new SudokuException("Cannot change a clue"); }
     }
     public override void AddCandidate(int val) => throw new SudokuException("Cannot change a clue");

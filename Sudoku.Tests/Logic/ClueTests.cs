@@ -12,7 +12,7 @@ public class ClueTests
     [Fact]
     public void CopyConstructor_Returns_Copy()
     {
-        Clue clone = new(_testObject);
+        var clone = new Clue(_testObject);
         Assert.NotNull(clone);
         Assert.NotSame(_testObject, clone);
         Assert.Equal(_testObject.Row, clone.Row);
@@ -38,7 +38,7 @@ public class ClueTests
     [Fact]
     public void Value_Set_Throws()
     {
-        Exception exception = Record.Exception(() => _testObject.Value = 1);
+        var exception = Record.Exception(() => _testObject.Value = 1);
         Assert.NotNull(exception);
         Assert.IsType<SudokuException>(exception);
     }
@@ -46,14 +46,14 @@ public class ClueTests
     [Fact]
     public void GetCandidates_Returns_EmptyList()
     {
-        ReadOnlyCollection<int> actual = _testObject.Candidates;
+        var actual = _testObject.Candidates;
         Assert.Empty(actual);
     }
 
     [Fact]
     public void AddCandidate_Throws()
     {
-        Exception exception = Record.Exception(() => _testObject.AddCandidate(1));
+        var exception = Record.Exception(() => _testObject.AddCandidate(1));
         Assert.NotNull(exception);
         Assert.IsType<SudokuException>(exception);
     }
@@ -61,7 +61,7 @@ public class ClueTests
     [Fact]
     public void RemoveCandidate_Throws()
     {
-        Exception exception = Record.Exception(() => _testObject.RemoveCandidate(1));
+        var exception = Record.Exception(() => _testObject.RemoveCandidate(1));
         Assert.NotNull(exception);
         Assert.IsType<SudokuException>(exception);
     }
@@ -69,7 +69,7 @@ public class ClueTests
     [Fact]
     public void FillCandidates_Throws()
     {
-        Exception exception = Record.Exception(() => _testObject.FillCandidates());
+        var exception = Record.Exception(() => _testObject.FillCandidates());
         Assert.NotNull(exception);
         Assert.IsType<SudokuException>(exception);
     }
@@ -77,7 +77,7 @@ public class ClueTests
     [Fact]
     public void ClearCandidates_Throws()
     {
-        Exception exception = Record.Exception(() => _testObject.ClearCandidates());
+        var exception = Record.Exception(() => _testObject.ClearCandidates());
         Assert.NotNull(exception);
         Assert.IsType<SudokuException>(exception);
     }

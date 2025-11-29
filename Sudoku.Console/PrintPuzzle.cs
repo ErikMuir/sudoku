@@ -1,68 +1,62 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MuirDev.ConsoleTools;
-using Sudoku.Logic;
-
 namespace Sudoku.Console;
 
-    public static class PrintPuzzle
+public static class PrintPuzzle
+{
+    const string GridBorder = " ----------------------------- ";
+    const string GridDivide = "|---------+---------+---------|";
+    const char VerticalLine = '|';
+    private static readonly FluentConsole _console = new();
+
+    public static void Run(Puzzle puzzle)
     {
-        const string GridBorder = " ----------------------------- ";
-        const string GridDivide = "|---------+---------+---------|";
-        const char VerticalLine = '|';
-        private static readonly FluentConsole _console = new();
-
-        public static void Run(Puzzle puzzle)
+        List<string> rows = new();
+        for (int i = 0; i < Puzzle.UnitSize; i++)
         {
-            List<string> rows = new();
-            for (int i = 0; i < Puzzle.UnitSize; i++)
-            {
-                Cell[] rowCells = puzzle.GetRow(i).ToArray();
-                string rowString = _gridRow(rowCells);
-                rows.Add(rowString);
-            }
-            _console
-                .LineFeed()
-                .WriteLine(GridBorder)
-                .WriteLine(rows[0])
-                .WriteLine(rows[1])
-                .WriteLine(rows[2])
-                .WriteLine(GridDivide)
-                .WriteLine(rows[3])
-                .WriteLine(rows[4])
-                .WriteLine(rows[5])
-                .WriteLine(GridDivide)
-                .WriteLine(rows[6])
-                .WriteLine(rows[7])
-                .WriteLine(rows[8])
-                .WriteLine(GridBorder)
-                .LineFeed();
+            Cell[] rowCells = puzzle.GetRow(i).ToArray();
+            string rowString = _gridRow(rowCells);
+            rows.Add(rowString);
         }
+        _console
+            .LineFeed()
+            .WriteLine(GridBorder)
+            .WriteLine(rows[0])
+            .WriteLine(rows[1])
+            .WriteLine(rows[2])
+            .WriteLine(GridDivide)
+            .WriteLine(rows[3])
+            .WriteLine(rows[4])
+            .WriteLine(rows[5])
+            .WriteLine(GridDivide)
+            .WriteLine(rows[6])
+            .WriteLine(rows[7])
+            .WriteLine(rows[8])
+            .WriteLine(GridBorder)
+            .LineFeed();
+    }
 
-        private static string _gridRow(Cell[] row)
-        {
-            List<string> cells = new();
-            for (int i = 0; i < Puzzle.UnitSize; i++)
-                cells.Add(_gridCell(row[i]));
+    private static string _gridRow(Cell[] row)
+    {
+        List<string> cells = new();
+        for (int i = 0; i < Puzzle.UnitSize; i++)
+            cells.Add(_gridCell(row[i]));
 
-            StringBuilder sb = new();
-            sb.Append(VerticalLine);
-            sb.Append(cells[0]);
-            sb.Append(cells[1]);
-            sb.Append(cells[2]);
-            sb.Append(VerticalLine);
-            sb.Append(cells[3]);
-            sb.Append(cells[4]);
-            sb.Append(cells[5]);
-            sb.Append(VerticalLine);
-            sb.Append(cells[6]);
-            sb.Append(cells[7]);
-            sb.Append(cells[8]);
-            sb.Append(VerticalLine);
+        StringBuilder sb = new();
+        sb.Append(VerticalLine);
+        sb.Append(cells[0]);
+        sb.Append(cells[1]);
+        sb.Append(cells[2]);
+        sb.Append(VerticalLine);
+        sb.Append(cells[3]);
+        sb.Append(cells[4]);
+        sb.Append(cells[5]);
+        sb.Append(VerticalLine);
+        sb.Append(cells[6]);
+        sb.Append(cells[7]);
+        sb.Append(cells[8]);
+        sb.Append(VerticalLine);
 
-            return sb.ToString();
-        }
+        return sb.ToString();
+    }
 
-        private static string _gridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
+    private static string _gridCell(Cell cell) => cell.Value.HasValue ? $" {cell.Value} " : "   ";
 }

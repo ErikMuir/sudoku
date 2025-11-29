@@ -1,33 +1,29 @@
-using System.Collections.Generic;
-using Sudoku.Extensions;
-using Sudoku.Logic;
+namespace Sudoku.Generation.Symmetries;
 
-namespace Sudoku.Generation;
+public class Horizontal : ISymmetry
+{
+    private Horizontal() { }
 
-    public class Horizontal : ISymmetry
+    public static readonly ISymmetry Symmetry;
+
+    static Horizontal()
     {
-        private Horizontal() { }
+        Symmetry = new Horizontal();
+    }
 
-        public static readonly ISymmetry Symmetry;
+    public SymmetryType Type => SymmetryType.Horizontal;
 
-        static Horizontal()
+    public int[] GetReflections(int cellIndex)
+    {
+        List<int> reflections = new() { cellIndex };
+        int row = cellIndex.GetRowIndex();
+        int col = cellIndex.GetColIndex();
+        if (row != Puzzle.ReflectiveIndex)
         {
-            Symmetry = new Horizontal();
+            int reflectedRow = (Puzzle.UnitSize - 1) - row;
+            int reflectedIndex = (reflectedRow * Puzzle.UnitSize) + col;
+            reflections.Add(reflectedIndex);
         }
-
-        public SymmetryType Type => SymmetryType.Horizontal;
-
-        public int[] GetReflections(int cellIndex)
-        {
-            List<int> reflections = new() { cellIndex };
-            int row = cellIndex.GetRowIndex();
-            int col = cellIndex.GetColIndex();
-            if (row != Puzzle.ReflectiveIndex)
-            {
-                int reflectedRow = (Puzzle.UnitSize - 1) - row;
-                int reflectedIndex = (reflectedRow * Puzzle.UnitSize) + col;
-                reflections.Add(reflectedIndex);
-            }
-            return reflections.ToArray();
+        return reflections.ToArray();
     }
 }

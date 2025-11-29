@@ -1,40 +1,36 @@
-using System.Linq;
-using MuirDev.ConsoleTools;
-using Sudoku.Analysis;
-
 namespace Sudoku.Console;
 
-    public static class AnalyzePuzzle
+public static class AnalyzePuzzle
+{
+    private static readonly FluentConsole _console = new();
+
+    public static void Run(Puzzle puzzle)
     {
-        private static readonly FluentConsole _console = new();
+        Analyzer analyzer = new Analyzer(puzzle);
+        _statistics(analyzer);
+    }
 
-        public static void Run(Puzzle puzzle)
-        {
-            Analyzer analyzer = new Analyzer(puzzle);
-            _statistics(analyzer);
-        }
+    private static void _statistics(Analyzer analyzer)
+    {
+        _console
+            .LineFeed()
+            .Info($"Level: {analyzer.Level}")
+            .Info($"Solve Duration (ms): {analyzer.SolveDuration.Milliseconds}")
+            .Info($"Solve Depth: {analyzer.SolveDepth}")
+            .Info("Constraint Actions:");
 
-        private static void _statistics(Analyzer analyzer)
-        {
-            _console
-                .LineFeed()
-                .Info($"Level: {analyzer.Level}")
-                .Info($"Solve Duration (ms): {analyzer.SolveDuration.Milliseconds}")
-                .Info($"Solve Depth: {analyzer.SolveDepth}")
-                .Info("Constraint Actions:");
-
-            analyzer.Logs
-                .Select(x => x.Constraint)
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList()
-                .ForEach(constraint =>
-                {
-                    int actionCount = analyzer.Logs
-                        .Where(x => x.Constraint == constraint)
-                        .Select(x => x.Actions.Count())
-                        .Aggregate((result, item) => result + item);
-                    _console.Info($"  {constraint}: {actionCount}");
-                });
+        analyzer.Logs
+            .Select(x => x.Constraint)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList()
+            .ForEach(constraint =>
+            {
+                int actionCount = analyzer.Logs
+                    .Where(x => x.Constraint == constraint)
+                    .Select(x => x.Actions.Count())
+                    .Aggregate((result, item) => result + item);
+                _console.Info($"  {constraint}: {actionCount}");
+            });
     }
 }

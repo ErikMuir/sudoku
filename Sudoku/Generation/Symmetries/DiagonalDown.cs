@@ -1,32 +1,28 @@
-using System.Collections.Generic;
-using Sudoku.Extensions;
-using Sudoku.Logic;
+namespace Sudoku.Generation.Symmetries;
 
-namespace Sudoku.Generation;
+public class DiagonalDown : ISymmetry
+{
+    private DiagonalDown() { }
 
-    public class DiagonalDown : ISymmetry
+    public static readonly ISymmetry Symmetry;
+
+    static DiagonalDown()
     {
-        private DiagonalDown() { }
+        Symmetry = new DiagonalDown();
+    }
 
-        public static readonly ISymmetry Symmetry;
+    public SymmetryType Type => SymmetryType.DiagonalDown;
 
-        static DiagonalDown()
+    public int[] GetReflections(int cellIndex)
+    {
+        List<int> reflections = new() { cellIndex };
+        int row = cellIndex.GetRowIndex();
+        int col = cellIndex.GetColIndex();
+        if (row != col)
         {
-            Symmetry = new DiagonalDown();
+            int reflectedIndex = (col * Puzzle.UnitSize) + row;
+            reflections.Add(reflectedIndex);
         }
-
-        public SymmetryType Type => SymmetryType.DiagonalDown;
-
-        public int[] GetReflections(int cellIndex)
-        {
-            List<int> reflections = new() { cellIndex };
-            int row = cellIndex.GetRowIndex();
-            int col = cellIndex.GetColIndex();
-            if (row != col)
-            {
-                int reflectedIndex = (col * Puzzle.UnitSize) + row;
-                reflections.Add(reflectedIndex);
-            }
-            return reflections.ToArray();
+        return reflections.ToArray();
     }
 }

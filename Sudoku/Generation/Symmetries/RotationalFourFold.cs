@@ -1,47 +1,43 @@
-using System.Collections.Generic;
-using Sudoku.Extensions;
-using Sudoku.Logic;
+namespace Sudoku.Generation.Symmetries;
 
-namespace Sudoku.Generation;
+public class RotationalFourFold : ISymmetry
+{
+    private RotationalFourFold() { }
 
-    public class RotationalFourFold : ISymmetry
+    public static readonly ISymmetry Symmetry;
+
+    static RotationalFourFold()
     {
-        private RotationalFourFold() { }
+        Symmetry = new RotationalFourFold();
+    }
 
-        public static readonly ISymmetry Symmetry;
+    public SymmetryType Type => SymmetryType.RotationalFourFold;
 
-        static RotationalFourFold()
+    public int[] GetReflections(int cellIndex)
+    {
+        List<int> reflections = new() { cellIndex };
+        int row = cellIndex.GetRowIndex();
+        int col = cellIndex.GetColIndex();
+        int axis = Puzzle.ReflectiveIndex;
+        if (row != axis || col != axis)
         {
-            Symmetry = new RotationalFourFold();
-        }
-
-        public SymmetryType Type => SymmetryType.RotationalFourFold;
-
-        public int[] GetReflections(int cellIndex)
-        {
-            List<int> reflections = new() { cellIndex };
-            int row = cellIndex.GetRowIndex();
-            int col = cellIndex.GetColIndex();
-            int axis = Puzzle.ReflectiveIndex;
-            if (row != axis || col != axis)
+            int reflectedIndex = cellIndex;
+            for (int i = 0; i < 3; i++)
             {
-                int reflectedIndex = cellIndex;
-                for (int i = 0; i < 3; i++)
-                {
-                    reflectedIndex = _rotateCell(reflectedIndex);
-                    reflections.Add(reflectedIndex);
-                }
+                reflectedIndex = _rotateCell(reflectedIndex);
+                reflections.Add(reflectedIndex);
             }
-            return reflections.ToArray();
         }
+        return reflections.ToArray();
+    }
 
-        private int _rotateCell(int cellIndex)
-        {
-            int row = cellIndex.GetRowIndex();
-            int col = cellIndex.GetColIndex();
-            int targetRow = col;
-            int targetCol = (Puzzle.UnitSize - 1) - row;
-            int targetIndex = (targetRow * Puzzle.UnitSize) + targetCol;
-            return targetIndex;
+    private int _rotateCell(int cellIndex)
+    {
+        int row = cellIndex.GetRowIndex();
+        int col = cellIndex.GetColIndex();
+        int targetRow = col;
+        int targetCol = (Puzzle.UnitSize - 1) - row;
+        int targetIndex = (targetRow * Puzzle.UnitSize) + targetCol;
+        return targetIndex;
     }
 }

@@ -6,7 +6,7 @@ public static class App
 
     public static void Run()
     {
-        Puzzle puzzle = null;
+        Puzzle? puzzle = null;
         while (true)
         {
             try

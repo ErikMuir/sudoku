@@ -1,25 +1,27 @@
 namespace Sudoku.Generation.Symmetries;
 
-public class RotationalTwoFold : ISymmetry
+public class RotationalTwoFold : Symmetry
 {
     private RotationalTwoFold() { }
-
-    public static readonly ISymmetry Symmetry;
 
     static RotationalTwoFold()
     {
         Symmetry = new RotationalTwoFold();
     }
 
-    public SymmetryType Type => SymmetryType.RotationalTwoFold;
+    public static readonly Symmetry Symmetry;
 
-    public int[] GetReflections(int cellIndex)
+    public override SymmetryType Type => SymmetryType.RotationalTwoFold;
+
+    public override int[] GetReflections(int cellIndex)
     {
-        List<int> reflections = [cellIndex];
         var row = cellIndex.GetRowIndex();
         var col = cellIndex.GetColIndex();
-        var lastIndex = Puzzle.UnitSize - 1;
         var axis = Puzzle.ReflectiveIndex;
+
+        var reflections = new List<int> { cellIndex };
+
+        var lastIndex = Puzzle.UnitSize - 1;
         if (row != axis || col != axis)
         {
             var reflectedRow = lastIndex - row;
@@ -27,6 +29,7 @@ public class RotationalTwoFold : ISymmetry
             var reflectedIndex = (reflectedRow * Puzzle.UnitSize) + reflectedCol;
             reflections.Add(reflectedIndex);
         }
+
         return [.. reflections];
     }
 }

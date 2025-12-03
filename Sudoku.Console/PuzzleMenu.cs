@@ -14,7 +14,7 @@ public static class PuzzleMenu
     };
     private static readonly Menu _menu = new(_options, "Puzzle Menu");
 
-    public static Puzzle Run(Puzzle puzzle) => _menu.Run() switch
+    public static Puzzle? Run(Puzzle puzzle) => _menu.Run() switch
     {
         '1' => Save(puzzle),
         '2' => Analyze(puzzle),
@@ -45,7 +45,7 @@ public static class PuzzleMenu
         return puzzle;
     }
 
-    private static Puzzle Clear(Puzzle puzzle)
+    private static Puzzle? Clear(Puzzle _)
     {
         _console.Warning("Puzzle has been cleared from memory!");
         return null;

@@ -3,12 +3,12 @@ namespace Sudoku.Console;
 public static class FilePuzzle
 {
     private const string PuzzleDirectory = "./puzzles";
-    private static readonly List<ISerializer> _serializers = new()
-    {
+    private static readonly List<Serializer> _serializers =
+    [
         Sdk.Serializer,
         Sdm.Serializer,
         Sdx.Serializer,
-    };
+    ];
     private static readonly Dictionary<char, string> _menuOptions = new()
     {
         { '1', _serializers[0].FileExtension },
@@ -52,16 +52,15 @@ public static class FilePuzzle
         }
     }
 
-    public static Puzzle Load()
+    public static Puzzle? Load()
     {
-        Puzzle puzzle = null;
-
+        Puzzle? puzzle = null;
         try
         {
             string fullPath;
             string fileExtension;
-            ISerializer serializer;
-            string validationMessage;
+            Serializer? serializer;
+            string? validationMessage;
 
             do
             {
@@ -74,14 +73,14 @@ public static class FilePuzzle
                     null;
                 if (validationMessage != null)
                 {
-                    Confirm confirm = new($"{validationMessage} Try again?", true);
-                    bool tryAgain = confirm.Run(LogType.Warning);
+                    var confirm = new Confirm($"{validationMessage} Try again?", true);
+                    var tryAgain = confirm.Run(LogType.Warning);
                     if (!tryAgain) return null;
                 }
             } while (validationMessage != null);
 
             var puzzleString = File.ReadAllText(fullPath);
-            puzzle = serializer.Deserialize(puzzleString);
+            puzzle = serializer!.Deserialize(puzzleString);
             PrintPuzzle.Run(puzzle);
             _console.Success("Successfully loaded puzzle from file!");
         }
@@ -93,7 +92,6 @@ public static class FilePuzzle
         {
             _console.Failure($"Failed to load the puzzle! {e.Message}");
         }
-
         return puzzle;
     }
 }

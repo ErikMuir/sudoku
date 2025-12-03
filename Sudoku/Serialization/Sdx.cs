@@ -1,26 +1,21 @@
 namespace Sudoku.Serialization;
 
-public class Sdx : ISerializer
+public partial class Sdx : Serializer
 {
-    private static readonly Regex _sdxPattern = new("^(u?[1-9]* ){8}u?[1-9]*(\r\n?|\n)?$", RegexOptions.Multiline);
-    private static readonly Regex _cluePattern = new("^[1-9]$");
-    private static readonly Regex _filledPattern = new("^u[1-9]$");
-    private static readonly Regex _emptyPattern = new("^1?2?3?4?5?6?7?8?9?$");
+    public static readonly Serializer Serializer;
 
     private Sdx() { }
-
-    public static readonly ISerializer Serializer;
 
     static Sdx()
     {
         Serializer = new Sdx();
     }
 
-    public string FileExtension => "sdx";
+    public override string FileExtension => "sdx";
 
-    public Puzzle Deserialize(string puzzleString)
+    public override Puzzle Deserialize(string puzzleString)
     {
-        if (!_sdxPattern.SafeIsMatch(puzzleString))
+        if (!SdxPattern().SafeIsMatch(puzzleString))
             throw new SudokuException("Invalid sdx file format");
 
         var lines = puzzleString
@@ -41,7 +36,7 @@ public class Sdx : ISerializer
         return puzzle;
     }
 
-    public string Serialize(Puzzle puzzle)
+    public override string Serialize(Puzzle puzzle)
     {
         var sb = new StringBuilder();
         for (var row = 0; row < Puzzle.UnitSize; row++)
@@ -85,12 +80,24 @@ public class Sdx : ISerializer
 
     private static CellType GetCellType(string cell)
     {
-        if (_cluePattern.SafeIsMatch(cell))
+        if (CluePattern().SafeIsMatch(cell))
             return CellType.Clue;
-        if (_filledPattern.SafeIsMatch(cell))
+        if (FilledPattern().SafeIsMatch(cell))
             return CellType.Filled;
-        if (_emptyPattern.SafeIsMatch(cell))
+        if (EmptyPattern().SafeIsMatch(cell))
             return CellType.Empty;
         return CellType.Invalid;
     }
+
+    [GeneratedRegex(@"^(u?[1-9]* ){8}u?[1-9]*(\r\n?|\n)?$", RegexOptions.Multiline)]
+    private static partial Regex SdxPattern();
+
+    [GeneratedRegex(@"^[1-9]$")]
+    private static partial Regex CluePattern();
+
+    [GeneratedRegex(@"^u[1-9]$")]
+    private static partial Regex FilledPattern();
+
+    [GeneratedRegex(@"^1?2?3?4?5?6?7?8?9?$")]
+    private static partial Regex EmptyPattern();
 }

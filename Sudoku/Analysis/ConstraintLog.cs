@@ -17,10 +17,10 @@ public class ConstraintLog(ConstraintType type)
         {
             case ConstraintType.NakedSingle:
             case ConstraintType.HiddenSingle:
-                Actions.Add(new Action(ActionType.SetValue, cell, value));
+                Actions.Add(Action.SetValue(cell, value));
                 break;
             default:
-                Actions.Add(new Action(ActionType.RemoveCandidate, cell, value));
+                Actions.Add(Action.RemoveCandidate(cell, value));
                 break;
         }
     }

@@ -1,23 +1,21 @@
 namespace Sudoku.Serialization;
 
-public class Sdm : ISerializer
+public partial class Sdm : Serializer
 {
-    private static readonly Regex _sdmPattern = new("^.{81}$");
+    public static readonly Serializer Serializer;
 
     private Sdm() { }
-
-    public static readonly ISerializer Serializer;
 
     static Sdm()
     {
         Serializer = new Sdm();
     }
 
-    public string FileExtension => "sdm";
+    public override string FileExtension => "sdm";
 
-    public Puzzle Deserialize(string puzzleString)
+    public override Puzzle Deserialize(string puzzleString)
     {
-        if (!_sdmPattern.SafeIsMatch(puzzleString))
+        if (!SdmPattern().SafeIsMatch(puzzleString))
             throw new SudokuException("Invalid sdm file format");
 
         var puzzle = new Puzzle();
@@ -31,7 +29,7 @@ public class Sdm : ISerializer
         return puzzle;
     }
 
-    public string Serialize(Puzzle puzzle)
+    public override string Serialize(Puzzle puzzle)
     {
         var sb = new StringBuilder();
         for (var i = 0; i < Puzzle.TotalCells; i++)
@@ -41,12 +39,12 @@ public class Sdm : ISerializer
 
     public List<Puzzle> DeserializeMultiple(string puzzleString)
     {
-        if (puzzleString == null)
+        if (puzzleString.IsNullOrWhiteSpace())
             throw new SudokuException("Invalid sdm file format");
 
         return [.. puzzleString
             .Split(SerializationUtils.NewLines, StringSplitOptions.None)
-            .Select(x => Deserialize(x))];
+            .Select(Deserialize)];
     }
 
     public string SerializeMultiple(List<Puzzle> puzzles)
@@ -61,4 +59,7 @@ public class Sdm : ISerializer
     }
 
     private static string SerializeCell(Cell cell) => cell.Value != null ? $"{cell.Value}" : "0";
+
+    [GeneratedRegex("^.{81}$")]
+    private static partial Regex SdmPattern();
 }

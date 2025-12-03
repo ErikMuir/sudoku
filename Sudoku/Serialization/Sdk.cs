@@ -1,31 +1,27 @@
 namespace Sudoku.Serialization;
 
-public class Sdk : ISerializer
+public partial class Sdk : Serializer
 {
-    private static readonly Regex _sdkLinePattern = new(@"^[1-9\.]{9}$");
+    public static readonly Serializer Serializer;
 
     private Sdk() { }
-
-    public static readonly ISerializer Serializer;
 
     static Sdk()
     {
         Serializer = new Sdk();
     }
 
-    public string FileExtension => "sdk";
+    public override string FileExtension => "sdk";
 
-    public Puzzle Deserialize(string puzzleString)
+    public override Puzzle Deserialize(string puzzleString)
     {
-        if (puzzleString is null) return null;
-
         var rows = puzzleString
             .Trim()
             .Split(SerializationUtils.NewLines, StringSplitOptions.None)
             .Where(x => x.Substring(0, 1) != MetadataTokens.Prefix)
             .ToArray();
 
-        if (rows.Length != Puzzle.UnitSize || rows.Any(row => !_sdkLinePattern.IsMatch(row)))
+        if (rows.Length != Puzzle.UnitSize || rows.Any(row => !SdkLinePattern().SafeIsMatch(row)))
             throw new SudokuException("Invalid sdk file format");
 
         var puzzle = new Puzzle
@@ -44,7 +40,7 @@ public class Sdk : ISerializer
         return puzzle;
     }
 
-    public string Serialize(Puzzle puzzle)
+    public override string Serialize(Puzzle puzzle)
     {
         var sb = new StringBuilder();
         var serializedMetadata = SerializeMetadata(puzzle.Metadata);
@@ -60,7 +56,7 @@ public class Sdk : ISerializer
         return sb.ToString();
     }
 
-    private static string SerializeMetadata(Metadata metadata)
+    private static string? SerializeMetadata(Metadata metadata)
     {
         if (metadata == null) return null;
 
@@ -80,9 +76,10 @@ public class Sdk : ISerializer
 
     private static Metadata DeserializeMetadata(string puzzleString)
     {
-        if (puzzleString == null) return null;
-
         var metadata = new Metadata();
+
+        if (puzzleString.IsNullOrWhiteSpace()) return metadata;
+
         var lines = puzzleString
             .Split(SerializationUtils.NewLines, StringSplitOptions.None)
             .Where(x => x.Length >= 2)
@@ -124,6 +121,10 @@ public class Sdk : ISerializer
             }
             catch (Exception) { }
         }
+
         return metadata;
     }
+
+    [GeneratedRegex(@"^[1-9\.]{9}$")]
+    private static partial Regex SdkLinePattern();
 }

@@ -4,12 +4,12 @@ public static class Solver
 {
     private static int _iterationCount = 0;
 
-    public static Puzzle Solve(Puzzle input)
+    public static Puzzle? Solve(Puzzle input)
     {
         _iterationCount = 0;
         input.FillCandidates();
         input.ReduceCandidates();
-        return DoMultiSolve(input, null);
+        return DoMultiSolve(input);
     }
 
     public static List<Puzzle> MultiSolve(Puzzle input, int maxSolutions = -1)
@@ -27,7 +27,7 @@ public static class Solver
         return solutions;
     }
 
-    private static Puzzle DoSolve(Puzzle input)
+    private static Puzzle? DoSolve(Puzzle input)
     {
         if (input.IsSolved) return input;
         if (++_iterationCount >= 1000) return null;
@@ -35,7 +35,7 @@ public static class Solver
         if (activeCell == null) return null;
         foreach (var guess in activeCell.Candidates)
         {
-            Puzzle puzzle;
+            Puzzle? puzzle;
             if ((puzzle = PlaceValue(input, activeCell.Index, guess)) != null)
                 if ((puzzle = DoSolve(puzzle)) != null)
                     return puzzle;
@@ -43,7 +43,7 @@ public static class Solver
         return null;
     }
 
-    private static Puzzle DoMultiSolve(Puzzle input, Func<Puzzle, bool> solutionFunc = null)
+    private static Puzzle? DoMultiSolve(Puzzle input, Func<Puzzle, bool>? solutionFunc = null)
     {
         if (input.IsSolved)
             return (solutionFunc != null && solutionFunc(input)) ? null : input;
@@ -52,7 +52,7 @@ public static class Solver
         if (activeCell == null) return null;
         foreach (var guess in activeCell.Candidates)
         {
-            Puzzle puzzle;
+            Puzzle? puzzle;
             if ((puzzle = PlaceValue(input, activeCell.Index, guess)) != null)
                 if ((puzzle = DoMultiSolve(puzzle, solutionFunc)) != null)
                     return puzzle;
@@ -60,7 +60,7 @@ public static class Solver
         return null;
     }
 
-    private static Puzzle PlaceValue(Puzzle input, int cellIndex, int value)
+    private static Puzzle? PlaceValue(Puzzle input, int cellIndex, int value)
     {
         var puzzle = new Puzzle(input);
         var cell = puzzle.Cells[cellIndex];
@@ -87,7 +87,7 @@ public static class Solver
         return puzzle;
     }
 
-    private static Cell FindWorkingCell(Puzzle puzzle)
+    private static Cell? FindWorkingCell(Puzzle puzzle)
     {
         return puzzle.Cells
             .EmptyCells()

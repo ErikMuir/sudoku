@@ -1,17 +1,15 @@
 namespace Sudoku.Extensions;
 
-public static class Extensions
+public static class CellExtensions
 {
-    private static bool IsUnit(this IEnumerable<Cell> unit)
-        => unit != null && unit.Count() == Puzzle.UnitSize;
+    private static bool IsUnit(this IEnumerable<Cell> unit) => unit.Count() == Puzzle.UnitSize;
 
-    private static int ValueCount(this IEnumerable<Cell> unit)
-        => unit.Count(x => x.Value is not null);
+    private static int ValueCount(this IEnumerable<Cell> unit) => unit.Count(x => x.Value.HasValue);
 
     private static int DistinctValueCount(this IEnumerable<Cell> unit)
         => unit
-            .Where(x => x.Value is not null)
-            .Select(x => x.Value)
+            .Where(x => x.Value.HasValue)
+            .Select(x => x.Value!.Value)
             .Distinct()
             .Count();
 
@@ -19,7 +17,7 @@ public static class Extensions
     public static bool IsUnitSolved(this IEnumerable<Cell> unit)
         => (
             unit.IsUnit() &&
-            unit.All(x => x.Value is not null) &&
+            unit.All(x => x.Value.HasValue) &&
             unit.DistinctValueCount() == Puzzle.UnitSize
         );
 
@@ -64,32 +62,4 @@ public static class Extensions
 
     public static IEnumerable<Cell> NonEmptyCells(this IEnumerable<Cell> cells)
         => cells.Where(x => x.Type != CellType.Empty);
-
-    public static void Loop(this int count, Action<int> action)
-    {
-        for (var i = 0; i < count; i++)
-            action(i);
-    }
-
-    public static bool LoopAnd(this int count, Func<int, bool> func)
-    {
-        for (var i = 0; i < count; i++)
-            if (!func?.Invoke(i) ?? false)
-                return false;
-        return true;
-    }
-
-    public static bool LoopOr(this int count, Func<int, bool> func)
-    {
-        for (var i = 0; i < count; i++)
-            if (func?.Invoke(i) ?? false)
-                return true;
-        return false;
-    }
-
-    public static int GetRowIndex(this int cellIndex)
-        => cellIndex / Puzzle.UnitSize;
-
-    public static int GetColIndex(this int cellIndex)
-        => cellIndex % Puzzle.UnitSize;
 }

@@ -3,7 +3,7 @@ namespace Sudoku.Generation;
 public static class Generator
 {
     private static readonly Random _rand = new();
-    private static readonly ISymmetry[] _supportedSymmetries =
+    private static readonly Symmetry[] _supportedSymmetries =
     [
         Horizontal.Symmetry,
         Vertical.Symmetry,
@@ -15,7 +15,7 @@ public static class Generator
     
     public static Puzzle Generate(GenerationOptions options)
     {
-        Puzzle puzzle = null;
+        Puzzle? puzzle = null;
         var puzzleIterations = 0;
 
         var stopwatch = new Stopwatch();
@@ -34,10 +34,9 @@ public static class Generator
         return puzzle;
     }
 
-    private static Puzzle PuzzleIteration(GenerationOptions options)
+    private static Puzzle? PuzzleIteration(GenerationOptions options)
     {
-        var maxClues = options?.MaxClues ?? 0;
-        var symmetry = options?.Symmetry ?? _supportedSymmetries[_rand.Next(_supportedSymmetries.Length)];
+        Symmetry symmetry = options.Symmetry ?? _supportedSymmetries[_rand.Next(_supportedSymmetries.Length)];
         var metadata = new Metadata()
         {
             Source = "MuirDev.Sudoku",
@@ -49,8 +48,8 @@ public static class Generator
         while (true)
         {
             var workingPuzzle = ApplySymmetry(puzzle, symmetry);
-            if (workingPuzzle is null) return null;
-            if (IsMaxClues(workingPuzzle, maxClues)) return null;
+            if (workingPuzzle == null) return null;
+            if (IsMaxClues(workingPuzzle, options.MaxClues)) return null;
             var solutions = Solver.MultiSolve(workingPuzzle, 2);
             if (solutions.Count == 0) return null;
             if (solutions.Count == 1) return ValidatePuzzle(workingPuzzle, options);
@@ -58,12 +57,13 @@ public static class Generator
         }
     }
 
-    private static Puzzle ApplySymmetry(Puzzle puzzle, ISymmetry symmetry)
+    private static Puzzle? ApplySymmetry(Puzzle puzzle, Symmetry symmetry)
     {
         var workingPuzzle = new Puzzle(puzzle);
         var randomEmptyCell = GetRandomEmptyCell(workingPuzzle);
+        if (randomEmptyCell == null) return workingPuzzle;
         var reflections = symmetry.GetReflections(randomEmptyCell.Index);
-        for (var i = 0; i < reflections.Length && workingPuzzle is not null; i++)
+        for (var i = 0; i < reflections.Length && workingPuzzle != null; i++)
         {
             var cell = workingPuzzle.Cells[reflections[i]];
             var value = cell.Candidates[_rand.Next(cell.Candidates.Count)];
@@ -72,13 +72,13 @@ public static class Generator
         return workingPuzzle;
     }
 
-    private static Cell GetRandomEmptyCell(Puzzle puzzle)
+    private static Cell? GetRandomEmptyCell(Puzzle puzzle)
     {
         var emptyCells = puzzle.Cells.EmptyCells().ToArray();
-        return emptyCells[_rand.Next(emptyCells.Length)];
+        return emptyCells.Length > 0 ? emptyCells[_rand.Next(emptyCells.Length)] : null;
     }
 
-    private static Puzzle PlaceValue(Puzzle input, int cellIndex, int value)
+    private static Puzzle? PlaceValue(Puzzle input, int cellIndex, int value)
     {
         var puzzle = new Puzzle(input);
         var cell = puzzle.Cells[cellIndex];
@@ -101,7 +101,7 @@ public static class Generator
     private static bool IsMaxClues(Puzzle puzzle, int maxClues)
         => maxClues > 0 && puzzle.Cells.FilledCells().Count() > maxClues;
 
-    private static Puzzle ValidatePuzzle(Puzzle input, GenerationOptions options)
+    private static Puzzle? ValidatePuzzle(Puzzle input, GenerationOptions options)
     {
         // clone puzzle
         var puzzle = new Puzzle(input);
@@ -110,7 +110,7 @@ public static class Generator
         for (var i = 0; i < puzzle.Cells.Length; i++)
         {
             var cell = puzzle.Cells[i];
-            if (cell.Value is null) continue;
+            if (cell.Value == null) continue;
             puzzle.Cells[i] = new Clue(cell.Row, cell.Col, (int)cell.Value);
         }
 

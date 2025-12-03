@@ -1,19 +1,19 @@
 namespace Sudoku.Generation.Symmetries;
 
-public class Asymmetric : ISymmetry
+public class Asymmetric : Symmetry
 {
     private Asymmetric() { }
-
-    public static readonly ISymmetry Symmetry;
 
     static Asymmetric()
     {
         Symmetry = new Asymmetric();
     }
 
-    public SymmetryType Type => SymmetryType.Asymmetric;
+    public static readonly Symmetry Symmetry;
 
-    public int[] GetReflections(int cellIndex)
+    public override SymmetryType Type => SymmetryType.Asymmetric;
+
+    public override int[] GetReflections(int cellIndex)
     {
         return [cellIndex];
     }

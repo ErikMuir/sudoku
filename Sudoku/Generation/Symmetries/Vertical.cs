@@ -1,23 +1,25 @@
 namespace Sudoku.Generation.Symmetries;
 
-public class Vertical : ISymmetry
+public class Vertical : Symmetry
 {
     private Vertical() { }
-
-    public static readonly ISymmetry Symmetry;
 
     static Vertical()
     {
         Symmetry = new Vertical();
     }
 
-    public SymmetryType Type => SymmetryType.Vertical;
+    public static readonly Symmetry Symmetry;
 
-    public int[] GetReflections(int cellIndex)
+    public override SymmetryType Type => SymmetryType.Vertical;
+
+    public override int[] GetReflections(int cellIndex)
     {
-        List<int> reflections = [cellIndex];
         var row = cellIndex.GetRowIndex();
         var col = cellIndex.GetColIndex();
+
+        var reflections = new List<int> { cellIndex };
+
         var lastIndex = Puzzle.UnitSize - 1;
         if (col != Puzzle.ReflectiveIndex)
         {
@@ -25,6 +27,7 @@ public class Vertical : ISymmetry
             var reflectedIndex = (row * Puzzle.UnitSize) + reflectedCol;
             reflections.Add(reflectedIndex);
         }
+
         return [.. reflections];
     }
 }

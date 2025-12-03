@@ -14,7 +14,7 @@ public class Cell
     public Cell(Cell cell) : this(cell.Row, cell.Col, cell.Value)
     {
         if (cell is Clue) throw new SudokuException("A clue cell cannot be cloned as a non-clue cell");
-        cell.Candidates.ToList().ForEach(x => AddCandidate(x));
+        cell.Candidates.ToList().ForEach(AddCandidate);
     }
 
     public readonly int Row;
@@ -24,7 +24,7 @@ public class Cell
 
     public virtual bool IsClue => false;
 
-    public virtual CellType Type => Value is not null ? CellType.Filled : CellType.Empty;
+    public virtual CellType Type => Value.HasValue ? CellType.Filled : CellType.Empty;
 
     protected int? _value;
     public virtual int? Value

@@ -22,6 +22,6 @@ public static class SerializationUtils
     public static string SerializeMetadataEntry(this SymmetryType value)
         => $"{MetadataTokens.Prefix}{MetadataTokens.Symmetry}{value}";
 
-    public static bool SafeIsMatch(this Regex pattern, string value)
+    public static bool SafeIsMatch(this Regex pattern, string? value)
         => value != null && pattern.IsMatch(value);
 }

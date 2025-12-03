@@ -2,8 +2,6 @@
 
 public class Puzzle
 {
-    private static readonly Dictionary<int, int[]> _lazyPeers = [];
-
     public const int BoxSize = 3;
     public const int UnitSize = 9;
     public const int TotalCells = 81;
@@ -28,7 +26,7 @@ public class Puzzle
         {
             var cell = puzzle.Cells[i];
             Cells[i] = cell.IsClue
-                ? new Clue(cell as Clue)
+                ? new Clue((Clue)cell)
                 : new Cell(cell);
         });
     }
@@ -41,18 +39,7 @@ public class Puzzle
     public IEnumerable<Cell> GetCol(int col) => Cells.Where(x => x.Col == col).OrderBy(x => x.Row);
     public IEnumerable<Cell> GetBox(int box) => Cells.Where(x => x.Box == box).OrderBy(x => x.Row).ThenBy(x => x.Col);
     public IEnumerable<Cell> CommonPeers(Cell c1, Cell c2) => Peers(c1).Intersect(Peers(c2));
-    public IEnumerable<Cell> Peers(Cell cell)
-    {
-        if (!_lazyPeers.ContainsKey(cell.Index))
-        {
-            var peers = Cells
-                .Where(cell.IsPeer)
-                .Select(c => c.Index)
-                .ToArray();
-            _lazyPeers.Add(cell.Index, peers);
-        }
-        return _lazyPeers[cell.Index].Select(c => Cells[c]);
-    }
+    public IEnumerable<Cell> Peers(Cell cell) => Cells.Where(c => c.IsPeer(cell));
 
     public bool IsSolved =>
         UnitSize.LoopAnd(i => GetRow(i).IsUnitSolved())
@@ -80,7 +67,7 @@ public class Puzzle
     {
         foreach (var cell in Cells.NonEmptyCells())
             foreach (var peer in Peers(cell).NonClueCells())
-                peer.RemoveCandidate((int)cell.Value);
+                peer.RemoveCandidate((int)cell.Value!);
     }
 
     // public void ReduceCandidates()
@@ -105,13 +92,13 @@ public class Puzzle
     //                 Cell colPeer = col[iPeer];
     //                 Cell boxPeer = box[iPeer];
 
-    //                 if (rowCellValue is not null && !rowPeer.IsClue)
+    //                 if (rowCellValue != null && !rowPeer.IsClue)
     //                     rowPeer.RemoveCandidate(rowCellValue.Value);
 
-    //                 if (colCellValue is not null && !colPeer.IsClue)
+    //                 if (colCellValue != null && !colPeer.IsClue)
     //                     colPeer.RemoveCandidate(colCellValue.Value);
 
-    //                 if (boxCellValue is not null && !boxPeer.IsClue)
+    //                 if (boxCellValue != null && !boxPeer.IsClue)
     //                     boxPeer.RemoveCandidate(boxCellValue.Value);
     //             });
     //         });

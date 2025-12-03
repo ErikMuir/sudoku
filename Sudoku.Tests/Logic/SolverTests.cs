@@ -7,7 +7,7 @@ public class SolverTests
     {
         var puzzle = TestHelpers.GetEasyPuzzle();
         var actual = Solver.Solve(puzzle);
-        Assert.True(actual.IsSolved);
+        Assert.True(actual!.IsSolved);
     }
 
     [Fact]

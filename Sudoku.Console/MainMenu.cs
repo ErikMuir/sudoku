@@ -13,7 +13,7 @@ public static class MainMenu
     };
     private static readonly Menu _menu = new(_options, "Main Menu");
 
-    public static Puzzle Run() => _menu.Run() switch
+    public static Puzzle? Run() => _menu.Run() switch
     {
         '1' => Input(),
         '2' => Load(),
@@ -23,12 +23,12 @@ public static class MainMenu
         _ => throw new SudokuException("Invalid option"),
     };
 
-    private static Puzzle Input() => InputPuzzle.Run();
+    private static Puzzle? Input() => InputPuzzle.Run();
 
-    private static Puzzle Load() => FilePuzzle.Load();
+    private static Puzzle? Load() => FilePuzzle.Load();
 
-    private static Puzzle Generate() => GeneratePuzzle.Run();
-    private static Puzzle Debug()
+    private static Puzzle? Generate() => GeneratePuzzle.Run();
+    private static Puzzle? Debug()
     {
         _console.Warning("Not implemented!");
         return null;

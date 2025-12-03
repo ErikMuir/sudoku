@@ -56,7 +56,7 @@ public static class GeneratePuzzle
         };
     }
 
-    private static ISymmetry GetSymmetry()
+    private static Symmetry? GetSymmetry()
     {
         _console.LineFeed();
         return _symmetryMenu.Run() switch

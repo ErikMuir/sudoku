@@ -8,9 +8,10 @@ public static class SolvePuzzle
     {
         var puzzle = new Puzzle(input);
         puzzle = Solver.Solve(puzzle);
-        var message = puzzle.IsSolved ? "Puzzle was successfully solved!" : "Failed to solve puzzle!";
-        var type = puzzle.IsSolved ? LogType.Success : LogType.Failure;
+        var isSolved = puzzle?.IsSolved ?? false;
+        var message = isSolved ? "Puzzle was successfully solved!" : "Failed to solve puzzle!";
+        var type = isSolved ? LogType.Success : LogType.Failure;
         _console.Log(message, type);
-        return puzzle.IsSolved ? puzzle : input;
+        return isSolved ? puzzle ?? input : input;
     }
 }

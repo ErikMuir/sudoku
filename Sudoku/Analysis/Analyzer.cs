@@ -213,10 +213,10 @@ public class Analyzer
 
                 var col = matches.AllInSameCol() ? matches.First().Col : null as int?;
                 var row = matches.AllInSameRow() ? matches.First().Row : null as int?;
-                if (col is null && row is null) continue;
+                if (col == null && row == null) continue;
 
                 var actions = new List<Action>();
-                var unit = col is not null ? _puzzle.GetCol(col.Value) : _puzzle.GetRow(row.Value);
+                var unit = col != null ? _puzzle.GetCol(col.Value) : _puzzle.GetRow(row!.Value);
                 unit.Where(cell => cell.Candidates.Contains(candidate))
                     .Where(cell => cell.Box != i)
                     .ToList()

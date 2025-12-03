@@ -21,7 +21,7 @@
 //         Assert.NotEmpty(clues);
 //         Assert.NotEmpty(empties);
 //         Assert.Empty(filled);
-//         if (symmetry is not null)
+//         if (symmetry != null)
 //             Assert.Equal(symmetry.Type, puzzle.Metadata.Symmetry);
 //         else
 //             Assert.Contains(puzzle.Metadata.Symmetry, _supportedSymmetries);
